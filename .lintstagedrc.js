@@ -1,6 +1,5 @@
 export default {
   '*.ts': () => 'tsc --noEmit',
-  '*.{js,ts}': 'eslint --fix',
+  '*.{js,ts}': ['eslint --fix', 'vitest related --run'],
   '*': 'prettier --ignore-unknown --write',
-  '*.{js,ts}': 'vitest related --run',
 };
