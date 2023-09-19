@@ -803,7 +803,7 @@ class P2PNode {
        *
        * Related issues:
        * - https://github.com/libp2p/js-libp2p/issues/1518
-       * - https://git.ergopool.io/ergo/rosen-bridge/ts-guard-service/-/issues/99
+       * - local:ergo/rosen-bridge/p2p#6
        */
       const handler = node.registrar.getHandler('/libp2p/circuit/relay/0.1.0');
       node.registrar.unhandle('/libp2p/circuit/relay/0.1.0');
@@ -894,6 +894,7 @@ class P2PNode {
         stream: Stream;
       }
     > = {};
+
     /**
      * Returns the source piped to the provided stream
      * @param stream
