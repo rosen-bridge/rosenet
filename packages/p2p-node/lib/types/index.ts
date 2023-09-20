@@ -27,10 +27,6 @@ export interface ReceiveDataCommunication {
   receiver?: string;
 }
 
-export interface ReceivePeers {
-  peerIds: string[];
-}
-
 export interface ConnectionStream {
   connection: Connection;
   stream: Stream;
@@ -42,18 +38,16 @@ export interface RelayInfo {
 }
 
 export interface P2PNodeConfig {
-  relays: {
-    multiaddrs: string[];
-    peerIDs: string[];
-  };
-  bootstrapTimeout: number;
-  pubsubInterval: number;
+  allowedStreamsPerGuard: number;
   apiCallbackTimeout: number;
+  bootstrapTimeout: number;
+  guardsCount: number;
   loggingInterval: number;
-  peerIdFilePath: string;
   messageSendingRetriesExponentialFactor: number;
   messageSendingRetriesMaxCount: bigint;
-  guardsCount: number;
-  allowedStreamsPerGuard: number;
+  peerIdFilePath: string;
+  protocolName: string;
+  pubsubInterval: number;
   relayReconnectionInterval: number;
+  relays: { multiaddrs: string[]; peerIDs: string[] };
 }

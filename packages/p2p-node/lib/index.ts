@@ -34,7 +34,6 @@ import {
   ConnectionStream,
   P2PNodeConfig,
   ReceiveDataCommunication,
-  ReceivePeers,
   SendDataCommunication,
   SubscribeChannel,
   SubscribeChannels,
@@ -49,11 +48,6 @@ class P2PNode {
   private _messageQueue = pushable();
   private _node: Libp2p | undefined;
   private _subscribedChannels: SubscribeChannels = {};
-
-  private readonly _SUPPORTED_PROTOCOL = new Map<string, string>([
-    ['MSG', '/broadcast'],
-    ['PEER', '/getpeers'],
-  ]);
 
   private constructor() {
     P2PNode.logger.info('P2PNode constructor called.');
@@ -478,7 +472,7 @@ class P2PNode {
   };
 
   /**
-   * handle incoming messages with broadcast protocol
+   * handle incoming messages with `config.protocolName` protocol
    * @param stream
    * @param connection
    */
@@ -493,9 +487,10 @@ class P2PNode {
       // Sink function
       async (source) => {
         try {
-          const broadcastProtocol = this._SUPPORTED_PROTOCOL.get('MSG');
           P2PNode.logger.debug(
-            `A new message with [${broadcastProtocol}] protocol received from peer [${connection.remotePeer.toString()}], trying to parse...`
+            `A new message with [${
+              P2PNode.config.protocolName
+            }] protocol received from peer [${connection.remotePeer.toString()}], trying to parse...`
           );
           // For each chunk of data
           for await (const msg of source) {
@@ -504,7 +499,7 @@ class P2PNode {
             );
 
             P2PNode.logger.debug(
-              `The new message with [${broadcastProtocol}] parsed successfully.`,
+              `The new message with [${P2PNode.config.protocolName}] parsed successfully.`,
               {
                 message: receivedData,
                 subscribedChannels: this._subscribedChannels,
@@ -555,61 +550,6 @@ class P2PNode {
     ).catch((error) => {
       P2PNode.logger.error(
         `An error occurred while handling broadcast protocol stream: ${error}`
-      );
-      P2PNode.logger.error(error.stack);
-    });
-  };
-
-  /**
-   * handle incoming messages for broadcast protocol
-   * @param node
-   * @param stream
-   * @param connection
-   * @deprecated since the issues of the guards causing message losses are fixed
-   */
-  private handlePeerDiscovery = async (
-    node: Libp2p,
-    stream: Stream,
-    connection: Connection
-  ) => {
-    pipe(
-      // Read from the stream (the source)
-      stream.source,
-      // Decode length-prefixed data
-      lp.decode(),
-      // Turn buffers into strings
-      (source) => map(source, (buf) => uint8ArrayToString(buf.subarray())),
-      // Sink function
-      async (source) => {
-        try {
-          // For each chunk of data
-          for await (const msg of source) {
-            if (this.isRelay(connection.remotePeer.toString())) {
-              const receivedData: ReceivePeers = JsonBigInt.parse(
-                msg.toString()
-              );
-              const nodePeerIds = node
-                .getPeers()
-                .map((peer) => peer.toString());
-              await this.addPeersToAddressBook(
-                receivedData.peerIds.filter(
-                  (mainPeer) => !nodePeerIds.includes(mainPeer)
-                )
-              );
-            }
-          }
-        } catch (error) {
-          P2PNode.logger.error(
-            `An error occurred while handling stream callback: ${error}`
-          );
-          if (error instanceof Error && error.stack) {
-            P2PNode.logger.error(error.stack);
-          }
-        }
-      }
-    ).catch((error) => {
-      P2PNode.logger.error(
-        `An error occurred while handling get peers protocol stream: ${error}`
       );
       P2PNode.logger.error(error.stack);
     });
@@ -760,7 +700,7 @@ class P2PNode {
 
       // Define protocol for node
       await node.handle(
-        this._SUPPORTED_PROTOCOL.get('MSG')!,
+        P2PNode.config.protocolName,
         async ({ stream, connection }) => {
           // Read the stream
           this.handleBroadcast(stream, connection);
@@ -770,19 +710,6 @@ class P2PNode {
             P2PNode.config.guardsCount * P2PNode.config.allowedStreamsPerGuard,
           maxOutboundStreams:
             P2PNode.config.guardsCount * P2PNode.config.allowedStreamsPerGuard,
-        }
-      );
-
-      /**
-       * TODO: This is probably no longer needed and should be removed in the near
-       * future if default peer discovery mechanism works as expected
-       */
-      // Handle messages for the _SUPPORTED_PROTOCOL_PEERS
-      await node.handle(
-        this._SUPPORTED_PROTOCOL.get('PEER')!,
-        async ({ stream, connection }) => {
-          // Read the stream
-          this.handlePeerDiscovery(node, stream, connection);
         }
       );
 
@@ -964,7 +891,7 @@ class P2PNode {
         const connStream = await this.getOpenStreamAndConnection(
           this._node!,
           await this.createFromString(peer),
-          this._SUPPORTED_PROTOCOL.get('MSG')!
+          P2PNode.config.protocolName
         );
 
         try {
