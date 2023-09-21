@@ -472,7 +472,7 @@ class P2PNode {
   };
 
   /**
-   * handle incoming messages with `config.protocolName` protocol
+   * handle incoming messages with `config.protocol` protocol
    * @param stream
    * @param connection
    */
@@ -492,7 +492,7 @@ class P2PNode {
         try {
           P2PNode.logger.debug(
             `A new message with [${
-              P2PNode.config.protocolName
+              P2PNode.config.protocol
             }] protocol received from peer [${connection.remotePeer.toString()}], trying to parse...`
           );
           // For each chunk of data
@@ -502,7 +502,7 @@ class P2PNode {
             );
 
             P2PNode.logger.debug(
-              `The new message with [${P2PNode.config.protocolName}] parsed successfully.`,
+              `The new message with [${P2PNode.config.protocol}] parsed successfully.`,
               {
                 message: receivedData,
                 subscribedChannels: this._subscribedChannels,
@@ -703,7 +703,7 @@ class P2PNode {
 
       // Define protocol for node
       await node.handle(
-        P2PNode.config.protocolName,
+        P2PNode.config.protocol,
         async ({ stream, connection }) => {
           // Read the stream
           this.handleIncomingMessage(stream, connection);
@@ -894,7 +894,7 @@ class P2PNode {
         const connStream = await this.getOpenStreamAndConnection(
           this._node!,
           await this.createFromString(peer),
-          P2PNode.config.protocolName
+          P2PNode.config.protocol
         );
 
         try {

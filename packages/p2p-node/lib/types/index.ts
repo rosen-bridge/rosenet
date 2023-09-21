@@ -46,7 +46,7 @@ export interface P2PNodeConfig {
   messageSendingRetriesExponentialFactor: number;
   messageSendingRetriesMaxCount: bigint;
   peerIdFilePath: string;
-  protocolName: string;
+  protocol: string;
   pubsubInterval: number;
   relayReconnectionInterval: number;
   relays: { multiaddrs: string[]; peerIDs: string[] };
