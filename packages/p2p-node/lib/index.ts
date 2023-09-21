@@ -301,18 +301,12 @@ class P2PNode {
   };
 
   /**
-   * TODO: This method is not written in arrow form because ts-mockito has some
-   * issues with mocking class fields which are of type arrow function. If you
-   * are going to convert it to an arrow method, make sure all tests pass without
-   * issue.
-   */
-  /**
    * send message to specific peer or broadcast it
    * @param channel: String
    * @param msg: string
    * @param receiver optional
    */
-  async sendMessage(channel: string, msg: string, receiver?: string) {
+  sendMessage = async (channel: string, msg: string, receiver?: string) => {
     const data: SendDataCommunication = {
       msg: msg,
       channel: channel,
@@ -335,7 +329,7 @@ class P2PNode {
         });
       }
     }
-  }
+  };
 
   /**
    * Creates a `PeerId` object from a string
