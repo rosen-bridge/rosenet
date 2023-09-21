@@ -476,7 +476,10 @@ class P2PNode {
    * @param stream
    * @param connection
    */
-  private handleBroadcast = async (stream: Stream, connection: Connection) => {
+  private handleIncomingMessage = async (
+    stream: Stream,
+    connection: Connection
+  ) => {
     pipe(
       // Read from the stream (the source)
       stream.source,
@@ -703,7 +706,7 @@ class P2PNode {
         P2PNode.config.protocolName,
         async ({ stream, connection }) => {
           // Read the stream
-          this.handleBroadcast(stream, connection);
+          this.handleIncomingMessage(stream, connection);
         },
         {
           maxInboundStreams:
