@@ -927,7 +927,7 @@ class P2PNode {
 
         setTimeout(() => {
           P2PNode.logger.info(
-            `Retry #${retriesCount} for sending a failed message...`
+            `Retry #${newRetriesCount} for sending a failed message...`
           );
           P2PNode.logger.debug(`Message content is: `, {
             messageToSend: rest.messageToSend,
