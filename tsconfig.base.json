@@ -1,6 +1,9 @@
 {
   "compilerOptions": {
     "allowJs": false,
+    "declaration": true,
+    "declarationMap": true,
+    "inlineSources": true,
     "esModuleInterop": true,
     "inlineSourceMap": true,
     "isolatedModules": false,
