@@ -11,7 +11,7 @@ import { getOrCreatePeerID, savePeerIdIfNeed } from './utils';
 
 import { RelayNodeConfig } from './types';
 
-async function startRelay(relayNodeConfig: RelayNodeConfig) {
+const startRelay = async (relayNodeConfig: RelayNodeConfig) => {
   const peerId = await getOrCreatePeerID(relayNodeConfig.peerIdFilePath);
 
   const node = await createLibp2p({
@@ -90,6 +90,6 @@ async function startRelay(relayNodeConfig: RelayNodeConfig) {
   });
 
   return node;
-}
+};
 
 export { startRelay };
