@@ -11,6 +11,11 @@ import { getOrCreatePeerID, savePeerIdIfNeed } from './utils';
 
 import { RelayNodeConfig } from './types';
 
+/**
+ * start a relay node based on config
+ *
+ * @param relayNodeConfig
+ */
 const startRelay = async (relayNodeConfig: RelayNodeConfig) => {
   const peerId = await getOrCreatePeerID(relayNodeConfig.peerIdFilePath);
 
@@ -79,7 +84,7 @@ const startRelay = async (relayNodeConfig: RelayNodeConfig) => {
    *
    * Related issues:
    * - https://github.com/libp2p/js-libp2p/issues/1518
-   * - https://git.ergopool.io/ergo/rosen-bridge/p2p/auto-relay/-/issues/17
+   * local:ergo/rosen-bridge/p2p#6
    */
   const handler = node.registrar.getHandler('/libp2p/circuit/relay/0.1.0');
   node.registrar.unhandle('/libp2p/circuit/relay/0.1.0');
