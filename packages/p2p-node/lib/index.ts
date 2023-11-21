@@ -25,7 +25,9 @@ import * as multiaddr from '@multiformats/multiaddr';
 import JsonBigInt from '@rosen-bridge/json-bigint';
 import { AbstractLogger, DummyLogger } from '@rosen-bridge/logger-interface';
 
-import { objectToUint8Array, uint8ArrayToObject } from './utils';
+import MessageBroker from './message-broker/MessageBroker';
+
+import { objectToUint8Array } from './utils';
 
 import { NotStartedP2PNodeError } from './errors';
 
@@ -43,9 +45,10 @@ class P2PNode {
   private static config: P2PNodeConfig;
   private static logger: AbstractLogger;
 
-  private _messageQueue = pushable();
   private _node: Libp2p | undefined;
   private _subscribedChannels: SubscribeChannels = {};
+
+  private messageBroker!: MessageBroker;
 
   private constructor() {
     P2PNode.logger.info('P2PNode constructor called.');
@@ -68,7 +71,17 @@ class P2PNode {
       await P2PNode.instance.startP2PNode();
       P2PNode.logger.debug('P2PNode instance started');
 
-      P2PNode.instance.processMessageQueue();
+      P2PNode.instance.messageBroker = new MessageBroker(
+        {
+          exponentialFactor: config.messageSendingRetriesExponentialFactor,
+          maxRetries: Number(config.messageSendingRetriesMaxCount),
+        },
+        logger
+      );
+      P2PNode.instance.messageBroker.startRouting(
+        P2PNode.instance.routeMessage
+      );
+
       P2PNode.logger.debug('P2PNode message queue processing started');
     } else {
       P2PNode.logger.debug(
@@ -294,33 +307,30 @@ class P2PNode {
 
   /**
    * send message to specific peer or broadcast it
-   * @param channel: String
-   * @param data: string
-   * @param receiver optional
+   * @param channel
+   * @param data
+   * @param peerId
    */
-  sendMessage = async (channel: string, data: string, receiver?: string) => {
-    const message: Message = {
-      data,
-      channel: channel,
-      ...(receiver && { receiver }),
-    };
-    if (receiver) {
-      const receiverPeerId = await createFromJSON({ id: `${receiver}` });
-      this.pushMessageToMessageQueue(receiverPeerId, message);
-      P2PNode.logger.debug('Message pushed to the message queue.', {
-        message,
-      });
+  sendMessage = async (channel: string, data: string, peerId?: string) => {
+    if (peerId) {
+      const message = {
+        data,
+        channel: channel,
+        peerId,
+      };
+      this.messageBroker.enqueue(message);
     } else {
       // send message for listener peers (not relays)
       const peers = this._node!.getPeers().filter((peer) =>
         this.isListener(peer.toString())
       );
       for (const peer of peers) {
-        this.pushMessageToMessageQueue(peer, message);
-        P2PNode.logger.debug('Message pushed to the message queue.', {
-          message,
-          peer,
-        });
+        const message = {
+          data,
+          channel: channel,
+          peerId: peer.toString(),
+        };
+        this.messageBroker.enqueue(message);
       }
     }
   };
@@ -449,20 +459,6 @@ class P2PNode {
       stream: stream,
       connection: connection,
     };
-  };
-
-  /**
-   * Pushes a message to the message queue
-   * @param peer
-   * @param messageToSend
-   */
-  private pushMessageToMessageQueue = (
-    peer: PeerId,
-    messageToSend: Message
-  ) => {
-    this._messageQueue.push(
-      objectToUint8Array({ peer, messageToSend, retriesCount: 0 })
-    );
   };
 
   /**
@@ -786,15 +782,10 @@ class P2PNode {
   };
 
   /**
-   * Processes message queue stream and pipes messages to a correct remote pipe
+   * send a message to its corresponding peer
+   * @param message
    */
-  private processMessageQueue = async () => {
-    interface MessageQueueParsedMessage {
-      peer: string;
-      messageToSend: Message;
-      retriesCount: bigint;
-    }
-
+  private routeMessage = async (message: Message) => {
     const routesInfo: Record<
       string,
       {
@@ -823,83 +814,19 @@ class P2PNode {
       }
     };
 
-    /**
-     * Retries sending message by pushing it to the queue again
-     * @param message
-     */
-    const retrySendingMessage = (message: Uint8Array) => {
-      const { retriesCount, ...rest }: MessageQueueParsedMessage =
-        uint8ArrayToObject(message);
+    const connStream = await this.getOpenStreamAndConnection(
+      this._node!,
+      await this.createFromString(message.peerId),
+      P2PNode.config.protocol
+    );
 
-      const newRetriesCount = retriesCount + 1n;
-
-      if (newRetriesCount <= P2PNode.config.messageSendingRetriesMaxCount) {
-        const timeout =
-          1000 *
-          P2PNode.config.messageSendingRetriesExponentialFactor **
-            Number(newRetriesCount);
-
-        setTimeout(() => {
-          P2PNode.logger.info(
-            `Retry #${newRetriesCount} for sending a failed message...`
-          );
-          P2PNode.logger.debug(`Message content is: `, {
-            messageToSend: rest.messageToSend,
-          });
-
-          this._messageQueue.push(
-            objectToUint8Array({
-              ...rest,
-              retriesCount: newRetriesCount,
-            })
-          );
-        }, timeout);
-      } else {
-        P2PNode.logger.error(
-          `Failed to send a message after ${P2PNode.config.messageSendingRetriesMaxCount} retries, message dropped.`
-        );
-        P2PNode.logger.debug(`Message content was: `, {
-          messageToSend: rest.messageToSend,
-        });
-      }
-    };
-
-    for await (const message of this._messageQueue) {
-      try {
-        const { peer, messageToSend, retriesCount }: MessageQueueParsedMessage =
-          uint8ArrayToObject(message);
-
-        const connStream = await this.getOpenStreamAndConnection(
-          this._node!,
-          await this.createFromString(peer),
-          P2PNode.config.protocol
-        );
-
-        try {
-          const source = getStreamSource(connStream.stream, peer);
-
-          source.push(objectToUint8Array(messageToSend));
-
-          if (retriesCount) {
-            P2PNode.logger.info(
-              `Retry #${retriesCount} was successful for a message.`
-            );
-            P2PNode.logger.debug(`Message was: `, { messageToSend });
-          }
-        } catch (error) {
-          P2PNode.logger.error(
-            `An error occurred while trying to get stream source: ${error}`
-          );
-        }
-      } catch (error) {
-        P2PNode.logger.error(
-          `An error occurred while trying to process a message in the messages queue`
-        );
-        if (error instanceof Error && error.stack) {
-          P2PNode.logger.error(error.stack);
-        }
-        retrySendingMessage(message);
-      }
+    try {
+      const source = getStreamSource(connStream.stream, message.peerId);
+      source.push(objectToUint8Array(message));
+    } catch (error) {
+      P2PNode.logger.error(
+        `An error occurred while trying to get stream source: ${error}`
+      );
     }
   };
 }

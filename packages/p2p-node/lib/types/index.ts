@@ -18,7 +18,7 @@ export interface SubscribeChannels {
 export interface Message {
   data: string;
   channel: string;
-  receiver?: string;
+  peerId: string;
 }
 
 export interface ConnectionStream {
