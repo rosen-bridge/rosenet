@@ -4,10 +4,7 @@ import map from 'it-map';
 import { pipe } from 'it-pipe';
 import { pushable, Pushable } from 'it-pushable';
 import { createLibp2p, Libp2p } from 'libp2p';
-import {
-  fromString as uint8ArrayFromString,
-  toString as uint8ArrayToString,
-} from 'uint8arrays';
+import { toString as uint8ArrayToString } from 'uint8arrays';
 
 import { groupBy, negate } from 'lodash-es';
 
@@ -27,6 +24,8 @@ import * as multiaddr from '@multiformats/multiaddr';
 
 import JsonBigInt from '@rosen-bridge/json-bigint';
 import { AbstractLogger, DummyLogger } from '@rosen-bridge/logger-interface';
+
+import { objectToUint8Array, uint8ArrayToObject } from './utils';
 
 import { NotStartedP2PNodeError } from './errors';
 
@@ -461,7 +460,7 @@ class P2PNode {
     messageToSend: SendDataCommunication
   ) => {
     this._messageQueue.push(
-      this.objectToUint8Array({ peer, messageToSend, retriesCount: 0 })
+      objectToUint8Array({ peer, messageToSend, retriesCount: 0 })
     );
   };
 
@@ -788,20 +787,6 @@ class P2PNode {
   };
 
   /**
-   * Converts a Unit8Array to an object
-   * @param uint8Array
-   */
-  private uint8ArrayToObject = (uint8Array: Uint8Array) =>
-    JsonBigInt.parse(uint8ArrayToString(uint8Array));
-
-  /**
-   * Converts an object to Uint8Array
-   * @param object
-   */
-  private objectToUint8Array = (object: unknown) =>
-    uint8ArrayFromString(JsonBigInt.stringify(object));
-
-  /**
    * Processes message queue stream and pipes messages to a correct remote pipe
    */
   private processMessageQueue = async () => {
@@ -845,7 +830,7 @@ class P2PNode {
      */
     const retrySendingMessage = (message: Uint8Array) => {
       const { retriesCount, ...rest }: MessageQueueParsedMessage =
-        this.uint8ArrayToObject(message);
+        uint8ArrayToObject(message);
 
       const newRetriesCount = retriesCount + 1n;
 
@@ -864,7 +849,7 @@ class P2PNode {
           });
 
           this._messageQueue.push(
-            this.objectToUint8Array({
+            objectToUint8Array({
               ...rest,
               retriesCount: newRetriesCount,
             })
@@ -883,7 +868,7 @@ class P2PNode {
     for await (const message of this._messageQueue) {
       try {
         const { peer, messageToSend, retriesCount }: MessageQueueParsedMessage =
-          this.uint8ArrayToObject(message);
+          uint8ArrayToObject(message);
 
         const connStream = await this.getOpenStreamAndConnection(
           this._node!,
@@ -894,7 +879,7 @@ class P2PNode {
         try {
           const source = getStreamSource(connStream.stream, peer);
 
-          source.push(this.objectToUint8Array(messageToSend));
+          source.push(objectToUint8Array(messageToSend));
 
           if (retriesCount) {
             P2PNode.logger.info(
