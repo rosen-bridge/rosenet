@@ -31,9 +31,8 @@ import { NotStartedP2PNodeError } from './errors';
 
 import {
   ConnectionStream,
+  Message,
   P2PNodeConfig,
-  ReceiveDataCommunication,
-  SendDataCommunication,
   SubscribeChannel,
   SubscribeChannels,
   SubscribeChannelWithURL,
@@ -296,28 +295,30 @@ class P2PNode {
   /**
    * send message to specific peer or broadcast it
    * @param channel: String
-   * @param msg: string
+   * @param data: string
    * @param receiver optional
    */
-  sendMessage = async (channel: string, msg: string, receiver?: string) => {
-    const data: SendDataCommunication = {
-      msg: msg,
+  sendMessage = async (channel: string, data: string, receiver?: string) => {
+    const message: Message = {
+      data,
       channel: channel,
       ...(receiver && { receiver }),
     };
     if (receiver) {
       const receiverPeerId = await createFromJSON({ id: `${receiver}` });
-      this.pushMessageToMessageQueue(receiverPeerId, data);
-      P2PNode.logger.debug('Message pushed to the message queue.', { data });
+      this.pushMessageToMessageQueue(receiverPeerId, message);
+      P2PNode.logger.debug('Message pushed to the message queue.', {
+        message,
+      });
     } else {
       // send message for listener peers (not relays)
       const peers = this._node!.getPeers().filter((peer) =>
         this.isListener(peer.toString())
       );
       for (const peer of peers) {
-        this.pushMessageToMessageQueue(peer, data);
+        this.pushMessageToMessageQueue(peer, message);
         P2PNode.logger.debug('Message pushed to the message queue.', {
-          data,
+          message,
           peer,
         });
       }
@@ -457,7 +458,7 @@ class P2PNode {
    */
   private pushMessageToMessageQueue = (
     peer: PeerId,
-    messageToSend: SendDataCommunication
+    messageToSend: Message
   ) => {
     this._messageQueue.push(
       objectToUint8Array({ peer, messageToSend, retriesCount: 0 })
@@ -489,15 +490,13 @@ class P2PNode {
             }] protocol received from peer [${connection.remotePeer.toString()}], trying to parse...`
           );
           // For each chunk of data
-          for await (const msg of source) {
-            const receivedData: ReceiveDataCommunication = JsonBigInt.parse(
-              msg.toString()
-            );
+          for await (const rawMessage of source) {
+            const message: Message = JsonBigInt.parse(rawMessage.toString());
 
             P2PNode.logger.debug(
               `The new message with [${P2PNode.config.protocol}] parsed successfully.`,
               {
-                message: receivedData,
+                message,
                 subscribedChannels: this._subscribedChannels,
                 fromPeer: connection.remotePeer.toString(),
               }
@@ -506,30 +505,30 @@ class P2PNode {
             const runSubscribeCallback = async (channel: SubscribeChannel) => {
               this.hasUrl(channel)
                 ? channel.func(
-                    receivedData.msg,
-                    receivedData.channel,
+                    message.data,
+                    message.channel,
                     connection.remotePeer.toString(),
                     channel.url
                   )
                 : channel.func(
-                    receivedData.msg,
-                    receivedData.channel,
+                    message.data,
+                    message.channel,
                     connection.remotePeer.toString()
                   );
             };
-            if (this._subscribedChannels[receivedData.channel]) {
+            if (this._subscribedChannels[message.channel]) {
               P2PNode.logger.debug(
                 `Received a message from [${connection.remotePeer.toString()}] in subscribed channel [${
-                  receivedData.channel
+                  message.channel
                 }].`
               );
-              this._subscribedChannels[receivedData.channel].forEach(
+              this._subscribedChannels[message.channel].forEach(
                 runSubscribeCallback
               );
             } else {
               P2PNode.logger.debug(
                 `Received a message from [${connection.remotePeer.toString()}] in unsubscribed channel [${
-                  receivedData.channel
+                  message.channel
                 }].`
               );
             }
@@ -792,7 +791,7 @@ class P2PNode {
   private processMessageQueue = async () => {
     interface MessageQueueParsedMessage {
       peer: string;
-      messageToSend: SendDataCommunication;
+      messageToSend: Message;
       retriesCount: bigint;
     }
 

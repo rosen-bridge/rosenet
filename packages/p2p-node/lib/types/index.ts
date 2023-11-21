@@ -15,14 +15,8 @@ export interface SubscribeChannels {
   [id: string]: Array<SubscribeChannel>;
 }
 
-export interface SendDataCommunication {
-  msg: string;
-  channel: string;
-  receiver?: string;
-}
-
-export interface ReceiveDataCommunication {
-  msg: string;
+export interface Message {
+  data: string;
   channel: string;
   receiver?: string;
 }
