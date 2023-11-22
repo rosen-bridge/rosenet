@@ -1,0 +1,47 @@
+{
+  "name": "relay",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Rosen bridge relay service used to connect guards p2p nodes to each other",
+  "repository": "https://github.com/rosen-bridge/p2p",
+  "license": "GPL-3.0",
+  "author": "Rosen Team",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build:prod": "tsc",
+    "coverage": "vitest run --coverage",
+    "lint": "eslint --fix . && npm run prettify",
+    "prettify": "prettier --write . --ignore-path ./.gitignore",
+    "start": "node --watch --experimental-specifier-resolution=node --loader ./ts-node-esm-loader.js ./src/index.ts",
+    "start:prod": "node --experimental-specifier-resolution=node ./dist/index.js",
+    "test": "vitest",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@multiformats/multiaddr": "^12.1.7",
+    "@rosen-bridge/p2p-relay": "^0.1.0",
+    "@rosen-bridge/winston-logger": "^0.2.1",
+    "config": "^3.3.7",
+    "is-valid-path": "^0.1.1",
+    "lodash-es": "^4.17.21",
+    "yup": "^1.3.2"
+  },
+  "devDependencies": {
+    "@types/config": "^0.0.41",
+    "@types/is-valid-path": "^0.1.0",
+    "@types/lodash-es": "^4.17.9",
+    "@types/node": "^18.11.18",
+    "@typescript-eslint/eslint-plugin": "^6.7.0",
+    "@typescript-eslint/parser": "^6.7.0",
+    "@vitest/coverage-c8": "^0.26.3",
+    "eslint": "^8.16.0",
+    "eslint-config-prettier": "^8.5.0",
+    "prettier": "2.7.1",
+    "ts-node": "^10.7.0",
+    "tsconfig-paths": "^4.1.2",
+    "typescript": "^5.0.0",
+    "vitest": "^0.26.2"
+  }
+}

@@ -131,3 +131,6 @@ dist
 
 # Sqlite databases
 *.sqlite
+
+services/relay/relay.json
+services/relay/config/local*

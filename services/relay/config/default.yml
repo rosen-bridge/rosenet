@@ -1,0 +1,11 @@
+allowedPeers: [] # list of allowed peers multiaddrs
+logs:
+  - type: 'file' # [file, console]
+    path: './logs/' # path to log files (only for rotateFile type)
+    maxSize: '20m' # maximum size of each log file (20 MB) (only for rotateFile type)
+    maxFiles: '14d' # maximum number of log files (14 days) (only for rotateFile type)
+    level: 'info' # [debug, info, warn, error]
+  - type: 'console'
+    level: 'info'
+peerIdFilePath: './relay.json' # path to peer id file path
+port: 10000 # relay listening port
