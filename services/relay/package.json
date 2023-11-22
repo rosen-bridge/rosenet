@@ -21,6 +21,7 @@
   "dependencies": {
     "@multiformats/multiaddr": "^12.1.7",
     "@rosen-bridge/p2p-relay": "^0.1.0",
+    "@rosen-bridge/winston-logger": "^0.2.1",
     "config": "^3.3.7",
     "is-valid-path": "^0.1.1",
     "lodash-es": "^4.17.21",

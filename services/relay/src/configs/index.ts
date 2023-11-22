@@ -1,6 +1,8 @@
 import nodeConfig from 'config';
 import { ValidationError, array, number, object, string } from 'yup';
 
+import { TransportOptions } from '@rosen-bridge/winston-logger';
+
 import './extend-yup';
 
 import {
@@ -8,8 +10,6 @@ import {
   DEFAULT_PEER_ID_FILE_PATH,
   DEFAULT_PORT,
 } from '../constants';
-
-import { LogConfig } from '../types';
 
 /**
  * get all service configs or exit the process in case of invalid configs
@@ -44,7 +44,7 @@ const getAllConfigs = () => {
       })
     )
       .label('logs')
-      .validateSync(nodeConfig.get<LogConfig[]>('logs'));
+      .validateSync(nodeConfig.get<TransportOptions[]>('logs'));
 
     const peerIdFilePath = string()
       .required()
