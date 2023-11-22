@@ -1,3 +1,5 @@
+import { random } from 'lodash-es';
+
 import { AbstractLogger } from '@rosen-bridge/logger-interface';
 
 import { objectToUint8Array, uint8ArrayToObject } from '../utils';
@@ -32,7 +34,7 @@ class MessageRetryHelper {
    * @param retryRound
    */
   protected getTimeoutForRetryRound = (retryRound: number) =>
-    1000 * this.options.exponentialFactor ** retryRound;
+    1000 * random(0.8, 1.2) * this.options.exponentialFactor ** retryRound;
 
   /**
    * schedule a message retry, which simply means adding the message to the
