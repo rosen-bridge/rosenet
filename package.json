@@ -5,7 +5,8 @@
   "workspaces": {
     "packages": [
       "services/*",
-      "packages/*"
+      "packages/*",
+      "packages-rosenet/*"
     ]
   },
   "scripts": {
