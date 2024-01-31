@@ -1,12 +1,10 @@
 {
-  "name": "p2p",
+  "name": "@rosen-bridge/rosenet",
   "private": true,
   "type": "module",
   "workspaces": {
     "packages": [
-      "services/*",
-      "packages/*",
-      "packages-rosenet/*"
+      "packages/*"
     ]
   },
   "scripts": {

@@ -1,4 +1,3 @@
-# Rosen Bridge p2p packages
+# Rosen Bridge RoseNet
 
-This monorepo contains packages and services used for our p2p logic in Rosen
-projects.
+Rosen Bridge RoseNet source code.
