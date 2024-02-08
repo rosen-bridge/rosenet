@@ -80,8 +80,8 @@ changeset:
     policy: pull
     paths:
       - node_modules
-      - apps/*/node_modules
-      - packages/*/node_modules
+      - '**/node_modules'
+      - '**/dist'
   before_script:
     - git fetch origin dev
   script:
