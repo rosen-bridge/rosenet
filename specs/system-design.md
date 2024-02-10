@@ -86,6 +86,12 @@ _TODO_
 | Persistence                      | Not planned                                                                         |
 | Discoverability (relays)         | Relays are not meant to be well-known ip addresses and don't need to be discovered  |
 
+## RoseNet design principles
+
+### Plug and Play
+
+RoseNet is designed for easy use with minimal configuration. In the RoseNet APIs, many libp2p configurations are intentionally inaccessible, forming a fundamental aspect of its design philosophy. The intention is for RoseNet to be employed without extensive customization, relying on configurations only when necessary for optimal node performance. If your customization requirements surpass the scope of RoseNet APIs, consider transitioning to direct utilization of libp2p for more granular control over network behavior.
+
 ## TODO
 
 _Describe the features in detail_
