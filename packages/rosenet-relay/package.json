@@ -31,5 +31,15 @@
   },
   "engines": {
     "node": ">=20.11.0"
+  },
+  "dependencies": {
+    "@chainsafe/libp2p-noise": "^15.0.0",
+    "@libp2p/circuit-relay-v2": "^1.0.15",
+    "@libp2p/crypto": "^4.0.2",
+    "@libp2p/mplex": "^10.0.15",
+    "@libp2p/peer-id-factory": "^4.0.6",
+    "@libp2p/tcp": "^9.0.15",
+    "@rosen-bridge/logger-interface": "^0.2.0",
+    "libp2p": "^1.2.3"
   }
 }
