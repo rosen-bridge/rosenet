@@ -6,15 +6,15 @@ import { privateKeys, peerIds as expectedPeerIds } from './private-keys.data';
 
 describe('privateKeyToPeerId', () => {
   /**
-   * @target `privateKeyToPeerId` should convert convert all valid private key
-   * types to peer id
+   * @target `privateKeyToPeerId` should convert all valid private key types to
+   * peer id
    * @dependencies
    * @scenario
    * - generate peer ids for three different supported private keys
    * @expected
    * - peer ids should be correct
    */
-  it('should convert convert all valid private key types to peer id', async () => {
+  it('should convert all valid private key types to peer id', async () => {
     const actualPeerIds = {
       rsa: (await privateKeyToPeerId(privateKeys.rsa)).toString(),
       ed25519: (await privateKeyToPeerId(privateKeys.ed25519)).toString(),
