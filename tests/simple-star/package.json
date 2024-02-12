@@ -1,5 +1,5 @@
 {
-  "name": "simple-star",
+  "name": "@rosenet-tests/simple-star",
   "private": true,
   "version": "0.0.0",
   "description": "RoseNet simple star test",
