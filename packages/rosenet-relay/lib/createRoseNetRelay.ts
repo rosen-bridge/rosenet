@@ -11,7 +11,7 @@ import { DEFAULT_LISTEN_HOST } from './constants';
 
 import { RoseNetRelayConfig } from './types';
 
-const createRoseNetNode = async (config: RoseNetRelayConfig) => {
+const createRoseNetRelay = async (config: RoseNetRelayConfig) => {
   const peerId = await (config.privateKey
     ? privateKeyToPeerId(config.privateKey)
     : createEd25519PeerId());
@@ -40,4 +40,4 @@ const createRoseNetNode = async (config: RoseNetRelayConfig) => {
   };
 };
 
-export default createRoseNetNode;
+export default createRoseNetRelay;
