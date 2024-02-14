@@ -27,6 +27,7 @@ resource "docker_image" "rosenet-node" {
   name = "rosenet-node"
 
   triggers = {
+    node_package_sha1 = sha1(join("", [for f in fileset(path.module, "../../packages/rosenet-node/lib/**") : filesha1(f)]))
     node_sha1 = filesha1("./src/node/node.ts")
     dockerfile_sha1 = filesha1("./src/node/Dockerfile")
   }
@@ -42,6 +43,7 @@ resource "docker_image" "rosenet-relay" {
   name     = "rosenet-relay"
 
   triggers = {
+    relay_package_sha1 = sha1(join("", [for f in fileset(path.module, "../../packages/rosenet-relay/lib/**") : filesha1(f)]))
     relay_sha1 = filesha1("./src/relay/relay.ts")
     dockerfile_sha1 = filesha1("./src/relay/Dockerfile")
   }
