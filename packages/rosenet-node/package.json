@@ -38,6 +38,7 @@
     "@libp2p/circuit-relay-v2": "^1.0.15",
     "@libp2p/mplex": "^10.0.15",
     "@libp2p/tcp": "^9.0.15",
+    "@rosen-bridge/rosenet-utils": "^0.0.0",
     "libp2p": "^1.2.3"
   }
 }

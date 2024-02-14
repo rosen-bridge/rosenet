@@ -5,13 +5,15 @@ import { mplex } from '@libp2p/mplex';
 import { tcp } from '@libp2p/tcp';
 import { createLibp2p } from 'libp2p';
 
+import { addEventListeners } from '@rosen-bridge/rosenet-utils';
+
 import RoseNetNodeError from './errors/RoseNetNodeError';
 
 import { RELAYS_COUNT_TO_CONNECT } from './constants';
 
 import { RoseNetNodeConfig } from './types';
 
-const createRoseNetNode = async (config: RoseNetNodeConfig) => {
+const createRoseNetNode = async ({ logger, ...config }: RoseNetNodeConfig) => {
   if (!config.relayMultiaddrs.length) {
     throw new RoseNetNodeError('Cannot start a RoseNet node without a relay');
   }
@@ -31,7 +33,9 @@ const createRoseNetNode = async (config: RoseNetNodeConfig) => {
       }),
     ],
   });
-  config.logger.debug('RoseNet node created');
+  logger.debug('RoseNet node created');
+
+  addEventListeners(node, logger);
 
   return {
     start: async () => node.start(),

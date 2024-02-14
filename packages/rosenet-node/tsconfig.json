@@ -5,4 +5,5 @@
     "composite": true,
   },
   "include": ["tests", "lib", "vitest.config.ts"],
+  "references": [{ "path": "../utils" }],
 }
