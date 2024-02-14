@@ -17,6 +17,10 @@ provider "docker" {
   host  = var.relay-host
 }
 
+locals {
+  relay_peer_id = "16Uiu2HAmLhLvBoYaoZfaMUKuibM6ac163GwKY74c5kiSLg5KvLpY"
+}
+
 resource "docker_image" "rosenet-node" {
   provider = docker.node-machine
 
@@ -56,7 +60,15 @@ resource "docker_container" "rosenet-node" {
 
   name  = "node-${count.index}"
   image = docker_image.rosenet-node.image_id
-  env = ["RELAY_MULTIADDR=/ip4/${var.relay-ip}/tcp/33333/p2p/16Uiu2HAmLhLvBoYaoZfaMUKuibM6ac163GwKY74c5kiSLg5KvLpY"]
+  env = ["RELAY_MULTIADDR=/ip4/${var.relay-ip}/tcp/33333/p2p/${local.relay_peer_id}"]
+
+  # Wait 5 seconds before reading logs, so that connections are established
+  wait = true
+  healthcheck {
+    test = ["CMD", "sleep", "5"]
+    interval = "10s"
+    timeout = "10s"
+  }
 
   depends_on = [docker_container.rosenet-relay]
 }
@@ -77,12 +89,12 @@ data "docker_logs" "relay-logs" {
   provider = docker.relay-machine
 
   name = docker_container.rosenet-relay.name
-  tail = 10
+  tail = 100
 
   lifecycle {
     postcondition {
       # Check if relay creation log is present
-      condition = strcontains(reverse(self.logs_list_string)[0], "created")
+      condition = anytrue([for log in self.logs_list_string: strcontains(log, "created")])
       error_message = "The relay was not created"
     }
   }
@@ -94,13 +106,18 @@ data "docker_logs" "node-logs" {
   count = 2
 
   name = docker_container.rosenet-node[count.index].name
-  tail = 10
+  tail = 100
 
   lifecycle {
     postcondition {
       # Check if node creation log is present
-      condition = strcontains(reverse(self.logs_list_string)[0], "created")
+      condition = anytrue([for log in self.logs_list_string: strcontains(log, "created")])
       error_message = "The node was not created"
+    }
+    postcondition {
+      # Check if connection to relay log is present
+      condition = anytrue([for log in self.logs_list_string: can(regex("Peer connected.*${local.relay_peer_id}", log))])
+      error_message = "The node did not connect to the relay"
     }
   }
 }
