@@ -5,18 +5,23 @@ import { createEd25519PeerId } from '@libp2p/peer-id-factory';
 import { tcp } from '@libp2p/tcp';
 import { createLibp2p } from 'libp2p';
 
+import { addEventListeners } from '@rosen-bridge/rosenet-utils';
+
 import privateKeyToPeerId from './privateKeyToPeerId';
 
 import { DEFAULT_LISTEN_HOST } from './constants';
 
 import { RoseNetRelayConfig } from './types';
 
-const createRoseNetRelay = async (config: RoseNetRelayConfig) => {
+const createRoseNetRelay = async ({
+  logger,
+  ...config
+}: RoseNetRelayConfig) => {
   const peerId = await (config.privateKey
     ? privateKeyToPeerId(config.privateKey)
     : createEd25519PeerId());
 
-  config.logger.debug(`PeerId ${peerId.toString()} generated`);
+  logger.debug(`PeerId ${peerId.toString()} generated`);
 
   const node = await createLibp2p({
     peerId,
@@ -33,7 +38,9 @@ const createRoseNetRelay = async (config: RoseNetRelayConfig) => {
     },
   });
 
-  config.logger.debug('RoseNet relay created');
+  logger.debug('RoseNet relay created');
+
+  addEventListeners(node, logger, true);
 
   return {
     start: async () => node.start(),

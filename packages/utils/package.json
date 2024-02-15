@@ -1,7 +1,8 @@
 {
-  "name": "@rosen-bridge/rosenet-node",
+  "name": "@rosen-bridge/rosenet-utils",
+  "private": true,
   "version": "0.0.0",
-  "description": "Rosen Bridge RoseNet node",
+  "description": "Utils used inside RoseNet",
   "repository": "https://github.com/rosen-bridge/rosenet",
   "license": "GPL-3.0",
   "author": "Rosen Team",
@@ -13,7 +14,6 @@
     "coverage": "npm run test -- --coverage",
     "lint": "eslint --fix . && npm run prettify",
     "prettify": "prettier --write . --ignore-path ./.gitignore",
-    "release": "npm run test -- --run && npm run build && npm publish --access public",
     "test": "NODE_OPTIONS=--loader=extensionless vitest",
     "type-check": "tsc --noEmit"
   },
@@ -33,12 +33,7 @@
     "node": ">=20.11.0"
   },
   "dependencies": {
-    "@chainsafe/libp2p-noise": "^15.0.0",
-    "@libp2p/bootstrap": "^10.0.15",
-    "@libp2p/circuit-relay-v2": "^1.0.15",
-    "@libp2p/mplex": "^10.0.15",
-    "@libp2p/tcp": "^9.0.15",
-    "@rosen-bridge/rosenet-utils": "^0.0.0",
+    "@rosen-bridge/logger-interface": "^0.2.0",
     "libp2p": "^1.2.3"
   }
 }
