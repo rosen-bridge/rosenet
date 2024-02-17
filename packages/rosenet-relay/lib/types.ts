@@ -7,4 +7,5 @@ export interface RoseNetRelayConfig {
   };
   privateKey: string;
   logger: AbstractLogger;
+  whitelist: string[];
 }

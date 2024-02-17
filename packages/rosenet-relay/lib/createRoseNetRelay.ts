@@ -1,5 +1,6 @@
 import { noise } from '@chainsafe/libp2p-noise';
 import { circuitRelayServer } from '@libp2p/circuit-relay-v2';
+import { PeerId } from '@libp2p/interface';
 import { mplex } from '@libp2p/mplex';
 import { tcp } from '@libp2p/tcp';
 import { createLibp2p } from 'libp2p';
@@ -9,6 +10,8 @@ import {
   privateKeyToPeerId,
 } from '@rosen-bridge/rosenet-utils';
 
+import { RoseNetRelayError } from './errors';
+
 import { DEFAULT_LISTEN_HOST } from './constants';
 
 import { RoseNetRelayConfig } from './types';
@@ -17,6 +20,19 @@ const createRoseNetRelay = async ({
   logger,
   ...config
 }: RoseNetRelayConfig) => {
+  if (!config.whitelist.length) {
+    throw new RoseNetRelayError(
+      'Cannot start a RoseNet relay with no whitelisted peer id',
+    );
+  }
+
+  /**
+   * return if a peer is unauthorized, i.e. not whitelisted
+   * @param peerId
+   */
+  const isPeerUnauthorized = (peerId: PeerId) =>
+    !peerId || !config.whitelist.includes(peerId.toString());
+
   const peerId = await privateKeyToPeerId(config.privateKey);
 
   logger.debug(`PeerId ${peerId.toString()} generated`);
@@ -30,6 +46,17 @@ const createRoseNetRelay = async ({
     },
     transports: [tcp()],
     connectionEncryption: [noise()],
+    connectionGater: {
+      denyInboundEncryptedConnection: isPeerUnauthorized,
+
+      denyInboundRelayReservation: isPeerUnauthorized,
+      /**
+       * In RoseNet, there isn't a scenario in which a relay needs to accept
+       * relayed connections
+       */
+      denyInboundRelayedConnection: () => true,
+      denyDialPeer: isPeerUnauthorized,
+    },
     streamMuxers: [mplex()],
     services: {
       circuitRelay: circuitRelayServer(),
