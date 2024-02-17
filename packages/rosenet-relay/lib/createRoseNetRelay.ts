@@ -1,7 +1,6 @@
 import { noise } from '@chainsafe/libp2p-noise';
 import { circuitRelayServer } from '@libp2p/circuit-relay-v2';
 import { mplex } from '@libp2p/mplex';
-import { createEd25519PeerId } from '@libp2p/peer-id-factory';
 import { tcp } from '@libp2p/tcp';
 import { createLibp2p } from 'libp2p';
 
@@ -18,9 +17,7 @@ const createRoseNetRelay = async ({
   logger,
   ...config
 }: RoseNetRelayConfig) => {
-  const peerId = await (config.privateKey
-    ? privateKeyToPeerId(config.privateKey)
-    : createEd25519PeerId());
+  const peerId = await privateKeyToPeerId(config.privateKey);
 
   logger.debug(`PeerId ${peerId.toString()} generated`);
 
