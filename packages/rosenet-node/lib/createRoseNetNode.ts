@@ -5,7 +5,10 @@ import { mplex } from '@libp2p/mplex';
 import { tcp } from '@libp2p/tcp';
 import { createLibp2p } from 'libp2p';
 
-import { addEventListeners } from '@rosen-bridge/rosenet-utils';
+import {
+  addEventListeners,
+  privateKeyToPeerId,
+} from '@rosen-bridge/rosenet-utils';
 
 import RoseNetNodeError from './errors/RoseNetNodeError';
 
@@ -18,7 +21,12 @@ const createRoseNetNode = async ({ logger, ...config }: RoseNetNodeConfig) => {
     throw new RoseNetNodeError('Cannot start a RoseNet node without a relay');
   }
 
+  const peerId = await privateKeyToPeerId(config.privateKey);
+
+  logger.debug(`PeerId ${peerId.toString()} generated`);
+
   const node = await createLibp2p({
+    peerId,
     transports: [
       circuitRelayTransport({
         discoverRelays: RELAYS_COUNT_TO_CONNECT,
