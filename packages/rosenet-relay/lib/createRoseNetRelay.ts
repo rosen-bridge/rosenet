@@ -5,9 +5,10 @@ import { createEd25519PeerId } from '@libp2p/peer-id-factory';
 import { tcp } from '@libp2p/tcp';
 import { createLibp2p } from 'libp2p';
 
-import { addEventListeners } from '@rosen-bridge/rosenet-utils';
-
-import privateKeyToPeerId from './privateKeyToPeerId';
+import {
+  addEventListeners,
+  privateKeyToPeerId,
+} from '@rosen-bridge/rosenet-utils';
 
 import { DEFAULT_LISTEN_HOST } from './constants';
 
