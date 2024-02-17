@@ -91,6 +91,8 @@ data "docker_logs" "relay-logs" {
   name = docker_container.rosenet-relay.name
   tail = 100
 
+  depends_on = [docker_container.rosenet-node]
+
   lifecycle {
     postcondition {
       # Check if relay creation log is present
