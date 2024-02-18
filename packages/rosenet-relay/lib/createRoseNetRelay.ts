@@ -14,6 +14,8 @@ import { RoseNetRelayError } from './errors';
 
 import { DEFAULT_LISTEN_HOST } from './constants';
 
+import packageJson from '../package.json' with { type: 'json' };
+
 import { RoseNetRelayConfig } from './types';
 
 const createRoseNetRelay = async ({
@@ -60,6 +62,10 @@ const createRoseNetRelay = async ({
     streamMuxers: [mplex()],
     services: {
       circuitRelay: circuitRelayServer(),
+    },
+    nodeInfo: {
+      name: 'rosenet-relay',
+      version: packageJson.version,
     },
   });
 

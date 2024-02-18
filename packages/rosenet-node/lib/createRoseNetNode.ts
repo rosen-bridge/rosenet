@@ -14,6 +14,8 @@ import RoseNetNodeError from './errors/RoseNetNodeError';
 
 import { RELAYS_COUNT_TO_CONNECT } from './constants';
 
+import packageJson from '../package.json' with { type: 'json' };
+
 import { RoseNetNodeConfig } from './types';
 
 const createRoseNetNode = async ({ logger, ...config }: RoseNetNodeConfig) => {
@@ -40,6 +42,10 @@ const createRoseNetNode = async ({ logger, ...config }: RoseNetNodeConfig) => {
         list: config.relayMultiaddrs,
       }),
     ],
+    nodeInfo: {
+      name: 'rosenet-node',
+      version: packageJson.version,
+    },
   });
   logger.debug('RoseNet node created');
 
