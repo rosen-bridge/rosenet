@@ -114,12 +114,12 @@ data "docker_logs" "node-logs" {
     postcondition {
       # Check if whitelisted relay peer id is connected
       condition = anytrue([for log in self.logs_list_string: can(regex("Peer connected.*${local.whitelisted_relay_peer_id}", log))])
-      error_message = "Whitelisted peer id was not connected to the relay"
+      error_message = "Whitelisted relay was not connected"
     }
     postcondition {
       # Check if blacklisted relay peer id is not connected
       condition = !anytrue([for log in self.logs_list_string: can(regex("Peer connected.*${local.blacklisted_relay_peer_id}", log))])
-      error_message = "Blacklisted peer id was connected to the relay"
+      error_message = "Blacklisted relay was connected"
     }
   }
 
