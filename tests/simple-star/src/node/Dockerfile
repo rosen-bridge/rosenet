@@ -8,7 +8,7 @@ COPY packages/rosenet-node/package.json ./packages/rosenet-node/
 COPY packages/rosenet-relay/package.json ./packages/rosenet-relay/
 COPY packages/utils/package.json ./packages/utils/
 COPY tests/simple-star/package.json ./tests/simple-star/
-RUN npm i
+RUN npm ci
 
 COPY . .
 RUN npm run build
