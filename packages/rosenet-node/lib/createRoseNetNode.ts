@@ -1,6 +1,7 @@
 import { noise } from '@chainsafe/libp2p-noise';
 import { bootstrap } from '@libp2p/bootstrap';
 import { circuitRelayTransport } from '@libp2p/circuit-relay-v2';
+import { PeerId } from '@libp2p/interface';
 import { mplex } from '@libp2p/mplex';
 import { tcp } from '@libp2p/tcp';
 import { createLibp2p } from 'libp2p';
@@ -23,6 +24,13 @@ const createRoseNetNode = async ({ logger, ...config }: RoseNetNodeConfig) => {
     throw new RoseNetNodeError('Cannot start a RoseNet node without a relay');
   }
 
+  /**
+   * return if a peer is unauthorized, i.e. not whitelisted
+   * @param peerId
+   */
+  const isPeerUnauthorized = (peerId: PeerId) =>
+    !peerId || !config.whitelist!.includes(peerId.toString());
+
   const peerId = await privateKeyToPeerId(config.privateKey);
 
   logger.debug(`PeerId ${peerId.toString()} generated`);
@@ -36,6 +44,17 @@ const createRoseNetNode = async ({ logger, ...config }: RoseNetNodeConfig) => {
       tcp(),
     ],
     connectionEncryption: [noise()],
+    connectionGater: {
+      ...(config.whitelist && {
+        denyInboundEncryptedConnection: isPeerUnauthorized,
+        denyInboundRelayedConnection: (
+          relayPeerId: PeerId,
+          remotePeerId: PeerId,
+        ) =>
+          isPeerUnauthorized(relayPeerId) || isPeerUnauthorized(remotePeerId),
+        denyDialPeer: isPeerUnauthorized,
+      }),
+    },
     streamMuxers: [mplex()],
     peerDiscovery: [
       bootstrap({
