@@ -65,14 +65,6 @@ resource "docker_container" "rosenet-node" {
   image = docker_image.rosenet-node.image_id
   env = ["RELAY_MULTIADDRS=/ip4/${var.relay-ip}/tcp/33333/p2p/${local.whitelisted_relay_peer_id},/ip4/${var.relay-ip}/tcp/44444/p2p/${local.blacklisted_relay_peer_id}", "PRIVATE_KEY=${local.node_private_key}", "WHITELISTED_PEER_ID=${local.whitelisted_relay_peer_id}"]
 
-  # Wait 5 seconds before reading logs, so that connections are established
-  wait = true
-  healthcheck {
-    test = ["CMD", "sleep", "5"]
-    interval = "10s"
-    timeout = "10s"
-  }
-
   depends_on = [docker_container.rosenet-whitelisted-relay, docker_container.rosenet-blacklisted-relay]
 }
 
@@ -86,6 +78,8 @@ resource "docker_container" "rosenet-whitelisted-relay" {
     internal = 33333
     external = 33333
   }
+
+  depends_on = [docker_image.rosenet-node]
 }
 
 resource "docker_container" "rosenet-blacklisted-relay" {
@@ -98,13 +92,15 @@ resource "docker_container" "rosenet-blacklisted-relay" {
     internal = 44444
     external = 44444
   }
+
+  depends_on = [docker_image.rosenet-node]
 }
 
 data "docker_logs" "node-logs" {
   provider = docker.node-machine
 
   name = docker_container.rosenet-node.name
-  tail = 100
+  follow = true
 
   # Currently we only check dial prevention, but the main point of whitelisting
   # is for inbound connections, so conditions for such connections should be

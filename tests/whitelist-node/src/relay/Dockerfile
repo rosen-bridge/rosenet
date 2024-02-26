@@ -15,4 +15,4 @@ RUN npm run build
 
 WORKDIR /app/tests/whitelist-node
 
-CMD npm run start:relay
+ENTRYPOINT npm run start:relay
