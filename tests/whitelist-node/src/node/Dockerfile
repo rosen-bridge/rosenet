@@ -15,4 +15,4 @@ RUN npm run build
 
 WORKDIR /app/tests/whitelist-node
 
-ENTRYPOINT npm run start:node
+CMD npm run start:node
