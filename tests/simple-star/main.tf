@@ -65,14 +65,6 @@ resource "docker_container" "rosenet-node" {
   image = docker_image.rosenet-node.image_id
   env = ["RELAY_MULTIADDR=/ip4/${var.relay-ip}/tcp/33333/p2p/${local.relay_peer_id}", "PRIVATE_KEY=${local.node_private_keys[count.index]}"]
 
-  # Wait 5 seconds before reading logs, so that connections are established
-  wait = true
-  healthcheck {
-    test = ["CMD", "sleep", "5"]
-    interval = "10s"
-    timeout = "10s"
-  }
-
   depends_on = [docker_container.rosenet-relay]
 }
 
@@ -86,23 +78,17 @@ resource "docker_container" "rosenet-relay" {
     internal = 33333
     external = 33333
   }
+
+  depends_on = [docker_image.rosenet-node]
 }
 
 data "docker_logs" "relay-logs" {
   provider = docker.relay-machine
 
   name = docker_container.rosenet-relay.name
-  tail = 100
+  follow = true
 
   depends_on = [docker_container.rosenet-node]
-
-  lifecycle {
-    postcondition {
-      # Check if relay creation log is present
-      condition = anytrue([for log in self.logs_list_string: strcontains(log, "created")])
-      error_message = "The relay was not created"
-    }
-  }
 }
 
 data "docker_logs" "node-logs" {
@@ -111,18 +97,23 @@ data "docker_logs" "node-logs" {
   count = 2
 
   name = docker_container.rosenet-node[count.index].name
-  tail = 100
+  follow = true
 
   lifecycle {
-    postcondition {
-      # Check if node creation log is present
-      condition = anytrue([for log in self.logs_list_string: strcontains(log, "created")])
-      error_message = "The node was not created"
-    }
     postcondition {
       # Check if connection to relay log is present
       condition = anytrue([for log in self.logs_list_string: can(regex("Peer connected.*${local.relay_peer_id}", log))])
       error_message = "The node did not connect to the relay"
+    }
+    postcondition {
+      # Check if the other node is discovered
+      condition = anytrue([
+        for index, log in self.logs_list_string: alltrue([
+          strcontains(log, "Peer identified"),
+          try(strcontains(self.logs_list_string[index + 1], "rosenet-node"), false)
+        ])
+      ])
+      error_message = "The other node is not discovered"
     }
   }
 }

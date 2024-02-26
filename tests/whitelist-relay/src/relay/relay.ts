@@ -11,3 +11,7 @@ const node = await createRoseNetRelay({
 });
 
 node.start();
+
+setTimeout(() => {
+  process.exit(0);
+}, 25000);

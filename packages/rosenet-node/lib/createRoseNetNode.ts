@@ -1,8 +1,11 @@
+import { gossipsub } from '@chainsafe/libp2p-gossipsub';
 import { noise } from '@chainsafe/libp2p-noise';
 import { bootstrap } from '@libp2p/bootstrap';
 import { circuitRelayTransport } from '@libp2p/circuit-relay-v2';
+import { identify } from '@libp2p/identify';
 import { PeerId } from '@libp2p/interface';
 import { mplex } from '@libp2p/mplex';
+import { pubsubPeerDiscovery } from '@libp2p/pubsub-peer-discovery';
 import { tcp } from '@libp2p/tcp';
 import { createLibp2p } from 'libp2p';
 
@@ -60,10 +63,15 @@ const createRoseNetNode = async ({ logger, ...config }: RoseNetNodeConfig) => {
       bootstrap({
         list: config.relayMultiaddrs,
       }),
+      pubsubPeerDiscovery(),
     ],
     nodeInfo: {
       name: 'rosenet-node',
       version: packageJson.version,
+    },
+    services: {
+      identify: identify(),
+      pubsub: gossipsub({ allowPublishToZeroPeers: true }),
     },
   });
   logger.debug('RoseNet node created');

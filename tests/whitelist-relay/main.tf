@@ -66,14 +66,6 @@ resource "docker_container" "rosenet-node" {
   image = docker_image.rosenet-node.image_id
   env = ["RELAY_MULTIADDR=/ip4/${var.relay-ip}/tcp/33333/p2p/${local.relay_peer_id}", "PRIVATE_KEY=${local.node_private_keys[count.index]}"]
 
-  # Wait 5 seconds before reading logs, so that connections are established
-  wait = true
-  healthcheck {
-    test = ["CMD", "sleep", "5"]
-    interval = "10s"
-    timeout = "10s"
-  }
-
   depends_on = [docker_container.rosenet-relay]
 }
 
@@ -93,7 +85,7 @@ data "docker_logs" "relay-logs" {
   provider = docker.relay-machine
 
   name = docker_container.rosenet-relay.name
-  tail = 100
+  follow = true
 
   lifecycle {
     postcondition {

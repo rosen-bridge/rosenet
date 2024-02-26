@@ -7,3 +7,7 @@ const node = await createRoseNetNode({
 });
 
 node.start();
+
+setTimeout(() => {
+  process.exit(0);
+}, 20000);
