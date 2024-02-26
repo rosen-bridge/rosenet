@@ -15,4 +15,4 @@ RUN npm run build
 
 WORKDIR /app/tests/simple-star
 
-CMD npm run start:node
+ENTRYPOINT npm run start:node

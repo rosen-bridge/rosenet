@@ -15,4 +15,4 @@ RUN npm run build
 
 WORKDIR /app/tests/simple-star
 
-CMD npm run start:relay
+ENTRYPOINT npm run start:relay
