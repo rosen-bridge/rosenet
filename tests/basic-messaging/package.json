@@ -1,0 +1,35 @@
+{
+  "name": "@rosenet-tests/basic-messaging",
+  "private": true,
+  "version": "0.0.0",
+  "description": "RoseNet basic messaging test",
+  "repository": "https://github.com/rosen-bridge/rosenet",
+  "license": "GPL-3.0",
+  "author": "Rosen Team",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "lint": "eslint --fix . && npm run prettify",
+    "prettify": "prettier --write . --ignore-path ./.gitignore",
+    "start:node": "node --loader ./ts-node-esm-loader.js --loader extensionless ./src/node/node.ts",
+    "start:relay": "node --loader ./ts-node-esm-loader.js --loader extensionless ./src/relay/relay.ts",
+    "type-check": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.9",
+    "@typescript-eslint/eslint-plugin": "^6.19.1",
+    "@typescript-eslint/parser": "^6.19.1",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "extensionless": "^1.9.6",
+    "prettier": "^3.2.4",
+    "ts-node": "^10.7.0",
+    "tsconfig-paths": "^4.1.2",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "@rosen-bridge/rosenet-node": "^0.0.0",
+    "@rosen-bridge/rosenet-relay": "^0.0.0"
+  }
+}

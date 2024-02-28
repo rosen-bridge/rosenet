@@ -25,8 +25,10 @@
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
     "extensionless": "^1.9.6",
+    "it-stream-types": "^2.0.1",
     "prettier": "^3.2.4",
     "typescript": "^5.3.3",
+    "uint8arraylist": "^2.4.8",
     "vitest": "^1.2.2"
   },
   "engines": {
@@ -39,9 +41,14 @@
     "@libp2p/circuit-relay-v2": "^1.0.15",
     "@libp2p/identify": "^1.0.14",
     "@libp2p/mplex": "^10.0.15",
+    "@libp2p/peer-id": "^4.0.6",
     "@libp2p/pubsub-peer-discovery": "^10.0.2",
     "@libp2p/tcp": "^9.0.15",
     "@rosen-bridge/rosenet-utils": "^0.0.0",
+    "it-first": "^3.0.4",
+    "it-length-prefixed": "^9.0.4",
+    "it-map": "^3.0.5",
+    "it-pipe": "^3.0.1",
     "libp2p": "^1.2.3"
   }
 }
