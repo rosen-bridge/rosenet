@@ -45,6 +45,7 @@
     "@libp2p/pubsub-peer-discovery": "^10.0.2",
     "@libp2p/tcp": "^9.0.15",
     "@rosen-bridge/rosenet-utils": "^0.0.0",
+    "fast-shuffle": "^6.1.0",
     "it-first": "^3.0.4",
     "it-length-prefixed": "^9.0.4",
     "it-map": "^3.0.5",

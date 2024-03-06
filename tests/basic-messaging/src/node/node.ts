@@ -8,7 +8,9 @@ const node = await createRoseNetNode({
 
 await node.start();
 
-const messages = ['Hi', 'Ping', 'Bye'];
+const messages = Array.from({ length: 1000 }).map(
+  (_, index) => `Ping#${index}`,
+);
 
 if (process.env.MODE === 'dialer') {
   setTimeout(async () => {

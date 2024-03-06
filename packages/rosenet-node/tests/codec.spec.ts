@@ -1,3 +1,4 @@
+import first from 'it-first';
 import { Uint8ArrayList } from 'uint8arraylist';
 import { describe, expect, it } from 'vitest';
 
@@ -32,21 +33,20 @@ describe('encode', () => {
 describe('decode', () => {
   /**
    * @target
-   * decode should decode a byte array iterable
+   * decode should decode a byte array iterable into a string iterable
    *
    * @dependencies
    *
    * @scenario
    * - decode the byte array iterable consisting of a length prefix and message
    *   byte array
-   * - await returned promise
    * @expected
-   * - decoded value should be message
+   * - first chunk of string iterable should be the message
    */
-  it('should decode a byte array iterable', async () => {
-    const actual = await decode([
+  it('should decode a byte array iterable into a string iterable', async () => {
+    const actual = decode([
       Uint8ArrayList.fromUint8Arrays([lengthPrefixByteArray, messageByteArray]),
     ]);
-    expect(actual).toEqual(message);
+    expect(await first(actual)).toEqual(message);
   });
 });

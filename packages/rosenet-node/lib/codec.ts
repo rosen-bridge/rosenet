@@ -1,4 +1,3 @@
-import first from 'it-first';
 import * as lp from 'it-length-prefixed';
 import map from 'it-map';
 import { pipe } from 'it-pipe';
@@ -16,7 +15,7 @@ const encode = (source: string) =>
   pipe(source, textEncoder.encode.bind(textEncoder), lp.encode.single);
 
 /**
- * decode a byte array iterable with length prefix into a string promise
+ * decode a byte array iterable with length prefix into a string iterable
  * @param source
  */
 const decode = (source: Source<Uint8ArrayList>) =>
@@ -25,7 +24,6 @@ const decode = (source: Source<Uint8ArrayList>) =>
     lp.decode,
     (source) => map(source, (message) => message.subarray()),
     (source) => map(source, textDecoder.decode.bind(textDecoder)),
-    first<string>,
   );
 
 export { decode, encode };
