@@ -16,8 +16,6 @@ const cache = new Map<
   }
 >();
 
-const logger = RoseNetNodeTools.logger;
-
 /**
  * get a stream and a pushable to the `to` remotePeer with
  * ROSENET_DIRECT_PROTOCOL_V1 protocol, caching the pair for future use
@@ -28,7 +26,7 @@ const logger = RoseNetNodeTools.logger;
 async function getStreamAndPushable(to: string, node: Libp2p) {
   const cacheHit = cache.get(to);
   if (cacheHit?.stream.status === 'open') {
-    logger.debug(
+    RoseNetNodeTools.logger.debug(
       `Found existing stream and pushable in the cache to peer ${to}`,
       {
         stream: {
@@ -50,7 +48,7 @@ async function getStreamAndPushable(to: string, node: Libp2p) {
   );
   const connection = possibleOpenConnectionToPeer ?? (await node.dial(peerId));
 
-  logger.debug(
+  RoseNetNodeTools.logger.debug(
     possibleOpenConnectionToPeer
       ? `Found an open connection to peer ${to}`
       : `Established a new connection to peer ${to}`,
@@ -74,7 +72,7 @@ async function getStreamAndPushable(to: string, node: Libp2p) {
       runOnTransientConnection: true,
     }));
 
-  logger.debug(
+  RoseNetNodeTools.logger.debug(
     possibleWritableStream
       ? `Found an open stream to peer ${to}`
       : `Created a new stream to peer ${to}`,
