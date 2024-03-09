@@ -47,7 +47,7 @@ const createRoseNetNode = async ({ logger, ...config }: RoseNetNodeConfig) => {
 
   const peerId = await privateKeyToPeerId(config.privateKey);
 
-  logger.debug(`PeerId ${peerId.toString()} generated`);
+  RoseNetNodeTools.logger.debug(`PeerId ${peerId.toString()} generated`);
 
   const node = await createLibp2p({
     peerId,
@@ -85,9 +85,9 @@ const createRoseNetNode = async ({ logger, ...config }: RoseNetNodeConfig) => {
       pubsub: gossipsub({ allowPublishToZeroPeers: true }),
     },
   });
-  logger.debug('RoseNet node created');
+  RoseNetNodeTools.logger.debug('RoseNet node created');
 
-  addEventListeners(node, logger);
+  addEventListeners(node, RoseNetNodeTools.logger);
 
   return {
     start: async () => node.start(),
@@ -98,7 +98,7 @@ const createRoseNetNode = async ({ logger, ...config }: RoseNetNodeConfig) => {
       pushable.push(message);
       await Promise.resolve();
 
-      logger.debug('message piped through created stream', {
+      RoseNetNodeTools.logger.debug('message piped through created stream', {
         message,
       });
     },
@@ -108,7 +108,7 @@ const createRoseNetNode = async ({ logger, ...config }: RoseNetNodeConfig) => {
       node.handle(
         ROSENET_DIRECT_PROTOCOL_V1,
         async ({ connection, stream }) => {
-          logger.debug(
+          RoseNetNodeTools.logger.debug(
             `incoming connection stream with protocol ${ROSENET_DIRECT_PROTOCOL_V1}`,
             {
               remoteAddress: connection.remoteAddr.toString(),
@@ -118,15 +118,20 @@ const createRoseNetNode = async ({ logger, ...config }: RoseNetNodeConfig) => {
           pipe(stream, decode, async (source) => {
             for await (const message of source) {
               await handler(connection.remotePeer.toString(), message);
-              logger.debug('incoming message handled successfully', {
-                message,
-              });
+              RoseNetNodeTools.logger.debug(
+                'incoming message handled successfully',
+                {
+                  message,
+                },
+              );
             }
           });
         },
         { runOnTransientConnection: true },
       );
-      logger.debug(`handler for ${ROSENET_DIRECT_PROTOCOL_V1} protocol set`);
+      RoseNetNodeTools.logger.debug(
+        `handler for ${ROSENET_DIRECT_PROTOCOL_V1} protocol set`,
+      );
     },
   };
 };
