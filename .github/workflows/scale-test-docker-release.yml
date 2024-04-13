@@ -32,7 +32,7 @@ jobs:
         uses: docker/metadata-action@v5
         id: meta
         with:
-          images: ghcr.io/rosen-bridge/scale-test${{matrix.role}}
+          images: ghcr.io/rosen-bridge/scale-test-${{matrix.role}}
           tags: latest
 
       - name: Build and push ${{matrix.role}}
