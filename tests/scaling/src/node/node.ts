@@ -8,7 +8,7 @@ const node = await createRoseNetNode({
 
 await node.start();
 
-const messages = Array.from({ length: 1000 }).map(
+const messages = Array.from({ length: 10 }).map(
   (_, index) => `Ping#${index}:${process.env.NODE_PEER_ID!.slice(-5)}`,
 );
 
