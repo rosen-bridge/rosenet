@@ -64,7 +64,13 @@ const createRoseNetRelay = async ({
     },
     streamMuxers: [mplex()],
     services: {
-      circuitRelay: circuitRelayServer(),
+      circuitRelay: circuitRelayServer({
+        reservations: {
+          defaultDurationLimit: 0,
+          defaultDataLimit: 0n,
+          applyDefaultLimit: false,
+        },
+      }),
       pubsub: gossipsub({ allowPublishToZeroPeers: true }),
       identify: identify(),
     },
