@@ -27,3 +27,5 @@ setInterval(async () => {
     }
   }
 }, 10000);
+
+node.handleIncomingMessage(() => {});
