@@ -25,7 +25,7 @@ const cache = new Map<
  */
 async function getStreamAndPushable(to: string, node: Libp2p) {
   const cacheHit = cache.get(to);
-  if (cacheHit?.stream.status === 'open') {
+  if (cacheHit?.stream.writeStatus === 'ready') {
     RoseNetNodeTools.logger.debug(
       `Found existing stream and pushable in the cache to peer ${to}`,
       {
