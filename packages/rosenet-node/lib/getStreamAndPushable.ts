@@ -17,6 +17,13 @@ const cache = new Map<
 >();
 
 /**
+ * return if a stream can be written on
+ * @param stream
+ */
+const isStreamWritable = (stream: Stream) =>
+  ['ready', 'writing'].includes(stream.writeStatus);
+
+/**
  * get a stream and a pushable to the `to` remotePeer with
  * ROSENET_DIRECT_PROTOCOL_V1 protocol, caching the pair for future use
  *
@@ -25,7 +32,7 @@ const cache = new Map<
  */
 async function getStreamAndPushable(to: string, node: Libp2p) {
   const cacheHit = cache.get(to);
-  if (cacheHit?.stream.writeStatus === 'ready') {
+  if (cacheHit && isStreamWritable(cacheHit.stream)) {
     RoseNetNodeTools.logger.debug(
       `Found existing stream and pushable in the cache to peer ${to}`,
       {
@@ -63,7 +70,7 @@ async function getStreamAndPushable(to: string, node: Libp2p) {
   const connectionStream = shuffle(connection.streams);
   const possibleWritableStream = connectionStream.find(
     (stream) =>
-      stream.writeStatus === 'ready' &&
+      isStreamWritable(stream) &&
       stream.protocol === ROSENET_DIRECT_PROTOCOL_V1,
   );
   const stream =
