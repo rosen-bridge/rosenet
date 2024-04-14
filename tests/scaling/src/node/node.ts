@@ -16,7 +16,13 @@ setTimeout(async () => {
   for (const message of messages) {
     for (const peer of process.env.ALL_PEER_IDS!.split(',')) {
       if (peer !== process.env.NODE_PEER_ID!) {
-        await node.sendMessage(peer, message);
+        try {
+          await node.sendMessage(peer, message);
+        } catch (error) {
+          console.warn(
+            `tried to send a message to ${peer.slice(-5)} but failed due to error: ${error}`,
+          );
+        }
       }
     }
   }
