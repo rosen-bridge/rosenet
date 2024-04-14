@@ -14,7 +14,7 @@ const messages = Array.from({ length: 1000 }).map(
 
 setTimeout(async () => {
   for (const message of messages) {
-    for (const peer of process.env.ALL_PEER_IDS!) {
+    for (const peer of process.env.ALL_PEER_IDS!.split(',')) {
       await node.sendMessage(peer, message);
     }
   }
