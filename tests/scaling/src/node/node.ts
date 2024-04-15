@@ -1,7 +1,10 @@
 import { createRoseNetNode } from '@rosen-bridge/rosenet-node';
 
 const node = await createRoseNetNode({
-  logger: console,
+  logger: {
+    ...console,
+    debug: () => {},
+  },
   relayMultiaddrs: [process.env.RELAY_MULTIADDR!],
   privateKey: process.env.PRIVATE_KEY!,
 });
@@ -42,8 +45,10 @@ setInterval(async () => {
     for (const peer of process.env.ALL_PEER_IDS!.split(',')) {
       if (peer !== process.env.NODE_PEER_ID!) {
         try {
-          await node.sendMessage(peer, `${message}->${peer.slice(-5)}`);
+          const actualMessage = `${message}->${peer.slice(-5)}`;
+          await node.sendMessage(peer, actualMessage);
           MessageCounter.increase();
+          console.info(`Message sent: ${actualMessage}`);
         } catch (error) {
           console.warn(
             `tried to send a message to ${peer.slice(-5)} but failed due to error: ${error}`,
@@ -57,10 +62,14 @@ setInterval(async () => {
 
 node.handleIncomingMessage(async (from, message) => {
   if (message?.includes('Pong')) {
+    console.info(`Pong received: ${message}`);
     MessageCounter.decrease();
   } else {
+    console.info(`Message received: ${message}`);
     try {
-      await node.sendMessage(from, `Pong:${message}`);
+      const actualMessage = `Pong@${new Date().toLocaleTimeString([], { hour12: false })}:${message}`;
+      await node.sendMessage(from, actualMessage);
+      console.info(`Pong sent: ${actualMessage}`);
     } catch (error) {
       console.warn(
         `tried to pong message ${message} but failed due to error: ${error}`,
