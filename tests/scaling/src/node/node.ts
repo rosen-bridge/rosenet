@@ -40,25 +40,27 @@ const messages = Array.from({ length: 10 }).map(
     `Ping@${new Date().toLocaleTimeString([], { hour12: false })}#${index}:${process.env.NODE_PEER_ID!.slice(-5)}`,
 );
 
-setInterval(async () => {
-  for (const message of messages) {
-    for (const peer of process.env.ALL_PEER_IDS!.split(',')) {
-      if (peer !== process.env.NODE_PEER_ID!) {
-        try {
-          const actualMessage = `${message}->${peer.slice(-5)}`;
-          await node.sendMessage(peer, actualMessage);
-          MessageCounter.increase();
-          console.info(`Message sent: ${actualMessage}`);
-        } catch (error) {
-          console.warn(
-            `tried to send a message to ${peer.slice(-5)} but failed due to error: ${error}`,
-          );
+setTimeout(() => {
+  setInterval(async () => {
+    for (const message of messages) {
+      for (const peer of process.env.ALL_PEER_IDS!.split(',')) {
+        if (peer !== process.env.NODE_PEER_ID!) {
+          try {
+            const actualMessage = `${message}->${peer.slice(-5)}`;
+            await node.sendMessage(peer, actualMessage);
+            MessageCounter.increase();
+            console.info(`Message sent: ${actualMessage}`);
+          } catch (error) {
+            console.warn(
+              `tried to send a message to ${peer.slice(-5)} but failed due to error: ${error}`,
+            );
+          }
+          await wait();
         }
-        await wait();
       }
     }
-  }
-}, 10_000);
+  }, 10_000);
+}, 30_000);
 
 node.handleIncomingMessage(async (from, message) => {
   if (message?.includes('Pong')) {
