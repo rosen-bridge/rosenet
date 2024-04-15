@@ -27,6 +27,11 @@ const MessageCounter = {
   },
 };
 
+const wait = () =>
+  new Promise((resolve) => {
+    setTimeout(resolve, 1 + Math.random() * 9);
+  });
+
 const messages = Array.from({ length: 10 }).map(
   (_, index) => `Ping#${index}:${process.env.NODE_PEER_ID!.slice(-5)}`,
 );
@@ -43,6 +48,7 @@ setInterval(async () => {
             `tried to send a message to ${peer.slice(-5)} but failed due to error: ${error}`,
           );
         }
+        await wait();
       }
     }
   }
