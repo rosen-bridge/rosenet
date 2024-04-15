@@ -71,6 +71,7 @@ async function getStreamAndPushable(to: string, node: Libp2p) {
   const possibleWritableStream = connectionStream.find(
     (stream) =>
       isStreamWritable(stream) &&
+      stream.direction === 'outbound' &&
       stream.protocol === ROSENET_DIRECT_PROTOCOL_V1,
   );
   const stream =
