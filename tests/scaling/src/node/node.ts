@@ -35,13 +35,12 @@ const wait = () =>
     setTimeout(resolve, 1 + Math.random() * 9);
   });
 
-const messages = Array.from({ length: 10 }).map(
-  (_, index) =>
-    `Ping@${new Date().toLocaleTimeString([], { hour12: false })}#${index}:${process.env.NODE_PEER_ID!.slice(-5)}`,
-);
-
 setTimeout(() => {
   setInterval(async () => {
+    const messages = Array.from({ length: 10 }).map(
+      (_, index) =>
+        `Ping@${new Date().toLocaleTimeString([], { hour12: false })}#${index}:${process.env.NODE_PEER_ID!.slice(-5)}`,
+    );
     for (const message of messages) {
       for (const peer of process.env.ALL_PEER_IDS!.split(',')) {
         if (peer !== process.env.NODE_PEER_ID!) {
