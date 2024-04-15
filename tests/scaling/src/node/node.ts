@@ -9,16 +9,20 @@ const node = await createRoseNetNode({
 await node.start();
 
 const MessageCounter = {
-  counter: 0,
+  ackWaiting: 0,
+  total: 0,
   increase() {
-    this.counter += 1;
+    this.ackWaiting += 1;
+    this.total += 1;
   },
   decrease() {
-    this.counter -= 1;
+    this.ackWaiting -= 1;
   },
   startLogger() {
     setInterval(() => {
-      console.info(`>>> Current counter: ${this.counter}`);
+      console.info(
+        `>>> Counter: ${this.ackWaiting}, Total: ${this.total}, loss: ${this.ackWaiting && this.total ? ((this.ackWaiting * 100) / this.total).toFixed(2) : 0}%`,
+      );
     }, 30_000);
   },
 };
