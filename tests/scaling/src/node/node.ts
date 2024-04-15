@@ -33,7 +33,8 @@ const wait = () =>
   });
 
 const messages = Array.from({ length: 10 }).map(
-  (_, index) => `Ping#${index}:${process.env.NODE_PEER_ID!.slice(-5)}`,
+  (_, index) =>
+    `Ping@${new Date().toLocaleTimeString([], { hour12: false })}#${index}:${process.env.NODE_PEER_ID!.slice(-5)}`,
 );
 
 setInterval(async () => {
@@ -41,7 +42,7 @@ setInterval(async () => {
     for (const peer of process.env.ALL_PEER_IDS!.split(',')) {
       if (peer !== process.env.NODE_PEER_ID!) {
         try {
-          await node.sendMessage(peer, message);
+          await node.sendMessage(peer, `${message}->${peer.slice(-5)}`);
           MessageCounter.increase();
         } catch (error) {
           console.warn(
