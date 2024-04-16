@@ -245,7 +245,19 @@ resource "docker_container" "rosenet-node-0" {
   env = [
     "RELAY_MULTIADDR=/ip4/${var.relay-ip}/tcp/33333/p2p/${local.relay_peer_id}", "PRIVATE_KEY=${local.node_private_keys[count.index]}", "ALL_PEER_IDS=${join("," ,local.node_peer_ids)}", "NODE_PEER_ID=${local.node_peer_ids[count.index]}"]
 
-  depends_on = [docker_container.rosenet-relay]
+  depends_on = [
+    docker_container.rosenet-relay,
+    docker_image.rosenet-node-0,
+    docker_image.rosenet-node-1,
+    docker_image.rosenet-node-2,
+    docker_image.rosenet-node-3,
+    docker_image.rosenet-node-4,
+    docker_image.rosenet-node-5,
+    docker_image.rosenet-node-6,
+    docker_image.rosenet-node-7,
+    docker_image.rosenet-node-8,
+    docker_image.rosenet-node-9,
+  ]
 }
 
 resource "docker_container" "rosenet-node-1" {
@@ -257,7 +269,19 @@ resource "docker_container" "rosenet-node-1" {
   env = [
     "RELAY_MULTIADDR=/ip4/${var.relay-ip}/tcp/33333/p2p/${local.relay_peer_id}", "PRIVATE_KEY=${local.node_private_keys[count.index + 4]}", "ALL_PEER_IDS=${join("," ,local.node_peer_ids)}", "NODE_PEER_ID=${local.node_peer_ids[count.index + 4]}"]
 
-  depends_on = [docker_container.rosenet-relay]
+  depends_on = [
+    docker_container.rosenet-relay,
+    docker_image.rosenet-node-0,
+    docker_image.rosenet-node-1,
+    docker_image.rosenet-node-2,
+    docker_image.rosenet-node-3,
+    docker_image.rosenet-node-4,
+    docker_image.rosenet-node-5,
+    docker_image.rosenet-node-6,
+    docker_image.rosenet-node-7,
+    docker_image.rosenet-node-8,
+    docker_image.rosenet-node-9,
+  ]
 }
 
 resource "docker_container" "rosenet-node-2" {
@@ -269,7 +293,19 @@ resource "docker_container" "rosenet-node-2" {
   env = [
     "RELAY_MULTIADDR=/ip4/${var.relay-ip}/tcp/33333/p2p/${local.relay_peer_id}", "PRIVATE_KEY=${local.node_private_keys[count.index + 8]}", "ALL_PEER_IDS=${join("," ,local.node_peer_ids)}", "NODE_PEER_ID=${local.node_peer_ids[count.index + 8]}"]
 
-  depends_on = [docker_container.rosenet-relay]
+  depends_on = [
+    docker_container.rosenet-relay,
+    docker_image.rosenet-node-0,
+    docker_image.rosenet-node-1,
+    docker_image.rosenet-node-2,
+    docker_image.rosenet-node-3,
+    docker_image.rosenet-node-4,
+    docker_image.rosenet-node-5,
+    docker_image.rosenet-node-6,
+    docker_image.rosenet-node-7,
+    docker_image.rosenet-node-8,
+    docker_image.rosenet-node-9,
+  ]
 }
 
 resource "docker_container" "rosenet-node-3" {
@@ -281,7 +317,19 @@ resource "docker_container" "rosenet-node-3" {
   env = [
     "RELAY_MULTIADDR=/ip4/${var.relay-ip}/tcp/33333/p2p/${local.relay_peer_id}", "PRIVATE_KEY=${local.node_private_keys[count.index + 12]}", "ALL_PEER_IDS=${join("," ,local.node_peer_ids)}", "NODE_PEER_ID=${local.node_peer_ids[count.index + 12]}"]
 
-  depends_on = [docker_container.rosenet-relay]
+  depends_on = [
+    docker_container.rosenet-relay,
+    docker_image.rosenet-node-0,
+    docker_image.rosenet-node-1,
+    docker_image.rosenet-node-2,
+    docker_image.rosenet-node-3,
+    docker_image.rosenet-node-4,
+    docker_image.rosenet-node-5,
+    docker_image.rosenet-node-6,
+    docker_image.rosenet-node-7,
+    docker_image.rosenet-node-8,
+    docker_image.rosenet-node-9,
+  ]
 }
 
 resource "docker_container" "rosenet-node-4" {
@@ -293,7 +341,19 @@ resource "docker_container" "rosenet-node-4" {
   env = [
     "RELAY_MULTIADDR=/ip4/${var.relay-ip}/tcp/33333/p2p/${local.relay_peer_id}", "PRIVATE_KEY=${local.node_private_keys[count.index + 16]}", "ALL_PEER_IDS=${join("," ,local.node_peer_ids)}", "NODE_PEER_ID=${local.node_peer_ids[count.index + 16]}"]
 
-  depends_on = [docker_container.rosenet-relay]
+  depends_on = [
+    docker_container.rosenet-relay,
+    docker_image.rosenet-node-0,
+    docker_image.rosenet-node-1,
+    docker_image.rosenet-node-2,
+    docker_image.rosenet-node-3,
+    docker_image.rosenet-node-4,
+    docker_image.rosenet-node-5,
+    docker_image.rosenet-node-6,
+    docker_image.rosenet-node-7,
+    docker_image.rosenet-node-8,
+    docker_image.rosenet-node-9,
+  ]
 }
 
 resource "docker_container" "rosenet-node-5" {
@@ -305,7 +365,19 @@ resource "docker_container" "rosenet-node-5" {
   env = [
     "RELAY_MULTIADDR=/ip4/${var.relay-ip}/tcp/33333/p2p/${local.relay_peer_id}", "PRIVATE_KEY=${local.node_private_keys[count.index + 20]}", "ALL_PEER_IDS=${join("," ,local.node_peer_ids)}", "NODE_PEER_ID=${local.node_peer_ids[count.index + 20]}"]
 
-  depends_on = [docker_container.rosenet-relay]
+  depends_on = [
+    docker_container.rosenet-relay,
+    docker_image.rosenet-node-0,
+    docker_image.rosenet-node-1,
+    docker_image.rosenet-node-2,
+    docker_image.rosenet-node-3,
+    docker_image.rosenet-node-4,
+    docker_image.rosenet-node-5,
+    docker_image.rosenet-node-6,
+    docker_image.rosenet-node-7,
+    docker_image.rosenet-node-8,
+    docker_image.rosenet-node-9,
+  ]
 }
 
 resource "docker_container" "rosenet-node-6" {
@@ -317,7 +389,19 @@ resource "docker_container" "rosenet-node-6" {
   env = [
     "RELAY_MULTIADDR=/ip4/${var.relay-ip}/tcp/33333/p2p/${local.relay_peer_id}", "PRIVATE_KEY=${local.node_private_keys[count.index + 24]}", "ALL_PEER_IDS=${join("," ,local.node_peer_ids)}", "NODE_PEER_ID=${local.node_peer_ids[count.index + 24]}"]
 
-  depends_on = [docker_container.rosenet-relay]
+  depends_on = [
+    docker_container.rosenet-relay,
+    docker_image.rosenet-node-0,
+    docker_image.rosenet-node-1,
+    docker_image.rosenet-node-2,
+    docker_image.rosenet-node-3,
+    docker_image.rosenet-node-4,
+    docker_image.rosenet-node-5,
+    docker_image.rosenet-node-6,
+    docker_image.rosenet-node-7,
+    docker_image.rosenet-node-8,
+    docker_image.rosenet-node-9,
+  ]
 }
 
 resource "docker_container" "rosenet-node-7" {
@@ -329,7 +413,19 @@ resource "docker_container" "rosenet-node-7" {
   env = [
     "RELAY_MULTIADDR=/ip4/${var.relay-ip}/tcp/33333/p2p/${local.relay_peer_id}", "PRIVATE_KEY=${local.node_private_keys[count.index + 28]}", "ALL_PEER_IDS=${join("," ,local.node_peer_ids)}", "NODE_PEER_ID=${local.node_peer_ids[count.index + 28]}"]
 
-  depends_on = [docker_container.rosenet-relay]
+  depends_on = [
+    docker_container.rosenet-relay,
+    docker_image.rosenet-node-0,
+    docker_image.rosenet-node-1,
+    docker_image.rosenet-node-2,
+    docker_image.rosenet-node-3,
+    docker_image.rosenet-node-4,
+    docker_image.rosenet-node-5,
+    docker_image.rosenet-node-6,
+    docker_image.rosenet-node-7,
+    docker_image.rosenet-node-8,
+    docker_image.rosenet-node-9,
+  ]
 }
 
 resource "docker_container" "rosenet-node-8" {
@@ -341,7 +437,19 @@ resource "docker_container" "rosenet-node-8" {
   env = [
     "RELAY_MULTIADDR=/ip4/${var.relay-ip}/tcp/33333/p2p/${local.relay_peer_id}", "PRIVATE_KEY=${local.node_private_keys[count.index + 32]}", "ALL_PEER_IDS=${join("," ,local.node_peer_ids)}", "NODE_PEER_ID=${local.node_peer_ids[count.index + 32]}"]
 
-  depends_on = [docker_container.rosenet-relay]
+  depends_on = [
+    docker_container.rosenet-relay,
+    docker_image.rosenet-node-0,
+    docker_image.rosenet-node-1,
+    docker_image.rosenet-node-2,
+    docker_image.rosenet-node-3,
+    docker_image.rosenet-node-4,
+    docker_image.rosenet-node-5,
+    docker_image.rosenet-node-6,
+    docker_image.rosenet-node-7,
+    docker_image.rosenet-node-8,
+    docker_image.rosenet-node-9,
+  ]
 }
 
 resource "docker_container" "rosenet-node-9" {
@@ -353,7 +461,19 @@ resource "docker_container" "rosenet-node-9" {
   env = [
     "RELAY_MULTIADDR=/ip4/${var.relay-ip}/tcp/33333/p2p/${local.relay_peer_id}", "PRIVATE_KEY=${local.node_private_keys[count.index + 36]}", "ALL_PEER_IDS=${join("," ,local.node_peer_ids)}", "NODE_PEER_ID=${local.node_peer_ids[count.index + 36]}"]
 
-  depends_on = [docker_container.rosenet-relay]
+  depends_on = [
+    docker_container.rosenet-relay,
+    docker_image.rosenet-node-0,
+    docker_image.rosenet-node-1,
+    docker_image.rosenet-node-2,
+    docker_image.rosenet-node-3,
+    docker_image.rosenet-node-4,
+    docker_image.rosenet-node-5,
+    docker_image.rosenet-node-6,
+    docker_image.rosenet-node-7,
+    docker_image.rosenet-node-8,
+    docker_image.rosenet-node-9,
+  ]
 }
 
 resource "docker_container" "rosenet-relay" {
