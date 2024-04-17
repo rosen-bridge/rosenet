@@ -8,6 +8,7 @@ const node = await createRoseNetRelay({
     port: Number(process.env.LISTEN_PORT),
   },
   whitelist: process.env.WHITELIST!.split(','),
+  maxReservations: 40,
 });
 
 node.start();
