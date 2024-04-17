@@ -66,6 +66,7 @@ const createRoseNetRelay = async ({
     services: {
       circuitRelay: circuitRelayServer({
         reservations: {
+          maxReservations: config.maxReservations,
           defaultDurationLimit: 0,
           defaultDataLimit: 0n,
           applyDefaultLimit: false,
