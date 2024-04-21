@@ -1,17 +1,18 @@
-name: Build and Push Scale Test Docker Image
+name: Build and Push Scaling Tests Docker Images
 on:
   push:
     paths:
-      - 'packages/**'
-      - 'tests/scaling/**'
+      - packages/**
+      - tests/scaling**
 
 jobs:
   build:
     strategy:
       matrix:
         role: [node, relay]
+        test-name: ['', peer-discovery]
 
-    name: Build and Push Scale Test Docker Image
+    name: Build and Push Scaling Test Docker Image
     permissions: write-all
     runs-on: ubuntu-latest
 
@@ -32,13 +33,13 @@ jobs:
         uses: docker/metadata-action@v5
         id: meta
         with:
-          images: ghcr.io/rosen-bridge/scale-test-${{matrix.role}}
+          images: ghcr.io/rosen-bridge/scaling${{matrix.test-name && format('-{0}', matrix.test-name)}}-test-${{matrix.role}}
           tags: latest
 
       - name: Build and push ${{matrix.role}}
         uses: docker/build-push-action@v4
         with:
           context: .
-          file: 'tests/scaling/src/${{matrix.role}}/Dockerfile'
+          file: tests/scaling${{matrix.test-name && format('-{0}', matrix.test-name)}}/src/${{matrix.role}}/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
