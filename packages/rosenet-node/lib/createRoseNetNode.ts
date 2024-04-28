@@ -16,13 +16,17 @@ import {
   privateKeyToPeerId,
 } from '@rosen-bridge/rosenet-utils';
 
-import { decode, encode } from './utils/codec';
-import streamService from './stream/stream-service';
 import RoseNetNodeContext from './context/RoseNetNodeContext';
+
+import addressService from './address/address-service';
+import streamService from './stream/stream-service';
+
+import { decode, encode } from './utils/codec';
 
 import RoseNetNodeError from './errors/RoseNetNodeError';
 
 import {
+  DEFAULT_NODE_PORT,
   RELAYS_COUNT_TO_CONNECT,
   ROSENET_DIRECT_PROTOCOL_V1,
 } from './constants';
@@ -31,7 +35,11 @@ import packageJson from '../package.json' with { type: 'json' };
 
 import { RoseNetNodeConfig } from './types';
 
-const createRoseNetNode = async ({ logger, ...config }: RoseNetNodeConfig) => {
+const createRoseNetNode = async ({
+  logger,
+  port = DEFAULT_NODE_PORT,
+  ...config
+}: RoseNetNodeConfig) => {
   if (!config.relayMultiaddrs.length) {
     throw new RoseNetNodeError('Cannot start a RoseNet node without a relay');
   }
@@ -49,6 +57,9 @@ const createRoseNetNode = async ({ logger, ...config }: RoseNetNodeConfig) => {
 
   RoseNetNodeContext.logger.debug(`PeerId ${peerId.toString()} generated`);
 
+  const announceMultiaddr = await addressService.getAnnounceMultiaddr(port);
+  logger.info(`${announceMultiaddr} set as announce multiaddr`);
+
   const node = await createLibp2p({
     peerId,
     transports: [
@@ -57,6 +68,10 @@ const createRoseNetNode = async ({ logger, ...config }: RoseNetNodeConfig) => {
       }),
       tcp(),
     ],
+    addresses: {
+      listen: [`/ip4/0.0.0.0/tcp/${port}`],
+      announce: [announceMultiaddr],
+    },
     connectionEncryption: [noise()],
     connectionGater: {
       ...(config.whitelist && {
