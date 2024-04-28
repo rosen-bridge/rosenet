@@ -2,7 +2,7 @@ import first from 'it-first';
 import { Uint8ArrayList } from 'uint8arraylist';
 import { describe, expect, it } from 'vitest';
 
-import { decode, encode } from '../lib/codec';
+import { decode, encode } from '../../lib/utils/codec';
 
 const message = 'hello world';
 const lengthPrefixByteArray = Uint8Array.from([message.length]);

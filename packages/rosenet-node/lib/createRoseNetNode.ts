@@ -16,9 +16,9 @@ import {
   privateKeyToPeerId,
 } from '@rosen-bridge/rosenet-utils';
 
-import { decode, encode } from './codec';
-import getStreamAndPushable from './getStreamAndPushable';
-import RoseNetNodeTools from './RoseNetNodeTools';
+import { decode, encode } from './utils/codec';
+import streamService from './stream/stream-service';
+import RoseNetNodeContext from './context/RoseNetNodeContext';
 
 import RoseNetNodeError from './errors/RoseNetNodeError';
 
@@ -36,7 +36,7 @@ const createRoseNetNode = async ({ logger, ...config }: RoseNetNodeConfig) => {
     throw new RoseNetNodeError('Cannot start a RoseNet node without a relay');
   }
 
-  RoseNetNodeTools.init(logger);
+  RoseNetNodeContext.init(logger);
 
   /**
    * return if a peer is unauthorized, i.e. not whitelisted
@@ -47,7 +47,7 @@ const createRoseNetNode = async ({ logger, ...config }: RoseNetNodeConfig) => {
 
   const peerId = await privateKeyToPeerId(config.privateKey);
 
-  RoseNetNodeTools.logger.debug(`PeerId ${peerId.toString()} generated`);
+  RoseNetNodeContext.logger.debug(`PeerId ${peerId.toString()} generated`);
 
   const node = await createLibp2p({
     peerId,
@@ -85,20 +85,23 @@ const createRoseNetNode = async ({ logger, ...config }: RoseNetNodeConfig) => {
       pubsub: gossipsub({ allowPublishToZeroPeers: true }),
     },
   });
-  RoseNetNodeTools.logger.debug('RoseNet node created');
+  RoseNetNodeContext.logger.debug('RoseNet node created');
 
-  addEventListeners(node, RoseNetNodeTools.logger);
+  addEventListeners(node, RoseNetNodeContext.logger);
 
   return {
     start: async () => node.start(),
     sendMessage: async (to: string, message: string) => {
-      const { stream, pushable } = await getStreamAndPushable(to, node);
+      const { stream, pushable } = await streamService.getStreamAndPushable(
+        to,
+        node,
+      );
 
       pipe(pushable, (source) => map(source, encode), stream);
       pushable.push(message);
       await Promise.resolve();
 
-      RoseNetNodeTools.logger.debug('message piped through created stream', {
+      RoseNetNodeContext.logger.debug('message piped through created stream', {
         message,
       });
     },
@@ -108,7 +111,7 @@ const createRoseNetNode = async ({ logger, ...config }: RoseNetNodeConfig) => {
       node.handle(
         ROSENET_DIRECT_PROTOCOL_V1,
         async ({ connection, stream }) => {
-          RoseNetNodeTools.logger.debug(
+          RoseNetNodeContext.logger.debug(
             `incoming connection stream with protocol ${ROSENET_DIRECT_PROTOCOL_V1}`,
             {
               remoteAddress: connection.remoteAddr.toString(),
@@ -118,7 +121,7 @@ const createRoseNetNode = async ({ logger, ...config }: RoseNetNodeConfig) => {
           pipe(stream, decode, async (source) => {
             for await (const message of source) {
               await handler(connection.remotePeer.toString(), message);
-              RoseNetNodeTools.logger.debug(
+              RoseNetNodeContext.logger.debug(
                 'incoming message handled successfully',
                 {
                   message,
@@ -129,7 +132,7 @@ const createRoseNetNode = async ({ logger, ...config }: RoseNetNodeConfig) => {
         },
         { runOnTransientConnection: true },
       );
-      RoseNetNodeTools.logger.debug(
+      RoseNetNodeContext.logger.debug(
         `handler for ${ROSENET_DIRECT_PROTOCOL_V1} protocol set`,
       );
     },
