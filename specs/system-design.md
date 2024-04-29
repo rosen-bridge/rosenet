@@ -60,26 +60,25 @@ Implementation status:
 🚧 Under development  
 ✅ Finished
 
-| Status | Feature                 | Current State                                                      |
-| ------ | ----------------------- | ------------------------------------------------------------------ |
-| 🚧     | Topology (ZeroLayer)    | Starts as a star, upgrades to partially-connected mesh             |
-| 🚧     | Topology (RoseLayer)    | Gossip-based partially-connected mesh                              |
-| 🏁     | Message Delivery        | Guaranteed within a 5-minute latency window                        |
-| ✅     | Whitelisting            | Configurable for both relays and nodes, being mandatory for relays |
-| ✅     | Communication Security  | All messages are end-to-end encrypted                              |
-| ✅     | Sybil Attack Mitigation | Relays only accept connections from whitelisted nodes              |
-| 🏁     | Network Availability    | At least 60% of the network is expected to be available            |
-| 🏁     | Scalability             | Up to 100 non-relay nodes                                          |
-| 🏁     | Message Sending Latency | 1-second latency for dequeuing                                     |
-| N/A    | Decentralization        | Mostly decentralized, but some relay nodes are required            |
-| 🚧     | Discoverability (Nodes) | Achieved after connecting to the relay                             |
-| 🚧     | NAT Traversal           | Supports both public and private nodes                             |
-| 🏁     | Monitoring & Analytics  | Tracks connected nodes, relays, messaging rates, etc.              |
-| 🏁     | Node Availability       | [To be determined]                                                 |
-| 🏁     | Message Routing         | [To be determined]                                                 |
-| 🏁     | Upgradability           | [To be determined]                                                 |
-| 🏁     | Burst Messaging         | [To be determined]                                                 |
-| 🏁     | Idle Network State      | [To be determined]                                                 |
+| Status | Feature                   | Current State                                                      |
+| ------ | ------------------------- | ------------------------------------------------------------------ |
+| 🚧     | Topology (ZeroLayer)      | Starts as a star, upgrades to partially-connected mesh             |
+| 🚧     | Topology (RoseLayer)      | Gossip-based partially-connected mesh                              |
+| 🏁     | Message Delivery          | Guaranteed within a 5-minute latency window                        |
+| ✅     | Whitelisting              | Configurable for both relays and nodes, being mandatory for relays |
+| ✅     | Communication Security    | All messages are end-to-end encrypted                              |
+| ✅     | Sybil Attack Mitigation   | Relays only accept connections from whitelisted nodes              |
+| 🏁     | Network Data Availability | Support planned in case of introducing state to the network        |
+| 🏁     | Scalability               | Up to 100 non-relay nodes                                          |
+| 🏁     | Message Sending Latency   | 1-second latency for dequeuing                                     |
+| N/A    | Decentralization          | Mostly decentralized, but some relay nodes are required            |
+| 🚧     | Discoverability (Nodes)   | Achieved after connecting to the relay                             |
+| 🚧     | NAT Traversal             | Supports both public and private nodes                             |
+| 🏁     | Monitoring & Analytics    | Tracks connected nodes, relays, messaging rates, etc.              |
+| 🏁     | Message Routing           | [To be determined]                                                 |
+| 🏁     | Upgradability             | [To be determined]                                                 |
+| 🏁     | Burst Messaging           | [To be determined]                                                 |
+| 🏁     | Idle Network State        | [To be determined]                                                 |
 
 ### Unsupported Features:
 
@@ -140,4 +139,5 @@ This enhanced approach to whitelisting not only ensures the smooth operation of 
 
 ## TODO
 
-_Describe the features in detail_
+- [ ] Describe the features in detail
+- [ ] Stateful vs Stateless
