@@ -8,7 +8,7 @@ design principles, assumptions, and features of RoseNet.
 
 | Status | creation date | last update date | version |
 | ------ | ------------- | ---------------- | ------- |
-| Draft  | 25 Dec 2023   | 17 Feb 2024      | Draft-2 |
+| Draft  | 25 Dec 2023   | 30 Apr 2024      | Draft-3 |
 
 Author: @mkermani144  
 Contributors: N/A
@@ -18,8 +18,6 @@ Contributors: N/A
 RoseNet serves as a critical component in enabling secure communication between
 Rosen Bridge guards. This section provides a high-level overview of RoseNet's
 purpose and its role within the broader system.
-
-_TODO: RoseNet use case in guards_
 
 ## RoseNet in action
 
@@ -49,10 +47,6 @@ involving NodeA connecting to RoseNet through RelayR:
    seamlessly.
 4. _TODO: messaging_
 
-## ZeroLayer vs RoseLayer
-
-_TODO_
-
 ## Features Summary
 
 Implementation status:  
@@ -60,26 +54,24 @@ Implementation status:
 🚧 Under development  
 ✅ Finished
 
-| Status | Feature                 | Current State                                                      |
-| ------ | ----------------------- | ------------------------------------------------------------------ |
-| 🚧     | Topology (ZeroLayer)    | Starts as a star, upgrades to partially-connected mesh             |
-| 🚧     | Topology (RoseLayer)    | Gossip-based partially-connected mesh                              |
-| 🏁     | Message Delivery        | Guaranteed within a 5-minute latency window                        |
-| ✅     | Whitelisting            | Configurable for both relays and nodes, being mandatory for relays |
-| ✅     | Communication Security  | All messages are end-to-end encrypted                              |
-| ✅     | Sybil Attack Mitigation | Relays only accept connections from whitelisted nodes              |
-| 🏁     | Network Availability    | At least 60% of the network is expected to be available            |
-| 🏁     | Scalability             | Up to 100 non-relay nodes                                          |
-| 🏁     | Message Sending Latency | 1-second latency for dequeuing                                     |
-| N/A    | Decentralization        | Mostly decentralized, but some relay nodes are required            |
-| 🚧     | Discoverability (Nodes) | Achieved after connecting to the relay                             |
-| 🚧     | NAT Traversal           | Supports both public and private nodes                             |
-| 🏁     | Monitoring & Analytics  | Tracks connected nodes, relays, messaging rates, etc.              |
-| 🏁     | Node Availability       | [To be determined]                                                 |
-| 🏁     | Message Routing         | [To be determined]                                                 |
-| 🏁     | Upgradability           | [To be determined]                                                 |
-| 🏁     | Burst Messaging         | [To be determined]                                                 |
-| 🏁     | Idle Network State      | [To be determined]                                                 |
+| Status | Feature                       | Current State                                                      |
+| ------ | ----------------------------- | ------------------------------------------------------------------ |
+| 🚧     | Topology (ZeroLayer)          | Starts as a star, but the final topology is to be determined       |
+| 🚧     | Topology (RoseLayer)          | [To be determined]                                                 |
+| 🏁     | Fast Message Delivery         | Guaranteed within a 5-minute latency window                        |
+| 🏁     | Message Delivery Verification | Message delivery is verified through an ack mechanism              |
+| ✅     | Whitelisting                  | Configurable for both relays and nodes, being mandatory for relays |
+| ✅     | Communication Security        | All messages are end-to-end encrypted                              |
+| ✅     | Sybil Attack Mitigation       | Relays only accept connections from whitelisted nodes              |
+| 🏁     | Network Data Availability     | Support planned in case of introducing state to the network        |
+| 🚧     | Scalability                   | Up to 40 non-relay nodes                                           |
+| -      | Decentralization              | Mostly decentralized, but some relay nodes are required            |
+| ✅     | Discoverability (Nodes)       | Achieved after connecting to the relay                             |
+| 🚧     | NAT Traversal                 | Supports both public and private nodes                             |
+| 🏁     | Monitoring & Analytics        | Tracks connected nodes, relays, messaging rates, etc.              |
+| 🏁     | Message Routing               | [To be determined]                                                 |
+| 🚧     | Burst Messaging               | [To be determined]                                                 |
+| 🏁     | Idle Network State            | [To be determined]                                                 |
 
 ### Unsupported Features:
 
@@ -91,6 +83,7 @@ Implementation status:
 | Relays count constraints support | Not planned, new relays must be added on demand                                     |
 | Persistence                      | Not planned                                                                         |
 | Discoverability (relays)         | Relays are not meant to be well-known ip addresses and don't need to be discovered  |
+| Backward-compatibility           | All RoseNet nodes and relays must use the same version of RoseNet protocol          |
 
 ## RoseNet design principles
 
@@ -140,4 +133,7 @@ This enhanced approach to whitelisting not only ensures the smooth operation of 
 
 ## TODO
 
-_Describe the features in detail_
+- [ ] Describe the features in detail
+- [ ] Stateful vs Stateless
+- [ ] RoseNet use case in Rosen Bridge guards
+- [ ] ZeroLayer vs RoseLayer
