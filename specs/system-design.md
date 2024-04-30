@@ -8,7 +8,7 @@ design principles, assumptions, and features of RoseNet.
 
 | Status | creation date | last update date | version |
 | ------ | ------------- | ---------------- | ------- |
-| Draft  | 25 Dec 2023   | 17 Feb 2024      | Draft-2 |
+| Draft  | 25 Dec 2023   | 30 Apr 2024      | Draft-3 |
 
 Author: @mkermani144  
 Contributors: N/A
