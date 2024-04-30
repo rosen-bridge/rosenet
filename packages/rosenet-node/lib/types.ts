@@ -4,5 +4,6 @@ export interface RoseNetNodeConfig {
   relayMultiaddrs: string[];
   logger: AbstractLogger;
   privateKey: string;
+  port?: number;
   whitelist?: string[];
 }

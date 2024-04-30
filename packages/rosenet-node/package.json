@@ -44,12 +44,14 @@
     "@libp2p/peer-id": "^4.0.6",
     "@libp2p/pubsub-peer-discovery": "^10.0.2",
     "@libp2p/tcp": "^9.0.15",
+    "@multiformats/multiaddr": "^12.2.1",
     "@rosen-bridge/rosenet-utils": "^0.0.0",
     "fast-shuffle": "^6.1.0",
     "it-first": "^3.0.4",
     "it-length-prefixed": "^9.0.4",
     "it-map": "^3.0.5",
     "it-pipe": "^3.0.1",
-    "libp2p": "^1.2.3"
+    "libp2p": "^1.2.3",
+    "public-ip": "^6.0.2"
   }
 }

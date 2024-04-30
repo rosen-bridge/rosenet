@@ -3,10 +3,10 @@ import { peerIdFromString } from '@libp2p/peer-id';
 import { shuffle } from 'fast-shuffle';
 import { Libp2p } from 'libp2p';
 
-import RoseNetNodeTools from './RoseNetNodeTools';
-import createPushable, { Pushable } from './pushable';
+import RoseNetNodeContext from '../context/RoseNetNodeContext';
+import createPushable, { Pushable } from './createPushable';
 
-import { ROSENET_DIRECT_PROTOCOL_V1 } from './constants';
+import { ROSENET_DIRECT_PROTOCOL_V1 } from '../constants';
 
 const cache = new Map<
   string,
@@ -33,7 +33,7 @@ const isStreamWritable = (stream: Stream) =>
 async function getStreamAndPushable(to: string, node: Libp2p) {
   const cacheHit = cache.get(to);
   if (cacheHit && isStreamWritable(cacheHit.stream)) {
-    RoseNetNodeTools.logger.debug(
+    RoseNetNodeContext.logger.debug(
       `Found existing stream and pushable in the cache to peer ${to}`,
       {
         stream: {
@@ -55,7 +55,7 @@ async function getStreamAndPushable(to: string, node: Libp2p) {
   );
   const connection = possibleOpenConnectionToPeer ?? (await node.dial(peerId));
 
-  RoseNetNodeTools.logger.debug(
+  RoseNetNodeContext.logger.debug(
     possibleOpenConnectionToPeer
       ? `Found an open connection to peer ${to}`
       : `Established a new connection to peer ${to}`,
@@ -80,7 +80,7 @@ async function getStreamAndPushable(to: string, node: Libp2p) {
       runOnTransientConnection: true,
     }));
 
-  RoseNetNodeTools.logger.debug(
+  RoseNetNodeContext.logger.debug(
     possibleWritableStream
       ? `Found an open stream to peer ${to}`
       : `Created a new stream to peer ${to}`,
@@ -106,4 +106,6 @@ async function getStreamAndPushable(to: string, node: Libp2p) {
   return pair;
 }
 
-export default getStreamAndPushable;
+export default {
+  getStreamAndPushable,
+};

@@ -1,6 +1,6 @@
 import { it, describe, expect } from 'vitest';
 
-import createPushable, { Pushable } from '../lib/pushable';
+import createPushable, { Pushable } from '../../lib/stream/createPushable';
 
 /**
  * delegate to the pushable parameter, essentially returning an iterator from

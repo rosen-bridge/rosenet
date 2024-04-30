@@ -21,7 +21,12 @@
         "terminal.integrated.defaultProfile.linux": "zsh",
         "terminal.integrated.profiles.linux": { "zsh": { "path": "/bin/zsh" } },
       },
+      "extensions": ["hashicorp.terraform"],
     },
+  },
+  "features": {
+    "ghcr.io/robbert229/devcontainer-features/opentofu:1": {},
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {},
   },
 
   // Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
