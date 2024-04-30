@@ -19,8 +19,6 @@ RoseNet serves as a critical component in enabling secure communication between
 Rosen Bridge guards. This section provides a high-level overview of RoseNet's
 purpose and its role within the broader system.
 
-_TODO: RoseNet use case in guards_
-
 ## RoseNet in action
 
 The current RoseNet implementation utilizes libp2p internally. Before delving
@@ -48,10 +46,6 @@ involving NodeA connecting to RoseNet through RelayR:
    enabling the exchange of messages—NodeA can both send and receive messages
    seamlessly.
 4. _TODO: messaging_
-
-## ZeroLayer vs RoseLayer
-
-_TODO_
 
 ## Features Summary
 
@@ -141,3 +135,5 @@ This enhanced approach to whitelisting not only ensures the smooth operation of 
 
 - [ ] Describe the features in detail
 - [ ] Stateful vs Stateless
+- [ ] RoseNet use case in Rosen Bridge guards
+- [ ] ZeroLayer vs RoseLayer
