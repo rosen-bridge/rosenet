@@ -10,7 +10,7 @@ jobs:
     strategy:
       matrix:
         role: [node, relay]
-        test-name: ['', peer-discovery]
+        test-name: ['', peer-discovery, pubsub]
 
     name: Build and Push Scaling Test Docker Image
     permissions: write-all
