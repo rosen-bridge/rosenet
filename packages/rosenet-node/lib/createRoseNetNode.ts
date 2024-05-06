@@ -69,8 +69,18 @@ const createRoseNetNode = async ({
       tcp(),
     ],
     addresses: {
-      listen: [`/ip4/0.0.0.0/tcp/${port}`],
-      announce: [announceMultiaddr],
+      listen: [
+        `/ip4/0.0.0.0/tcp/${port}`,
+        ...config.relayMultiaddrs.map(
+          (multiaddr) => `${multiaddr}/p2p-circuit`,
+        ),
+      ],
+      announce: [
+        announceMultiaddr,
+        ...config.relayMultiaddrs.map(
+          (multiaddr) => `${multiaddr}/p2p-circuit`,
+        ),
+      ],
     },
     connectionEncryption: [noise()],
     connectionGater: {
