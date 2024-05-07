@@ -51,6 +51,8 @@ setTimeout(async () => {
   }, 10_000);
 }, 30_000);
 
+node.handleIncomingMessage(async () => {});
+
 node.subscribe('rosenet-news', (message) => {
   console.info(
     `Message received: ${message} (delay: ${(Date.now() - +message) / 1000}s)`,
