@@ -69,8 +69,18 @@ const createRoseNetNode = async ({
       tcp(),
     ],
     addresses: {
-      listen: [`/ip4/0.0.0.0/tcp/${port}`],
-      announce: [announceMultiaddr],
+      listen: [
+        `/ip4/0.0.0.0/tcp/${port}`,
+        ...config.relayMultiaddrs.map(
+          (multiaddr) => `${multiaddr}/p2p-circuit`,
+        ),
+      ],
+      announce: [
+        announceMultiaddr,
+        ...config.relayMultiaddrs.map(
+          (multiaddr) => `${multiaddr}/p2p-circuit`,
+        ),
+      ],
     },
     connectionEncryption: [noise()],
     connectionGater: {
@@ -97,7 +107,10 @@ const createRoseNetNode = async ({
     },
     services: {
       identify: identify(),
-      pubsub: gossipsub({ allowPublishToZeroPeers: true }),
+      pubsub: gossipsub({
+        allowPublishToZeroPeers: true,
+        runOnTransientConnection: true,
+      }),
     },
   });
   RoseNetNodeContext.logger.debug('RoseNet node created');
@@ -150,6 +163,19 @@ const createRoseNetNode = async ({
       RoseNetNodeContext.logger.debug(
         `handler for ${ROSENET_DIRECT_PROTOCOL_V1} protocol set`,
       );
+    },
+    publish: async (topic: string, message: string) => {
+      const textEncoder = new TextEncoder();
+      node.services.pubsub.publish(topic, textEncoder.encode(message));
+    },
+    subscribe: async (topic: string, handler: (message: string) => void) => {
+      node.services.pubsub.subscribe(topic);
+      node.services.pubsub.addEventListener('message', (event) => {
+        if (event.detail.topic === topic) {
+          const textDecoder = new TextDecoder();
+          handler(textDecoder.decode(event.detail.data));
+        }
+      });
     },
   };
 };

@@ -135,3 +135,5 @@ dist
 tests/*/.terraform
 tests/*/*.tfstate*
 tests/*/terraform.tfvars
+
+.vscode/settings.json
