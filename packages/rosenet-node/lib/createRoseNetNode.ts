@@ -13,6 +13,7 @@ import { createLibp2p } from 'libp2p';
 
 import {
   addEventListeners,
+  libp2pLoggerFactory,
   privateKeyToPeerId,
 } from '@rosen-bridge/rosenet-utils';
 
@@ -112,6 +113,7 @@ const createRoseNetNode = async ({
         runOnTransientConnection: true,
       }),
     },
+    logger: libp2pLoggerFactory(logger, config.debug?.libp2pComponents ?? []),
   });
   RoseNetNodeContext.logger.debug('RoseNet node created');
 

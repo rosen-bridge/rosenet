@@ -10,6 +10,7 @@ import { createLibp2p } from 'libp2p';
 
 import {
   addEventListeners,
+  libp2pLoggerFactory,
   privateKeyToPeerId,
 } from '@rosen-bridge/rosenet-utils';
 
@@ -83,6 +84,7 @@ const createRoseNetRelay = async ({
       name: 'rosenet-relay',
       version: packageJson.version,
     },
+    logger: libp2pLoggerFactory(logger, config.debug?.libp2pComponents ?? []),
   });
 
   logger.debug('RoseNet relay created');
