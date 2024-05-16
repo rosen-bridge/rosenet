@@ -9,4 +9,7 @@ export interface RoseNetRelayConfig {
   logger: AbstractLogger;
   whitelist: string[];
   maxReservations?: number;
+  debug?: {
+    libp2pComponents?: string[];
+  };
 }

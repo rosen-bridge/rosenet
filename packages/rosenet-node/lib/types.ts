@@ -6,4 +6,7 @@ export interface RoseNetNodeConfig {
   privateKey: string;
   port?: number;
   whitelist?: string[];
+  debug?: {
+    libp2pComponents?: string[];
+  };
 }
