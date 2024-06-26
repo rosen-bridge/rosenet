@@ -1,7 +1,10 @@
 import { createRoseNetNode } from '@rosen-bridge/rosenet-node';
 
 const node = await createRoseNetNode({
-  logger: console,
+  logger: {
+    ...console,
+    debug: () => {},
+  },
   relayMultiaddrs: [process.env.RELAY_MULTIADDR!],
   privateKey: process.env.PRIVATE_KEY!,
 });
@@ -51,7 +54,9 @@ setTimeout(async () => {
   }, 10_000);
 }, 30_000);
 
-node.handleIncomingMessage(async () => {});
+node.handleIncomingMessage(async (_, message) => {
+  console.info(`Large message received, length: ${message?.length}`);
+});
 
 node.subscribe('rosenet-news', (message) => {
   console.info(
