@@ -4,13 +4,14 @@ on:
     paths:
       - packages/**
       - tests/scaling**
+      - .github/workflows/scaling-test-docker-release.yml
 
 jobs:
   build:
     strategy:
       matrix:
         role: [node, relay]
-        test-name: ['', peer-discovery, pubsub]
+        test-name: ['', peer-discovery, pubsub, large-messages]
 
     name: Build and Push Scaling Test Docker Image
     permissions: write-all

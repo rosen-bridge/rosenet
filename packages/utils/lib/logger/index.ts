@@ -1,3 +1,5 @@
+import { format as utilFormat } from 'node:util';
+
 import { ComponentLogger, Logger } from '@libp2p/interface';
 import { AbstractLogger, DummyLogger } from '@rosen-bridge/logger-interface';
 
@@ -11,9 +13,13 @@ import format from './format';
  */
 const convertToPrintfFormat =
   (name: string, logger: AbstractLogger, level: 'info' | 'error' | 'debug') =>
-  (formatter: string, ...rest: unknown[]) => {
-    const formatted = format(formatter, ...rest);
-    logger[level](`[${name}] ${formatted}`);
+  (formatter: unknown, ...rest: unknown[]) => {
+    if (typeof formatter === 'string') {
+      const formatted = format(formatter, ...rest);
+      logger[level](`[${name}] ${formatted}`);
+    } else {
+      logger[level](`[${name}] ${utilFormat(formatter, ...rest)}`);
+    }
   };
 
 /**

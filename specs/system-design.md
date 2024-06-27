@@ -71,6 +71,7 @@ Implementation status:
 | 🏁     | Monitoring & Analytics        | Tracks connected nodes, relays, messaging rates, etc.              |
 | 🏁     | Message Routing               | [To be determined]                                                 |
 | 🚧     | Burst Messaging               | [To be determined]                                                 |
+| ✅     | Sending Large Messages        | Delivery of messages up to 100kB guaranteed                        |
 | 🏁     | Idle Network State            | [To be determined]                                                 |
 
 ### Unsupported Features:
