@@ -43,15 +43,19 @@ const formatters = {
 const format = (str: string, ...args: any[]) => {
   let j = 0;
 
-  return str.replace(/%([a-z])/gi, (match, f: keyof typeof formatters) => {
-    if (formatters[f]) {
-      return formatters[f](args[j++]);
-    }
-    if (f) {
-      return utilFormat(`%${f}`, args[j++]);
-    }
-    return match;
-  });
+  const formatted = str.replace(
+    /%([a-z])/gi,
+    (match, f: keyof typeof formatters) => {
+      if (formatters[f]) {
+        return formatters[f](args[j++]);
+      }
+      if (f) {
+        return utilFormat(`%${f}`, args[j++]);
+      }
+      return match;
+    },
+  );
+  return `${formatted} ${args.slice(j).join(' ')}`.trimEnd();
 };
 
 export default format;
