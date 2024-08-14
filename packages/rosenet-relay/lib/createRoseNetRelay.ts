@@ -3,7 +3,7 @@ import { noise } from '@chainsafe/libp2p-noise';
 import { circuitRelayServer } from '@libp2p/circuit-relay-v2';
 import { identify } from '@libp2p/identify';
 import { PeerId } from '@libp2p/interface';
-import { mplex } from '@libp2p/mplex';
+import { yamux } from '@chainsafe/libp2p-yamux';
 import { pubsubPeerDiscovery } from '@libp2p/pubsub-peer-discovery';
 import { tcp } from '@libp2p/tcp';
 import { createLibp2p } from 'libp2p';
@@ -63,7 +63,7 @@ const createRoseNetRelay = async ({
       denyInboundRelayedConnection: () => true,
       denyDialPeer: isPeerUnauthorized,
     },
-    streamMuxers: [mplex()],
+    streamMuxers: [yamux()],
     services: {
       circuitRelay: circuitRelayServer({
         reservations: {

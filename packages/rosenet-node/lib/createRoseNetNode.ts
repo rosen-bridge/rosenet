@@ -4,7 +4,7 @@ import { bootstrap } from '@libp2p/bootstrap';
 import { circuitRelayTransport } from '@libp2p/circuit-relay-v2';
 import { identify } from '@libp2p/identify';
 import { PeerId } from '@libp2p/interface';
-import { mplex } from '@libp2p/mplex';
+import { yamux } from '@chainsafe/libp2p-yamux';
 import { pubsubPeerDiscovery } from '@libp2p/pubsub-peer-discovery';
 import { tcp } from '@libp2p/tcp';
 import map from 'it-map';
@@ -95,7 +95,7 @@ const createRoseNetNode = async ({
         denyDialPeer: isPeerUnauthorized,
       }),
     },
-    streamMuxers: [mplex()],
+    streamMuxers: [yamux()],
     peerDiscovery: [
       bootstrap({
         list: config.relayMultiaddrs,
