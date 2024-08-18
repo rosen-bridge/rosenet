@@ -110,7 +110,6 @@ const createRoseNetNode = async ({
       identify: identify(),
       pubsub: gossipsub({
         allowPublishToZeroPeers: true,
-        runOnTransientConnection: true,
       }),
     },
     logger: libp2pLoggerFactory(logger, config.debug?.libp2pComponents ?? []),

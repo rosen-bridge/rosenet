@@ -75,7 +75,6 @@ const createRoseNetRelay = async ({
       }),
       pubsub: gossipsub({
         allowPublishToZeroPeers: true,
-        runOnTransientConnection: true,
       }),
       identify: identify(),
     },
