@@ -82,7 +82,7 @@ const createRoseNetRelay = async ({
       }),
       identify: identify(),
     },
-    peerDiscovery: [pubsubPeerDiscovery()],
+    peerDiscovery: [pubsubPeerDiscovery({ listenOnly: true })],
     nodeInfo: {
       name: 'rosenet-relay',
       version: packageJson.version,

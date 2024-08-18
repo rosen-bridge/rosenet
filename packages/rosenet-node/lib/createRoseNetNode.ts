@@ -23,6 +23,7 @@ import addressService from './address/address-service';
 import streamService from './stream/stream-service';
 
 import { decode, encode } from './utils/codec';
+import sample from './utils/sample';
 
 import RoseNetNodeError from './errors/RoseNetNodeError';
 
@@ -61,6 +62,11 @@ const createRoseNetNode = async ({
   const announceMultiaddr = await addressService.getAnnounceMultiaddr(port);
   logger.info(`${announceMultiaddr} set as announce multiaddr`);
 
+  const sampledRelayMultiaddrs = sample(
+    config.relayMultiaddrs,
+    RELAYS_COUNT_TO_CONNECT,
+  );
+
   const node = await createLibp2p({
     peerId,
     transports: [
@@ -72,13 +78,13 @@ const createRoseNetNode = async ({
     addresses: {
       listen: [
         `/ip4/0.0.0.0/tcp/${port}`,
-        ...config.relayMultiaddrs.map(
+        ...sampledRelayMultiaddrs.map(
           (multiaddr) => `${multiaddr}/p2p-circuit`,
         ),
       ],
       announce: [
         announceMultiaddr,
-        ...config.relayMultiaddrs.map(
+        ...sampledRelayMultiaddrs.map(
           (multiaddr) => `${multiaddr}/p2p-circuit`,
         ),
       ],
@@ -98,7 +104,7 @@ const createRoseNetNode = async ({
     streamMuxers: [yamux()],
     peerDiscovery: [
       bootstrap({
-        list: config.relayMultiaddrs,
+        list: sampledRelayMultiaddrs,
       }),
       pubsubPeerDiscovery(),
     ],
