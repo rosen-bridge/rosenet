@@ -4,7 +4,7 @@ import { bootstrap } from '@libp2p/bootstrap';
 import { circuitRelayTransport } from '@libp2p/circuit-relay-v2';
 import { identify } from '@libp2p/identify';
 import { PeerId } from '@libp2p/interface';
-import { mplex } from '@libp2p/mplex';
+import { yamux } from '@chainsafe/libp2p-yamux';
 import { pubsubPeerDiscovery } from '@libp2p/pubsub-peer-discovery';
 import { tcp } from '@libp2p/tcp';
 import map from 'it-map';
@@ -23,6 +23,7 @@ import addressService from './address/address-service';
 import streamService from './stream/stream-service';
 
 import { decode, encode } from './utils/codec';
+import sample from './utils/sample';
 
 import RoseNetNodeError from './errors/RoseNetNodeError';
 
@@ -61,6 +62,11 @@ const createRoseNetNode = async ({
   const announceMultiaddr = await addressService.getAnnounceMultiaddr(port);
   logger.info(`${announceMultiaddr} set as announce multiaddr`);
 
+  const sampledRelayMultiaddrs = sample(
+    config.relayMultiaddrs,
+    RELAYS_COUNT_TO_CONNECT,
+  );
+
   const node = await createLibp2p({
     peerId,
     transports: [
@@ -72,13 +78,13 @@ const createRoseNetNode = async ({
     addresses: {
       listen: [
         `/ip4/0.0.0.0/tcp/${port}`,
-        ...config.relayMultiaddrs.map(
+        ...sampledRelayMultiaddrs.map(
           (multiaddr) => `${multiaddr}/p2p-circuit`,
         ),
       ],
       announce: [
         announceMultiaddr,
-        ...config.relayMultiaddrs.map(
+        ...sampledRelayMultiaddrs.map(
           (multiaddr) => `${multiaddr}/p2p-circuit`,
         ),
       ],
@@ -95,10 +101,10 @@ const createRoseNetNode = async ({
         denyDialPeer: isPeerUnauthorized,
       }),
     },
-    streamMuxers: [mplex()],
+    streamMuxers: [yamux()],
     peerDiscovery: [
       bootstrap({
-        list: config.relayMultiaddrs,
+        list: sampledRelayMultiaddrs,
       }),
       pubsubPeerDiscovery(),
     ],
@@ -110,7 +116,6 @@ const createRoseNetNode = async ({
       identify: identify(),
       pubsub: gossipsub({
         allowPublishToZeroPeers: true,
-        runOnTransientConnection: true,
       }),
     },
     logger: libp2pLoggerFactory(logger, config.debug?.libp2pComponents ?? []),

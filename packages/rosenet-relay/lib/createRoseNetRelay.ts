@@ -3,7 +3,7 @@ import { noise } from '@chainsafe/libp2p-noise';
 import { circuitRelayServer } from '@libp2p/circuit-relay-v2';
 import { identify } from '@libp2p/identify';
 import { PeerId } from '@libp2p/interface';
-import { mplex } from '@libp2p/mplex';
+import { yamux } from '@chainsafe/libp2p-yamux';
 import { pubsubPeerDiscovery } from '@libp2p/pubsub-peer-discovery';
 import { tcp } from '@libp2p/tcp';
 import { createLibp2p } from 'libp2p';
@@ -63,7 +63,7 @@ const createRoseNetRelay = async ({
       denyInboundRelayedConnection: () => true,
       denyDialPeer: isPeerUnauthorized,
     },
-    streamMuxers: [mplex()],
+    streamMuxers: [yamux()],
     services: {
       circuitRelay: circuitRelayServer({
         reservations: {
@@ -75,11 +75,14 @@ const createRoseNetRelay = async ({
       }),
       pubsub: gossipsub({
         allowPublishToZeroPeers: true,
-        runOnTransientConnection: true,
+        D: 0,
+        Dlo: 0,
+        Dhi: 0,
+        Dout: 0,
       }),
       identify: identify(),
     },
-    peerDiscovery: [pubsubPeerDiscovery()],
+    peerDiscovery: [pubsubPeerDiscovery({ listenOnly: true })],
     nodeInfo: {
       name: 'rosenet-relay',
       version: packageJson.version,
@@ -93,6 +96,15 @@ const createRoseNetRelay = async ({
 
   return {
     start: async () => node.start(),
+    subscribe: async (topic: string, handler: (message: string) => void) => {
+      node.services.pubsub.subscribe(topic);
+      node.services.pubsub.addEventListener('message', (event) => {
+        if (event.detail.topic === topic) {
+          const textDecoder = new TextDecoder();
+          handler(textDecoder.decode(event.detail.data));
+        }
+      });
+    },
   };
 };
 
