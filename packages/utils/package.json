@@ -19,6 +19,7 @@
   },
   "devDependencies": {
     "@multiformats/multiaddr": "^12.2.1",
+    "@types/json-diff": "^1.0.3",
     "@types/node": "^20.11.9",
     "@typescript-eslint/eslint-plugin": "^6.19.1",
     "@typescript-eslint/parser": "^6.19.1",
@@ -38,6 +39,7 @@
     "@libp2p/crypto": "^4.0.2",
     "@libp2p/peer-id-factory": "^4.0.6",
     "@rosen-bridge/logger-interface": "^0.2.0",
+    "json-diff": "^1.0.6",
     "libp2p": "^1.2.3",
     "multiformats": "^13.1.0"
   }

@@ -1,5 +1,12 @@
 import { Libp2p } from 'libp2p';
+import { diffString, DiffStringOptions } from 'json-diff';
 import { AbstractLogger } from '@rosen-bridge/logger-interface';
+
+const jsonDiffOptions: DiffStringOptions = {
+  color: false,
+  sort: true,
+  maxElisions: 0,
+};
 
 /**
  * Log different events of a RoseNet node or relay
@@ -56,38 +63,51 @@ const addEventListeners = (
     });
   });
   node.addEventListener('peer:update', ({ detail: peerUpdate }) => {
-    logger.debug('Peer updated', {
-      id: peerUpdate.peer.id.toString(),
-      previous: {
+    const diff = diffString(
+      {
         multiAddresses: peerUpdate.previous?.addresses.map((address) =>
           address.multiaddr.toString(),
         ),
         protocols: peerUpdate.previous?.protocols,
       },
-      current: {
+      {
         multiAddresses: peerUpdate.peer.addresses.map((address) =>
           address.multiaddr.toString(),
         ),
         protocols: peerUpdate.peer.protocols,
       },
+      jsonDiffOptions,
+    );
+
+    if (!diff) return;
+
+    logger.debug('Peer updated', {
+      id: peerUpdate.peer.id.toString(),
     });
+    logger.debug(diff);
   });
 
   node.addEventListener('self:peer:update', ({ detail: peerUpdate }) => {
-    logger.debug('Our own peer updated', {
-      previous: {
+    const diff = diffString(
+      {
         multiAddresses: peerUpdate.previous?.addresses.map((address) =>
           address.multiaddr.toString(),
         ),
         protocols: peerUpdate.previous?.protocols,
       },
-      current: {
+      {
         multiAddresses: peerUpdate.peer.addresses.map((address) =>
           address.multiaddr.toString(),
         ),
         protocols: peerUpdate.peer.protocols,
       },
-    });
+      jsonDiffOptions,
+    );
+
+    if (!diff) return;
+
+    logger.debug('Our own peer updated');
+    logger.debug(diff);
   });
 
   node.addEventListener('start', () => {
