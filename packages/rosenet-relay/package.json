@@ -41,6 +41,7 @@
     "@libp2p/interface": "^1.7.0",
     "@libp2p/pubsub-peer-discovery": "^10.0.2",
     "@libp2p/tcp": "^9.1.5",
+    "@libp2p/utils": "^5.4.9",
     "@rosen-bridge/logger-interface": "^0.2.0",
     "@rosen-bridge/rosenet-utils": "^0.0.0",
     "libp2p": "^1.9.2"

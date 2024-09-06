@@ -7,6 +7,7 @@ import { yamux } from '@chainsafe/libp2p-yamux';
 import { pubsubPeerDiscovery } from '@libp2p/pubsub-peer-discovery';
 import { tcp } from '@libp2p/tcp';
 import { createLibp2p } from 'libp2p';
+import { isPrivate } from '@libp2p/utils/multiaddr/is-private';
 
 import {
   addEventListeners,
@@ -49,6 +50,8 @@ const createRoseNetRelay = async ({
       listen: [
         `/ip4/${config.listen?.host ?? DEFAULT_LISTEN_HOST}/tcp/${config.listen?.port ?? '0'}`,
       ],
+      announceFilter: (addresses) =>
+        addresses.filter((address) => !isPrivate(address)),
     },
     transports: [tcp()],
     connectionEncryption: [noise()],
