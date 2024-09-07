@@ -24,6 +24,8 @@ import packageJson from '../package.json' with { type: 'json' };
 
 import { RoseNetRelayConfig } from './types';
 
+const textDecoder = new TextDecoder();
+
 const createRoseNetRelay = async ({
   logger,
   ...config
@@ -126,7 +128,6 @@ const createRoseNetRelay = async ({
       node.services.pubsub.subscribe(topic);
       node.services.pubsub.addEventListener('message', (event) => {
         if (event.detail.topic === topic) {
-          const textDecoder = new TextDecoder();
           handler(textDecoder.decode(event.detail.data));
         }
       });
