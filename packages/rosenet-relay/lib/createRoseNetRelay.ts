@@ -82,6 +82,14 @@ const createRoseNetRelay = async ({
         Dlo: 0,
         Dhi: 0,
         Dout: 0,
+        /**
+         * Current implementation of Gossipsub includes at most 5000 messages in
+         * IHAVE or IWANT messages during a `mcachegossip` window, which is by
+         * default 3 heartbeats. Supposing a limit of 100KB for each message, a
+         * maximum of around 5000*100KB=500MB is received in 3 heartbeats from
+         * a single stream, which is 500MB/3≃170MB.
+         */
+        maxInboundDataLength: 170_000_000, // 170MB
       }),
       identify: identify(),
     },
