@@ -7,6 +7,7 @@ import { yamux } from '@chainsafe/libp2p-yamux';
 import { pubsubPeerDiscovery } from '@libp2p/pubsub-peer-discovery';
 import { tcp } from '@libp2p/tcp';
 import { createLibp2p } from 'libp2p';
+import { ping } from '@libp2p/ping';
 import { isPrivate } from '@libp2p/utils/multiaddr/is-private';
 
 import {
@@ -92,6 +93,17 @@ const createRoseNetRelay = async ({
         maxInboundDataLength: 170_000_000, // 170MB
       }),
       identify: identify(),
+      ping: ping({
+        /**
+         * Connection monitor component of libp2p uses `ping` internally. For
+         * relays, there is a chance they have lots of connections, beyond the
+         * default number of allowed `ping` steams. It should be increased to
+         * prevent stream resets as a result of exceeding those limits.
+         * Supposing that autodial of relays is disabled, there is no need to
+         * increase outbound streams limit.
+         */
+        maxInboundStreams: 128,
+      }),
     },
     peerDiscovery: [pubsubPeerDiscovery({ listenOnly: true })],
     nodeInfo: {

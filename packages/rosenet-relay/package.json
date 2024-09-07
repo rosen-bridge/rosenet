@@ -39,6 +39,7 @@
     "@libp2p/circuit-relay-v2": "^1.1.5",
     "@libp2p/identify": "^2.1.5",
     "@libp2p/interface": "^1.7.0",
+    "@libp2p/ping": "^1.1.5",
     "@libp2p/pubsub-peer-discovery": "^10.0.2",
     "@libp2p/tcp": "^9.1.5",
     "@libp2p/utils": "^5.4.9",
