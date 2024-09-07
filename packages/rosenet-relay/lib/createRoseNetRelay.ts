@@ -98,6 +98,9 @@ const createRoseNetRelay = async ({
       name: 'rosenet-relay',
       version: packageJson.version,
     },
+    connectionManager: {
+      minConnections: 0,
+    },
     logger: libp2pLoggerFactory(logger, config.debug?.libp2pComponents ?? []),
   });
 
