@@ -107,6 +107,9 @@ const createRoseNetNode = async ({
       }),
     },
     streamMuxers: [yamux()],
+    connectionManager: {
+      minConnections: 0,
+    },
     peerDiscovery: [
       bootstrap({
         list: sampledRelayMultiaddrs,
