@@ -19,6 +19,8 @@ import {
 
 import RoseNetNodeContext from './context/RoseNetNodeContext';
 
+import restartRelayDiscovery from './libp2p/restart-relay-discovery';
+
 import addressService from './address/address-service';
 import streamService from './stream/stream-service';
 
@@ -128,6 +130,7 @@ const createRoseNetNode = async ({
          */
         maxInboundDataLength: 170_000_000, // 170MB
       }),
+      restartRelayDiscovery,
     },
     logger: libp2pLoggerFactory(logger, config.debug?.libp2pComponents ?? []),
   });
