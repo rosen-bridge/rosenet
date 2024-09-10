@@ -1,12 +1,14 @@
 import { gossipsub } from '@chainsafe/libp2p-gossipsub';
 import { noise } from '@chainsafe/libp2p-noise';
+import { yamux } from '@chainsafe/libp2p-yamux';
 import { bootstrap } from '@libp2p/bootstrap';
 import { circuitRelayTransport } from '@libp2p/circuit-relay-v2';
 import { identify } from '@libp2p/identify';
 import { PeerId } from '@libp2p/interface';
-import { yamux } from '@chainsafe/libp2p-yamux';
 import { pubsubPeerDiscovery } from '@libp2p/pubsub-peer-discovery';
 import { tcp } from '@libp2p/tcp';
+
+import first from 'it-first';
 import map from 'it-map';
 import { pipe } from 'it-pipe';
 import { createLibp2p } from 'libp2p';
@@ -28,8 +30,12 @@ import { decode, encode } from './utils/codec';
 import sample from './utils/sample';
 
 import RoseNetNodeError from './errors/RoseNetNodeError';
+import RoseNetDirectAckError, {
+  AckError,
+} from './errors/RoseNetDirectAckError';
 
 import {
+  ACK_BYTE,
   DEFAULT_NODE_PORT,
   RELAYS_COUNT_TO_CONNECT,
   ROSENET_DIRECT_PROTOCOL_V1,
@@ -149,11 +155,29 @@ const createRoseNetNode = async ({
         node,
       );
 
-      pipe(pushable, (source) => map(source, encode), stream);
       pushable.push(message);
-      await Promise.resolve();
+      const result = await pipe(
+        pushable,
+        (source) => map(source, encode),
+        stream,
+        async (source) => await first(source),
+      );
 
-      RoseNetNodeContext.logger.debug('message piped through created stream', {
+      if (result?.length !== 1) {
+        throw new RoseNetDirectAckError(
+          `Unexpected ack: There are more than one chunk in the ack message`,
+          AckError.InvalidChunks,
+        );
+      }
+      const ack = result?.subarray();
+      if (ack.length !== 1 || ack[0] !== ACK_BYTE) {
+        throw new RoseNetDirectAckError(
+          `Unexpected ack: Ack byte is invalid`,
+          AckError.InvalidByte,
+        );
+      }
+
+      RoseNetNodeContext.logger.debug('message sent successfully', {
         message,
       });
     },
@@ -170,17 +194,23 @@ const createRoseNetNode = async ({
               transient: connection.transient,
             },
           );
-          pipe(stream, decode, async (source) => {
-            for await (const message of source) {
-              await handler(connection.remotePeer.toString(), message);
-              RoseNetNodeContext.logger.debug(
-                'incoming message handled successfully',
-                {
-                  message,
-                },
-              );
-            }
-          });
+          pipe(
+            stream,
+            decode,
+            async function* (source) {
+              for await (const message of source) {
+                RoseNetNodeContext.logger.debug(
+                  'message received, calling handler and sending ack',
+                  {
+                    message,
+                  },
+                );
+                handler(connection.remotePeer.toString(), message);
+                yield Uint8Array.of(ACK_BYTE);
+              }
+            },
+            stream,
+          );
         },
         { runOnTransientConnection: true },
       );
