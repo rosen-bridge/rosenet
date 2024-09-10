@@ -150,14 +150,10 @@ const createRoseNetNode = async ({
   return {
     start: async () => node.start(),
     sendMessage: async (to: string, message: string) => {
-      const { stream, pushable } = await streamService.getStreamAndPushable(
-        to,
-        node,
-      );
+      const stream = await streamService.getRoseNetDirectStreamTo(to, node);
 
-      pushable.push(message);
       const result = await pipe(
-        pushable,
+        [message],
         (source) => map(source, encode),
         stream,
         async (source) => await first(source),
