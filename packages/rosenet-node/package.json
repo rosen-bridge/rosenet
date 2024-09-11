@@ -56,6 +56,7 @@
     "it-map": "^3.0.5",
     "it-pipe": "^3.0.1",
     "libp2p": "^1.9.2",
-    "public-ip": "^6.0.2"
+    "public-ip": "^6.0.2",
+    "race-signal": "^1.1.0"
   }
 }

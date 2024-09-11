@@ -1,6 +1,7 @@
 import RoseNetNodeError from './RoseNetNodeError';
 
 export enum AckError {
+  Timeout = 'Timeout',
   InvalidChunks = 'InvalidChunks',
   InvalidByte = 'InvalidByte',
 }

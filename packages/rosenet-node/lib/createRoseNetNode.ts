@@ -7,6 +7,7 @@ import { identify } from '@libp2p/identify';
 import { PeerId } from '@libp2p/interface';
 import { pubsubPeerDiscovery } from '@libp2p/pubsub-peer-discovery';
 import { tcp } from '@libp2p/tcp';
+import { AbortError, raceSignal } from 'race-signal';
 
 import first from 'it-first';
 import map from 'it-map';
@@ -36,6 +37,7 @@ import RoseNetDirectAckError, {
 
 import {
   ACK_BYTE,
+  ACK_TIMEOUT,
   DEFAULT_NODE_PORT,
   RELAYS_COUNT_TO_CONNECT,
   ROSENET_DIRECT_PROTOCOL_V1,
@@ -150,32 +152,55 @@ const createRoseNetNode = async ({
   return {
     start: async () => node.start(),
     sendMessage: async (to: string, message: string) => {
-      const stream = await streamService.getRoseNetDirectStreamTo(to, node);
+      let stream;
 
-      const result = await pipe(
-        [message],
-        (source) => map(source, encode),
-        stream,
-        async (source) => await first(source),
-      );
+      try {
+        stream = await streamService.getRoseNetDirectStreamTo(to, node);
 
-      if (result?.length !== 1) {
-        throw new RoseNetDirectAckError(
-          `Unexpected ack: There are more than one chunk in the ack message`,
-          AckError.InvalidChunks,
+        const result = await pipe(
+          [message],
+          (source) => map(source, encode),
+          stream,
+          async (source) =>
+            await raceSignal(first(source), AbortSignal.timeout(ACK_TIMEOUT)),
         );
-      }
-      const ack = result?.subarray();
-      if (ack.length !== 1 || ack[0] !== ACK_BYTE) {
-        throw new RoseNetDirectAckError(
-          `Unexpected ack: Ack byte is invalid`,
-          AckError.InvalidByte,
-        );
-      }
 
-      RoseNetNodeContext.logger.debug('message sent successfully', {
-        message,
-      });
+        if (result?.length !== 1) {
+          throw new RoseNetDirectAckError(
+            `There are more than one chunk in the ack message`,
+            AckError.InvalidChunks,
+          );
+        }
+        const ack = result?.subarray();
+        if (ack.length !== 1 || ack[0] !== ACK_BYTE) {
+          throw new RoseNetDirectAckError(
+            `Ack byte is invalid`,
+            AckError.InvalidByte,
+          );
+        }
+
+        RoseNetNodeContext.logger.debug('message sent successfully', {
+          message,
+        });
+      } catch (error) {
+        if (error instanceof AbortError) {
+          const errorToThrow = new RoseNetDirectAckError(
+            `Ack was not received`,
+            AckError.Timeout,
+          );
+          stream?.abort(errorToThrow);
+          throw errorToThrow;
+        }
+        if (error instanceof RoseNetDirectAckError) {
+          stream?.abort(error);
+          throw error;
+        }
+        const errorToThrow = new RoseNetNodeError(
+          `An unknown error occured: ${error instanceof Error ? error.message : error}`,
+        );
+        stream?.abort(errorToThrow);
+        throw error;
+      }
     },
     handleIncomingMessage: (
       handler: (from: string, message?: string) => void,
