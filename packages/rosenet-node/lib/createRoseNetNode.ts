@@ -20,6 +20,7 @@ import {
   handleIncomingMessageFactory,
   sendMessageFactory,
 } from './rosenet-direct';
+import { publishFactory, subscribeFactory } from './rosenet-pubsub';
 
 import RoseNetNodeContext from './context/RoseNetNodeContext';
 
@@ -36,9 +37,6 @@ import { DEFAULT_NODE_PORT, RELAYS_COUNT_TO_CONNECT } from './constants';
 import packageJson from '../package.json' with { type: 'json' };
 
 import { RoseNetNodeConfig } from './types';
-
-const textEncoder = new TextEncoder();
-const textDecoder = new TextDecoder();
 
 const createRoseNetNode = async ({
   logger,
@@ -143,17 +141,8 @@ const createRoseNetNode = async ({
     start: async () => node.start(),
     sendMessage: sendMessageFactory(node),
     handleIncomingMessage: handleIncomingMessageFactory(node),
-    publish: async (topic: string, message: string) => {
-      node.services.pubsub.publish(topic, textEncoder.encode(message));
-    },
-    subscribe: async (topic: string, handler: (message: string) => void) => {
-      node.services.pubsub.subscribe(topic);
-      node.services.pubsub.addEventListener('message', (event) => {
-        if (event.detail.topic === topic) {
-          handler(textDecoder.decode(event.detail.data));
-        }
-      });
-    },
+    publish: publishFactory(node),
+    subscribe: subscribeFactory(node),
   };
 };
 
