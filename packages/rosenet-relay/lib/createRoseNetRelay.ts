@@ -7,6 +7,8 @@ import { yamux } from '@chainsafe/libp2p-yamux';
 import { pubsubPeerDiscovery } from '@libp2p/pubsub-peer-discovery';
 import { tcp } from '@libp2p/tcp';
 import { createLibp2p } from 'libp2p';
+import { ping } from '@libp2p/ping';
+import { isPrivate } from '@libp2p/utils/multiaddr/is-private';
 
 import {
   addEventListeners,
@@ -21,6 +23,8 @@ import { DEFAULT_LISTEN_HOST } from './constants';
 import packageJson from '../package.json' with { type: 'json' };
 
 import { RoseNetRelayConfig } from './types';
+
+const textDecoder = new TextDecoder();
 
 const createRoseNetRelay = async ({
   logger,
@@ -49,6 +53,8 @@ const createRoseNetRelay = async ({
       listen: [
         `/ip4/${config.listen?.host ?? DEFAULT_LISTEN_HOST}/tcp/${config.listen?.port ?? '0'}`,
       ],
+      announceFilter: (addresses) =>
+        addresses.filter((address) => !isPrivate(address)),
     },
     transports: [tcp()],
     connectionEncryption: [noise()],
@@ -74,18 +80,40 @@ const createRoseNetRelay = async ({
         },
       }),
       pubsub: gossipsub({
-        allowPublishToZeroPeers: true,
+        allowPublishToZeroTopicPeers: true,
         D: 0,
         Dlo: 0,
         Dhi: 0,
         Dout: 0,
+        /**
+         * Current implementation of Gossipsub includes at most 5000 messages in
+         * IHAVE or IWANT messages during a `mcachegossip` window, which is by
+         * default 3 heartbeats. Supposing a limit of 100KB for each message, a
+         * maximum of around 5000*100KB=500MB is received in 3 heartbeats from
+         * a single stream, which is 500MB/3≃170MB.
+         */
+        maxInboundDataLength: 170_000_000, // 170MB
       }),
       identify: identify(),
+      ping: ping({
+        /**
+         * Connection monitor component of libp2p uses `ping` internally. For
+         * relays, there is a chance they have lots of connections, beyond the
+         * default number of allowed `ping` steams. It should be increased to
+         * prevent stream resets as a result of exceeding those limits.
+         * Supposing that autodial of relays is disabled, there is no need to
+         * increase outbound streams limit.
+         */
+        maxInboundStreams: 128,
+      }),
     },
     peerDiscovery: [pubsubPeerDiscovery({ listenOnly: true })],
     nodeInfo: {
       name: 'rosenet-relay',
       version: packageJson.version,
+    },
+    connectionManager: {
+      minConnections: 0,
     },
     logger: libp2pLoggerFactory(logger, config.debug?.libp2pComponents ?? []),
   });
@@ -100,7 +128,6 @@ const createRoseNetRelay = async ({
       node.services.pubsub.subscribe(topic);
       node.services.pubsub.addEventListener('message', (event) => {
         if (event.detail.topic === topic) {
-          const textDecoder = new TextDecoder();
           handler(textDecoder.decode(event.detail.data));
         }
       });

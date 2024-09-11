@@ -19,6 +19,8 @@ import {
 
 import RoseNetNodeContext from './context/RoseNetNodeContext';
 
+import restartRelayDiscovery from './libp2p/restart-relay-discovery';
+
 import addressService from './address/address-service';
 import streamService from './stream/stream-service';
 
@@ -36,6 +38,9 @@ import {
 import packageJson from '../package.json' with { type: 'json' };
 
 import { RoseNetNodeConfig } from './types';
+
+const textEncoder = new TextEncoder();
+const textDecoder = new TextDecoder();
 
 const createRoseNetNode = async ({
   logger,
@@ -102,6 +107,9 @@ const createRoseNetNode = async ({
       }),
     },
     streamMuxers: [yamux()],
+    connectionManager: {
+      minConnections: 0,
+    },
     peerDiscovery: [
       bootstrap({
         list: sampledRelayMultiaddrs,
@@ -115,8 +123,17 @@ const createRoseNetNode = async ({
     services: {
       identify: identify(),
       pubsub: gossipsub({
-        allowPublishToZeroPeers: true,
+        allowPublishToZeroTopicPeers: true,
+        /**
+         * Current implementation of Gossipsub includes at most 5000 messages in
+         * IHAVE or IWANT messages during a `mcachegossip` window, which is by
+         * default 3 heartbeats. Supposing a limit of 100KB for each message, a
+         * maximum of around 5000*100KB=500MB is received in 3 heartbeats from
+         * a single stream, which is 500MB/3≃170MB.
+         */
+        maxInboundDataLength: 170_000_000, // 170MB
       }),
+      restartRelayDiscovery,
     },
     logger: libp2pLoggerFactory(logger, config.debug?.libp2pComponents ?? []),
   });
@@ -172,14 +189,12 @@ const createRoseNetNode = async ({
       );
     },
     publish: async (topic: string, message: string) => {
-      const textEncoder = new TextEncoder();
       node.services.pubsub.publish(topic, textEncoder.encode(message));
     },
     subscribe: async (topic: string, handler: (message: string) => void) => {
       node.services.pubsub.subscribe(topic);
       node.services.pubsub.addEventListener('message', (event) => {
         if (event.detail.topic === topic) {
-          const textDecoder = new TextDecoder();
           handler(textDecoder.decode(event.detail.data));
         }
       });

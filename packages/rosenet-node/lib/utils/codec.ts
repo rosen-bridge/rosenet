@@ -23,7 +23,7 @@ const decode = (source: Source<Uint8ArrayList>) =>
     source,
     lp.decode,
     (source) => map(source, (message) => message.subarray()),
-    (source) => map(source, textDecoder.decode.bind(textDecoder)),
+    (source) => map(source, input => textDecoder.decode(input)),
   );
 
 export { decode, encode };
