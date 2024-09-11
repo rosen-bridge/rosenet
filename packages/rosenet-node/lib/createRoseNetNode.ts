@@ -8,7 +8,6 @@ import { PeerId } from '@libp2p/interface';
 import { pubsubPeerDiscovery } from '@libp2p/pubsub-peer-discovery';
 import { tcp } from '@libp2p/tcp';
 
-import { pipe } from 'it-pipe';
 import { createLibp2p } from 'libp2p';
 
 import {
@@ -17,28 +16,26 @@ import {
   privateKeyToPeerId,
 } from '@rosen-bridge/rosenet-utils';
 
+import {
+  handleIncomingMessageFactory,
+  sendMessageFactory,
+} from './rosenet-direct';
+
 import RoseNetNodeContext from './context/RoseNetNodeContext';
 
 import restartRelayDiscovery from './libp2p/restart-relay-discovery';
 
 import addressService from './address/address-service';
 
-import { decode } from './utils/codec';
 import sample from './utils/sample';
 
 import RoseNetNodeError from './errors/RoseNetNodeError';
 
-import {
-  ACK_BYTE,
-  DEFAULT_NODE_PORT,
-  RELAYS_COUNT_TO_CONNECT,
-  ROSENET_DIRECT_PROTOCOL_V1,
-} from './constants';
+import { DEFAULT_NODE_PORT, RELAYS_COUNT_TO_CONNECT } from './constants';
 
 import packageJson from '../package.json' with { type: 'json' };
 
 import { RoseNetNodeConfig } from './types';
-import sendMessageFactory from './rosenet-direct/sendMessage';
 
 const textEncoder = new TextEncoder();
 const textDecoder = new TextDecoder();
@@ -145,43 +142,7 @@ const createRoseNetNode = async ({
   return {
     start: async () => node.start(),
     sendMessage: sendMessageFactory(node),
-    handleIncomingMessage: (
-      handler: (from: string, message?: string) => void,
-    ) => {
-      node.handle(
-        ROSENET_DIRECT_PROTOCOL_V1,
-        async ({ connection, stream }) => {
-          RoseNetNodeContext.logger.debug(
-            `incoming connection stream with protocol ${ROSENET_DIRECT_PROTOCOL_V1}`,
-            {
-              remoteAddress: connection.remoteAddr.toString(),
-              transient: connection.transient,
-            },
-          );
-          pipe(
-            stream,
-            decode,
-            async function* (source) {
-              for await (const message of source) {
-                RoseNetNodeContext.logger.debug(
-                  'message received, calling handler and sending ack',
-                  {
-                    message,
-                  },
-                );
-                handler(connection.remotePeer.toString(), message);
-                yield Uint8Array.of(ACK_BYTE);
-              }
-            },
-            stream,
-          );
-        },
-        { runOnTransientConnection: true },
-      );
-      RoseNetNodeContext.logger.debug(
-        `handler for ${ROSENET_DIRECT_PROTOCOL_V1} protocol set`,
-      );
-    },
+    handleIncomingMessage: handleIncomingMessageFactory(node),
     publish: async (topic: string, message: string) => {
       node.services.pubsub.publish(topic, textEncoder.encode(message));
     },
