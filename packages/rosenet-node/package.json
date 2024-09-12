@@ -51,11 +51,12 @@
     "@rosen-bridge/rosenet-utils": "^0.0.0",
     "cockatiel": "^3.2.1",
     "fast-shuffle": "^6.1.0",
-    "it-first": "^3.0.4",
+    "it-first": "^3.0.6",
     "it-length-prefixed": "^9.0.4",
     "it-map": "^3.0.5",
     "it-pipe": "^3.0.1",
     "libp2p": "^1.9.2",
-    "public-ip": "^6.0.2"
+    "public-ip": "^6.0.2",
+    "race-signal": "^1.1.0"
   }
 }
