@@ -18,7 +18,11 @@ import {
 
 import { RoseNetRelayError } from './errors';
 
-import { DEFAULT_LISTEN_HOST } from './constants';
+import {
+  DEFAULT_LISTEN_HOST,
+  RESERVATION_DATA_LIMIT,
+  RESERVATION_DURATION_LIMIT,
+} from './constants';
 
 import packageJson from '../package.json' with { type: 'json' };
 
@@ -74,9 +78,12 @@ const createRoseNetRelay = async ({
       circuitRelay: circuitRelayServer({
         reservations: {
           maxReservations: config.maxReservations,
-          defaultDurationLimit: 0,
-          defaultDataLimit: 0n,
-          applyDefaultLimit: false,
+          /**
+           * Ideally we want the connection to upgrade through DCUtR, but for
+           * edge cases we keep these limits a reasonably large number
+           */
+          defaultDurationLimit: RESERVATION_DURATION_LIMIT,
+          defaultDataLimit: RESERVATION_DATA_LIMIT,
         },
       }),
       pubsub: gossipsub({

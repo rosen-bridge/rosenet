@@ -3,6 +3,7 @@ import { noise } from '@chainsafe/libp2p-noise';
 import { yamux } from '@chainsafe/libp2p-yamux';
 import { bootstrap } from '@libp2p/bootstrap';
 import { circuitRelayTransport } from '@libp2p/circuit-relay-v2';
+import { dcutr } from '@libp2p/dcutr';
 import { identify } from '@libp2p/identify';
 import { PeerId } from '@libp2p/interface';
 import { pubsubPeerDiscovery } from '@libp2p/pubsub-peer-discovery';
@@ -129,6 +130,7 @@ const createRoseNetNode = async ({
          */
         maxInboundDataLength: 170_000_000, // 170MB
       }),
+      dcutr: dcutr(),
       restartRelayDiscovery,
     },
     logger: libp2pLoggerFactory(logger, config.debug?.libp2pComponents ?? []),
