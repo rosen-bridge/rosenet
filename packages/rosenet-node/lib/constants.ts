@@ -9,3 +9,6 @@ export const ACK_BYTE = 1;
  * and an ack requires 1 RTT. We use 2 RTT as the timeout for an ack.
  */
 export const ACK_TIMEOUT = 500;
+export const MESSAGE_RETRY_ATTEMPTS = 3;
+export const MESSAGE_RETRY_EXPONENT = 5;
+export const MESSAGE_RETRY_INITIAL_DELAY = 5000;

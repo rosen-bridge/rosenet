@@ -7,11 +7,7 @@ import { identify } from '@libp2p/identify';
 import { PeerId } from '@libp2p/interface';
 import { pubsubPeerDiscovery } from '@libp2p/pubsub-peer-discovery';
 import { tcp } from '@libp2p/tcp';
-import { AbortError, raceSignal } from 'race-signal';
 
-import first from 'it-first';
-import map from 'it-map';
-import { pipe } from 'it-pipe';
 import { createLibp2p } from 'libp2p';
 
 import {
@@ -20,35 +16,27 @@ import {
   privateKeyToPeerId,
 } from '@rosen-bridge/rosenet-utils';
 
+import {
+  handleIncomingMessageFactory,
+  sendMessageFactory,
+} from './rosenet-direct';
+import { publishFactory, subscribeFactory } from './rosenet-pubsub';
+
 import RoseNetNodeContext from './context/RoseNetNodeContext';
 
 import restartRelayDiscovery from './libp2p/restart-relay-discovery';
 
 import addressService from './address/address-service';
-import streamService from './stream/stream-service';
 
-import { decode, encode } from './utils/codec';
 import sample from './utils/sample';
 
 import RoseNetNodeError from './errors/RoseNetNodeError';
-import RoseNetDirectAckError, {
-  AckError,
-} from './errors/RoseNetDirectAckError';
 
-import {
-  ACK_BYTE,
-  ACK_TIMEOUT,
-  DEFAULT_NODE_PORT,
-  RELAYS_COUNT_TO_CONNECT,
-  ROSENET_DIRECT_PROTOCOL_V1,
-} from './constants';
+import { DEFAULT_NODE_PORT, RELAYS_COUNT_TO_CONNECT } from './constants';
 
 import packageJson from '../package.json' with { type: 'json' };
 
 import { RoseNetNodeConfig } from './types';
-
-const textEncoder = new TextEncoder();
-const textDecoder = new TextDecoder();
 
 const createRoseNetNode = async ({
   logger,
@@ -151,105 +139,10 @@ const createRoseNetNode = async ({
 
   return {
     start: async () => node.start(),
-    sendMessage: async (to: string, message: string) => {
-      let stream;
-
-      try {
-        stream = await streamService.getRoseNetDirectStreamTo(to, node);
-
-        const result = await pipe(
-          [message],
-          (source) => map(source, encode),
-          stream,
-          async (source) =>
-            await raceSignal(first(source), AbortSignal.timeout(ACK_TIMEOUT)),
-        );
-
-        if (result?.length !== 1) {
-          throw new RoseNetDirectAckError(
-            `There are more than one chunk in the ack message`,
-            AckError.InvalidChunks,
-          );
-        }
-        const ack = result?.subarray();
-        if (ack.length !== 1 || ack[0] !== ACK_BYTE) {
-          throw new RoseNetDirectAckError(
-            `Ack byte is invalid`,
-            AckError.InvalidByte,
-          );
-        }
-
-        RoseNetNodeContext.logger.debug('message sent successfully', {
-          message,
-        });
-      } catch (error) {
-        if (error instanceof AbortError) {
-          const errorToThrow = new RoseNetDirectAckError(
-            `Ack was not received`,
-            AckError.Timeout,
-          );
-          stream?.abort(errorToThrow);
-          throw errorToThrow;
-        }
-        if (error instanceof RoseNetDirectAckError) {
-          stream?.abort(error);
-          throw error;
-        }
-        const errorToThrow = new RoseNetNodeError(
-          `An unknown error occured: ${error instanceof Error ? error.message : error}`,
-        );
-        stream?.abort(errorToThrow);
-        throw error;
-      }
-    },
-    handleIncomingMessage: (
-      handler: (from: string, message?: string) => void,
-    ) => {
-      node.handle(
-        ROSENET_DIRECT_PROTOCOL_V1,
-        async ({ connection, stream }) => {
-          RoseNetNodeContext.logger.debug(
-            `incoming connection stream with protocol ${ROSENET_DIRECT_PROTOCOL_V1}`,
-            {
-              remoteAddress: connection.remoteAddr.toString(),
-              transient: connection.transient,
-            },
-          );
-          pipe(
-            stream,
-            decode,
-            async function* (source) {
-              for await (const message of source) {
-                RoseNetNodeContext.logger.debug(
-                  'message received, calling handler and sending ack',
-                  {
-                    message,
-                  },
-                );
-                handler(connection.remotePeer.toString(), message);
-                yield Uint8Array.of(ACK_BYTE);
-              }
-            },
-            stream,
-          );
-        },
-        { runOnTransientConnection: true },
-      );
-      RoseNetNodeContext.logger.debug(
-        `handler for ${ROSENET_DIRECT_PROTOCOL_V1} protocol set`,
-      );
-    },
-    publish: async (topic: string, message: string) => {
-      node.services.pubsub.publish(topic, textEncoder.encode(message));
-    },
-    subscribe: async (topic: string, handler: (message: string) => void) => {
-      node.services.pubsub.subscribe(topic);
-      node.services.pubsub.addEventListener('message', (event) => {
-        if (event.detail.topic === topic) {
-          handler(textDecoder.decode(event.detail.data));
-        }
-      });
-    },
+    sendMessage: sendMessageFactory(node),
+    handleIncomingMessage: handleIncomingMessageFactory(node),
+    publish: publishFactory(node),
+    subscribe: subscribeFactory(node),
   };
 };
 
