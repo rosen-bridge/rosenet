@@ -23,23 +23,32 @@ const handleIncomingMessageFactory =
             transient: connection.transient,
           },
         );
-        pipe(
-          stream,
-          decode,
-          async function* (source) {
-            for await (const message of source) {
-              RoseNetNodeContext.logger.debug(
-                'message received, calling handler and sending ack',
-                {
-                  message,
-                },
-              );
-              handler(connection.remotePeer.toString(), message);
-              yield Uint8Array.of(ACK_BYTE);
-            }
-          },
-          stream,
-        );
+        try {
+          await pipe(
+            stream,
+            decode,
+            async function* (source) {
+              for await (const message of source) {
+                RoseNetNodeContext.logger.debug(
+                  'message received, calling handler and sending ack',
+                  {
+                    message,
+                  },
+                );
+                handler(connection.remotePeer.toString(), message);
+                yield Uint8Array.of(ACK_BYTE);
+              }
+            },
+            stream,
+          );
+        } catch (error) {
+          RoseNetNodeContext.logger.warn(
+            'An error occurred while reading from stream',
+            {
+              error,
+            },
+          );
+        }
       },
       { runOnTransientConnection: true },
     );
