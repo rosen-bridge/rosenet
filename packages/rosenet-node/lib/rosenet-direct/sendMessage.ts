@@ -1,26 +1,36 @@
-import { Libp2p } from '@libp2p/interface';
+import { Libp2p, Stream } from '@libp2p/interface';
 
-import { ExponentialBackoff, handleAll, retry } from 'cockatiel';
+import {
+  bulkhead,
+  ExponentialBackoff,
+  handleAll,
+  isBrokenCircuitError,
+  isTaskCancelledError,
+  retry,
+  timeout,
+  TimeoutStrategy,
+  wrap,
+} from 'cockatiel';
 import first from 'it-first';
 import map from 'it-map';
 import { pipe } from 'it-pipe';
-import { AbortError, raceSignal } from 'race-signal';
 
 import RoseNetNodeContext from '../context/RoseNetNodeContext';
 import streamService from '../stream/stream-service';
 import { encode } from '../utils/codec';
 
-import RoseNetDirectAckError, {
-  AckError,
-} from '../errors/RoseNetDirectAckError';
+import RoseNetDirectError, {
+  RoseNetDirectErrorType,
+} from '../errors/RoseNetDirectError';
 import RoseNetNodeError from '../errors/RoseNetNodeError';
 
 import {
   ACK_BYTE,
-  ACK_TIMEOUT,
+  MAX_CONCURRENT_ROSENET_DIRECT_MESSAGES_ALLOWED,
+  MAX_CONCURRENT_ROSENET_DIRECT_MESSAGES_QUEUE_SIZE,
   MESSAGE_RETRY_ATTEMPTS,
-  MESSAGE_RETRY_EXPONENT,
   MESSAGE_RETRY_INITIAL_DELAY,
+  MESSAGE_ROUNDTRIP_TIMEOUT,
 } from '../constants';
 
 /**
@@ -29,30 +39,36 @@ import {
  */
 const sendMessageFactory =
   (node: Libp2p) => async (to: string, message: string) => {
-    let stream;
+    let stream: Stream | undefined;
 
     try {
       stream = await streamService.getRoseNetDirectStreamTo(to, node);
 
-      const result = await pipe(
+      const messageRoundTripTimeout = timeout(
+        MESSAGE_ROUNDTRIP_TIMEOUT,
+        TimeoutStrategy.Aggressive,
+      );
+
+      const messagePipe = pipe(
         [message],
         (source) => map(source, encode),
         stream,
-        async (source) =>
-          await raceSignal(first(source), AbortSignal.timeout(ACK_TIMEOUT)),
+        async (source) => first(source),
       );
 
+      const result = await messageRoundTripTimeout.execute(() => messagePipe);
+
       if (result?.length !== 1) {
-        throw new RoseNetDirectAckError(
+        throw new RoseNetDirectError(
           `There are more than one chunk in the ack message`,
-          AckError.InvalidChunks,
+          RoseNetDirectErrorType.InvalidAckChunks,
         );
       }
       const ack = result?.subarray();
       if (ack.length !== 1 || ack[0] !== ACK_BYTE) {
-        throw new RoseNetDirectAckError(
+        throw new RoseNetDirectError(
           `Ack byte is invalid`,
-          AckError.InvalidByte,
+          RoseNetDirectErrorType.InvalidAckByte,
         );
       }
 
@@ -60,15 +76,26 @@ const sendMessageFactory =
         message,
       });
     } catch (error) {
-      if (error instanceof AbortError) {
-        const errorToThrow = new RoseNetDirectAckError(
-          `Ack was not received`,
-          AckError.Timeout,
+      if (isBrokenCircuitError(error)) {
+        /**
+         * We were unable to dial, so `stream` is undefined and we don't need to
+         * abort it
+         */
+        throw new RoseNetNodeError(
+          `Cannot dial peer ${to} to send message`,
+          undefined,
+          error,
+        );
+      }
+      if (isTaskCancelledError(error)) {
+        const errorToThrow = new RoseNetDirectError(
+          'Message sending timed out',
+          RoseNetDirectErrorType.Timeout,
         );
         stream?.abort(errorToThrow);
         throw errorToThrow;
       }
-      if (error instanceof RoseNetDirectAckError) {
+      if (error instanceof RoseNetNodeError) {
         stream?.abort(error);
         throw error;
       }
@@ -80,12 +107,17 @@ const sendMessageFactory =
     }
   };
 
+const bulkheadPolicy = bulkhead(
+  MAX_CONCURRENT_ROSENET_DIRECT_MESSAGES_ALLOWED,
+  MAX_CONCURRENT_ROSENET_DIRECT_MESSAGES_QUEUE_SIZE,
+);
+
 /**
  * A wrapper around `sendMessageFactory` for retrying failed messages
  */
-const sendMessageWithRetryFactory =
+const sendMessageWithRetryAndBulkheadFactory =
   (node: Libp2p) =>
-  async (
+  (
     to: string,
     message: string,
     /**
@@ -95,41 +127,41 @@ const sendMessageWithRetryFactory =
     onSettled?: (error?: Error) => Promise<void>,
   ) => {
     const sendMessageInner = sendMessageFactory(node);
-    try {
-      const retryPolicy = retry(handleAll, {
-        maxAttempts: MESSAGE_RETRY_ATTEMPTS,
-        backoff: new ExponentialBackoff({
-          exponent: MESSAGE_RETRY_EXPONENT,
-          initialDelay: MESSAGE_RETRY_INITIAL_DELAY,
-          maxDelay: 300_000,
-        }),
-      });
-      retryPolicy.onFailure((data) => {
-        RoseNetNodeContext.logger.debug('message sending failed', {
-          message,
-          reason: data.reason,
-        });
-      });
-      retryPolicy.onRetry((data) => {
-        RoseNetNodeContext.logger.debug(
-          `retry sending message (attempt #${data.attempt}/${MESSAGE_RETRY_ATTEMPTS})`,
-          {
-            message,
-          },
-        );
-      });
-
-      await retryPolicy.execute(() => sendMessageInner(to, message));
-      onSettled?.();
-    } catch (error) {
-      RoseNetNodeContext.logger.error(
-        'message sending failed regardless of 3 retries, dropping message',
-      );
-      RoseNetNodeContext.logger.debug('message was: ', {
+    const retryPolicy = retry(handleAll, {
+      maxAttempts: MESSAGE_RETRY_ATTEMPTS,
+      backoff: new ExponentialBackoff({
+        initialDelay: MESSAGE_RETRY_INITIAL_DELAY,
+      }),
+    });
+    retryPolicy.onFailure((data) => {
+      RoseNetNodeContext.logger.debug('message sending failed', {
         message,
+        reason: data.reason,
       });
-      onSettled?.(new RoseNetNodeError('Message sending failed'));
-    }
+    });
+    retryPolicy.onRetry((data) => {
+      RoseNetNodeContext.logger.debug(
+        `retry sending message (attempt #${data.attempt}/${MESSAGE_RETRY_ATTEMPTS})`,
+        {
+          message,
+        },
+      );
+    });
+
+    const wrappedPolicy = wrap(bulkheadPolicy, retryPolicy);
+
+    wrappedPolicy
+      .execute(() => sendMessageInner(to, message))
+      .then(() => onSettled?.())
+      .catch(() => {
+        RoseNetNodeContext.logger.error(
+          'message sending failed regardless of 3 retries, dropping message',
+        );
+        RoseNetNodeContext.logger.debug('message was: ', {
+          message,
+        });
+        onSettled?.(new RoseNetNodeError('Message sending failed'));
+      });
   };
 
-export default sendMessageWithRetryFactory;
+export default sendMessageWithRetryAndBulkheadFactory;
