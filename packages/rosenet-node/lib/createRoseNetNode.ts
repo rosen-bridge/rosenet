@@ -129,6 +129,8 @@ const createRoseNetNode = async ({
          * a single stream, which is 500MB/3≃170MB.
          */
         maxInboundDataLength: 170_000_000, // 170MB
+        globalSignaturePolicy: 'StrictNoSign',
+        ignoreDuplicatePublishError: true,
       }),
       dcutr: dcutr(),
       restartRelayDiscovery,
