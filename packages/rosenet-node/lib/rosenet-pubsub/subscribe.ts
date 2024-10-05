@@ -1,6 +1,19 @@
 import { Libp2p, PubSub } from '@libp2p/interface';
+import { bulkhead } from 'cockatiel';
+
+import RoseNetNodeContext from '../context/RoseNetNodeContext';
+
+import {
+  MAX_INBOUND_PUBSUB_QUEUE_SIZE,
+  MAX_INBOUND_PUBSUB_THROUGHPUT,
+} from '../constants';
 
 const textDecoder = new TextDecoder();
+
+const bulkheadPolicy = bulkhead(
+  MAX_INBOUND_PUBSUB_THROUGHPUT,
+  MAX_INBOUND_PUBSUB_QUEUE_SIZE,
+);
 
 /**
  * factory for libp2p subscribe
@@ -9,9 +22,17 @@ const subscribeFactory =
   (node: Libp2p<{ pubsub: PubSub }>) =>
   async (topic: string, handler: (message: string) => void) => {
     node.services.pubsub.subscribe(topic);
-    node.services.pubsub.addEventListener('message', (event) => {
-      if (event.detail.topic === topic) {
-        handler(textDecoder.decode(event.detail.data));
+    node.services.pubsub.addEventListener('message', async (event) => {
+      try {
+        await bulkheadPolicy.execute(() => {
+          if (event.detail.topic === topic) {
+            handler(textDecoder.decode(event.detail.data));
+          }
+        });
+      } catch {
+        RoseNetNodeContext.logger.warn(
+          'Maximum pubsub message handling threshold reached',
+        );
       }
     });
   };

@@ -3,6 +3,8 @@ import {
   BulkheadPolicy,
   BulkheadRejectedError,
   wrap,
+  timeout,
+  TimeoutStrategy,
 } from 'cockatiel';
 import { pipe } from 'it-pipe';
 
@@ -19,6 +21,7 @@ import {
   MAX_INBOUND_ROSENET_DIRECT_THROUGHPUT,
   MAX_INBOUND_ROSENET_DIRECT_THROUGHPUT_PER_PEER,
   ROSENET_DIRECT_PROTOCOL_V1,
+  MESSAGE_HANDLING_TIMEOUT,
 } from '../constants';
 
 const messageHandlingBulkhead = bulkhead(
@@ -61,26 +64,32 @@ const handleIncomingMessageFactory =
         try {
           await wrappedPolicy.execute(async () => {
             try {
-              await pipe(
-                stream,
-                decode,
-                async function* (source) {
-                  for await (const message of source) {
-                    RoseNetNodeContext.logger.debug(
-                      'message received, calling handler and sending ack',
-                      {
-                        message,
-                      },
-                    );
-                    handler(connection.remotePeer.toString(), message);
-                    yield Uint8Array.of(ACK_BYTE);
-                  }
-                },
-                stream,
+              const messageHandlingTimeout = timeout(
+                MESSAGE_HANDLING_TIMEOUT,
+                TimeoutStrategy.Aggressive,
+              );
+              await messageHandlingTimeout.execute(() =>
+                pipe(
+                  stream,
+                  decode,
+                  async function* (source) {
+                    for await (const message of source) {
+                      RoseNetNodeContext.logger.debug(
+                        'message received, calling handler and sending ack',
+                        {
+                          message,
+                        },
+                      );
+                      handler(connection.remotePeer.toString(), message);
+                      yield Uint8Array.of(ACK_BYTE);
+                    }
+                  },
+                  stream,
+                ),
               );
             } catch (error) {
               RoseNetNodeContext.logger.warn(
-                'An error occurred while reading from stream',
+                'An error occurred while handling incoming message',
                 {
                   error,
                 },
