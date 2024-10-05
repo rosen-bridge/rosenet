@@ -92,6 +92,8 @@ const createRoseNetRelay = async ({
         Dlo: 0,
         Dhi: 0,
         Dout: 0,
+        globalSignaturePolicy: 'StrictNoSign',
+        ignoreDuplicatePublishError: true,
         /**
          * Current implementation of Gossipsub includes at most 5000 messages in
          * IHAVE or IWANT messages during a `mcachegossip` window, which is by
