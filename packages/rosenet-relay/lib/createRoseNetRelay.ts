@@ -92,6 +92,7 @@ const createRoseNetRelay = async ({
         Dlo: 0,
         Dhi: 0,
         Dout: 0,
+        doPX: true,
         globalSignaturePolicy: 'StrictNoSign',
         ignoreDuplicatePublishError: true,
         /**
