@@ -147,6 +147,10 @@ const createRoseNetNode = async ({
     handleIncomingMessage: handleIncomingMessageFactory(node),
     publish: publishFactory(node),
     subscribe: subscribeFactory(node),
+    info: {
+      getPeerId: () => node.peerId.toString(),
+      getConnectedPeers: () => node.getPeers().map((peer) => peer.toString()),
+    },
   };
 };
 
