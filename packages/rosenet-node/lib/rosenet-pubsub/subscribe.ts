@@ -26,7 +26,11 @@ const subscribeFactory =
       try {
         await bulkheadPolicy.execute(() => {
           if (event.detail.topic === topic) {
-            handler(textDecoder.decode(event.detail.data));
+            const message = textDecoder.decode(event.detail.data);
+            handler(message);
+            RoseNetNodeContext.logger.debug('Pubsub message received', {
+              message,
+            });
           }
         });
       } catch {
@@ -35,6 +39,7 @@ const subscribeFactory =
         );
       }
     });
+    RoseNetNodeContext.logger.info(`Topic ${topic} subscribed`);
   };
 
 export default subscribeFactory;

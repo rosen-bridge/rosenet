@@ -25,11 +25,12 @@ const publishFactory =
       await bulkheadPolicy.execute(() =>
         node.services.pubsub.publish(topic, textEncoder.encode(message)),
       );
+      RoseNetNodeContext.logger.debug('Message published successfully');
     } catch (error) {
       if (isBulkheadRejectedError(error)) {
-        RoseNetNodeContext.logger.warn('Maximum publish threshold reached');
+        RoseNetNodeContext.logger.debug('Maximum publish threshold reached');
       } else {
-        RoseNetNodeContext.logger.warn('Message publish failed', {
+        RoseNetNodeContext.logger.debug('Message publish failed', {
           message,
         });
       }

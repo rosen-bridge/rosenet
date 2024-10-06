@@ -56,9 +56,12 @@ const sendMessageFactory =
         async (source) => first(source),
       );
 
+      RoseNetNodeContext.logger.debug('Starting message sending process');
       const result = await messageRoundTripTimeout.execute(() => messagePipe);
+      RoseNetNodeContext.logger.debug('Message sending process completed');
 
       if (result?.length !== 1) {
+        RoseNetNodeContext.logger.debug('Invalid multi-chunk ack received');
         throw new RoseNetDirectError(
           `There are more than one chunk in the ack message`,
           RoseNetDirectErrorType.InvalidAckChunks,
@@ -66,17 +69,22 @@ const sendMessageFactory =
       }
       const ack = result?.subarray();
       if (ack.length !== 1 || ack[0] !== ACK_BYTE) {
+        RoseNetNodeContext.logger.debug('Invalid ack byte received');
         throw new RoseNetDirectError(
           `Ack byte is invalid`,
           RoseNetDirectErrorType.InvalidAckByte,
         );
       }
+      RoseNetNodeContext.logger.debug('Ack validation compeleted');
 
-      RoseNetNodeContext.logger.debug('message sent successfully', {
+      RoseNetNodeContext.logger.debug('Message sent successfully', {
         message,
       });
     } catch (error) {
       if (isBrokenCircuitError(error)) {
+        RoseNetNodeContext.logger.debug(
+          'Message sending attempt failed due to a broken circuit',
+        );
         /**
          * We were unable to dial, so `stream` is undefined and we don't need to
          * abort it
@@ -88,6 +96,9 @@ const sendMessageFactory =
         );
       }
       if (isTaskCancelledError(error)) {
+        RoseNetNodeContext.logger.debug(
+          'Message sending attempt failed due to timeout',
+        );
         const errorToThrow = new RoseNetDirectError(
           'Message sending timed out',
           RoseNetDirectErrorType.Timeout,
@@ -95,6 +106,9 @@ const sendMessageFactory =
         stream?.abort(errorToThrow);
         throw errorToThrow;
       }
+      RoseNetNodeContext.logger.debug(
+        'Message sending attempt failed for some reason',
+      );
       if (error instanceof RoseNetNodeError) {
         stream?.abort(error);
         throw error;
@@ -134,14 +148,14 @@ const sendMessageWithRetryAndBulkheadFactory =
       }),
     });
     retryPolicy.onFailure((data) => {
-      RoseNetNodeContext.logger.debug('message sending failed', {
+      RoseNetNodeContext.logger.debug('Message sending failed', {
         message,
         reason: data.reason,
       });
     });
     retryPolicy.onRetry((data) => {
       RoseNetNodeContext.logger.debug(
-        `retry sending message (attempt #${data.attempt}/${MESSAGE_RETRY_ATTEMPTS})`,
+        `Retry sending message (attempt #${data.attempt}/${MESSAGE_RETRY_ATTEMPTS})`,
         {
           message,
         },
@@ -154,10 +168,10 @@ const sendMessageWithRetryAndBulkheadFactory =
       .execute(() => sendMessageInner(to, message))
       .then(() => onSettled?.())
       .catch(() => {
-        RoseNetNodeContext.logger.error(
-          'message sending failed regardless of 3 retries, dropping message',
+        RoseNetNodeContext.logger.warn(
+          'Message sending failed regardless of 3 retries, dropping message',
         );
-        RoseNetNodeContext.logger.debug('message was: ', {
+        RoseNetNodeContext.logger.debug('Message was: ', {
           message,
         });
         onSettled?.(new RoseNetNodeError('Message sending failed'));
