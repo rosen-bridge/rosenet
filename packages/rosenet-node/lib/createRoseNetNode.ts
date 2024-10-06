@@ -137,7 +137,7 @@ const createRoseNetNode = async ({
     },
     logger: libp2pLoggerFactory(logger, config.debug?.libp2pComponents ?? []),
   });
-  RoseNetNodeContext.logger.debug('RoseNet node created');
+  RoseNetNodeContext.logger.info('RoseNet node created');
 
   addEventListeners(node, RoseNetNodeContext.logger);
 

@@ -51,7 +51,7 @@ const handleIncomingMessageFactory =
       ROSENET_DIRECT_PROTOCOL_V1,
       async ({ connection, stream }) => {
         RoseNetNodeContext.logger.debug(
-          `incoming connection stream with protocol ${ROSENET_DIRECT_PROTOCOL_V1}`,
+          `Incoming connection stream with protocol ${ROSENET_DIRECT_PROTOCOL_V1}`,
           {
             remoteAddress: connection.remoteAddr.toString(),
             transient: connection.transient,
@@ -74,18 +74,22 @@ const handleIncomingMessageFactory =
                   decode,
                   async function* (source) {
                     for await (const message of source) {
-                      RoseNetNodeContext.logger.debug(
-                        'message received, calling handler and sending ack',
-                        {
-                          message,
-                        },
-                      );
+                      RoseNetNodeContext.logger.debug('Message decoded', {
+                        message,
+                      });
                       handler(connection.remotePeer.toString(), message);
+                      RoseNetNodeContext.logger.debug('Handler called');
                       yield Uint8Array.of(ACK_BYTE);
+                      RoseNetNodeContext.logger.debug(
+                        'Ack sent back to the sender',
+                      );
                     }
                   },
                   stream,
                 ),
+              );
+              RoseNetNodeContext.logger.debug(
+                'Incoming message handling completed',
               );
             } catch (error) {
               RoseNetNodeContext.logger.warn(
@@ -105,8 +109,8 @@ const handleIncomingMessageFactory =
       },
       { runOnTransientConnection: true },
     );
-    RoseNetNodeContext.logger.debug(
-      `handler for ${ROSENET_DIRECT_PROTOCOL_V1} protocol set`,
+    RoseNetNodeContext.logger.info(
+      `Handler for ${ROSENET_DIRECT_PROTOCOL_V1} protocol set`,
     );
   };
 
