@@ -39,9 +39,19 @@ export const MESSAGE_HANDLING_TIMEOUT = 2000;
  */
 export const MESSAGE_RETRY_ATTEMPTS = 5;
 /**
+ * The number of times we attempt to re-send failed messages when in fail fast
+ * mode
+ */
+export const FAIL_FAST_MESSAGE_RETRY_ATTEMPTS = 1;
+/**
  * Initial delay after which we retry sending a failed message
  */
 export const MESSAGE_RETRY_INITIAL_DELAY = 2000;
+/**
+ * Initial delay after which we retry sending a failed message when in fail fast
+ * mode
+ */
+export const FAIL_FAST_MESSAGE_RETRY_INITIAL_DELAY = 5000;
 /**
  * Maximum number of incoming RoseNet Direct messages that can be handled
  * concurrently
@@ -95,3 +105,8 @@ export const MAX_OUTBOUND_PUBSUB_QUEUE_SIZE = 400;
  * upgrade) can take
  */
 export const ROSENET_DIRECT_STREAM_CREATION_TIMEOUT = 2000;
+/**
+ * Threshold for enabling fail fast when sending messages, resulting in fewer
+ * retry attempts to prevent the queues from becoming full
+ */
+export const FAIL_FAST_THRESHOLD = MAX_OUTBOUND_ROSENET_DIRECT_THROUGHPUT / 4;
