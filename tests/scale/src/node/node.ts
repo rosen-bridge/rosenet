@@ -31,8 +31,7 @@ const data: Record<string, { r: number; ss: number; sf: number }> = {};
 
 setTimeout(async () => {
   // eslint-disable-next-line no-constant-condition
-  while (true) {
-    if (counter > 20000) return;
+  while (counter <= 20000) {
     const currentCounter = counter;
     for (let i = 0; i < Math.random() * 30; i++) {
       counter++;
