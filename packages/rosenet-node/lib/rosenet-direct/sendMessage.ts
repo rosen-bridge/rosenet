@@ -26,8 +26,11 @@ import RoseNetNodeError from '../errors/RoseNetNodeError';
 
 import {
   ACK_BYTE,
-  MAX_OUTBOUND_ROSENET_DIRECT_THROUGHPUT,
+  FAIL_FAST_MESSAGE_RETRY_ATTEMPTS,
+  FAIL_FAST_MESSAGE_RETRY_INITIAL_DELAY,
+  FAIL_FAST_THRESHOLD,
   MAX_OUTBOUND_ROSENET_DIRECT_QUEUE_SIZE,
+  MAX_OUTBOUND_ROSENET_DIRECT_THROUGHPUT,
   MESSAGE_RETRY_ATTEMPTS,
   MESSAGE_RETRY_INITIAL_DELAY,
   MESSAGE_ROUNDTRIP_TIMEOUT,
@@ -141,10 +144,20 @@ const sendMessageWithRetryAndBulkheadFactory =
     onSettled?: (error?: Error) => Promise<void>,
   ) => {
     const sendMessageInner = sendMessageFactory(node);
+
+    const shouldFailFast = bulkheadPolicy.executionSlots > FAIL_FAST_THRESHOLD;
+
+    const maxAttempts = shouldFailFast
+      ? MESSAGE_RETRY_ATTEMPTS
+      : FAIL_FAST_MESSAGE_RETRY_ATTEMPTS;
+    const initialDelay = shouldFailFast
+      ? MESSAGE_RETRY_INITIAL_DELAY
+      : FAIL_FAST_MESSAGE_RETRY_INITIAL_DELAY;
+
     const retryPolicy = retry(handleAll, {
-      maxAttempts: MESSAGE_RETRY_ATTEMPTS,
+      maxAttempts,
       backoff: new ExponentialBackoff({
-        initialDelay: MESSAGE_RETRY_INITIAL_DELAY,
+        initialDelay,
       }),
     });
     retryPolicy.onFailure((data) => {
@@ -167,9 +180,13 @@ const sendMessageWithRetryAndBulkheadFactory =
     wrappedPolicy
       .execute(() => sendMessageInner(to, message))
       .then(() => onSettled?.())
-      .catch(() => {
+      .catch((error) => {
         RoseNetNodeContext.logger.warn(
-          'Message sending failed regardless of 3 retries, dropping message',
+          'Message sending failed, dropping message',
+          {
+            lastOccurredError: error,
+            isFailFastEnabled: shouldFailFast,
+          },
         );
         RoseNetNodeContext.logger.debug('Message was: ', {
           message,
