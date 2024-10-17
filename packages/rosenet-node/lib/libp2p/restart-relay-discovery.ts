@@ -107,7 +107,6 @@ class RestartRelayDiscovery implements Startable {
         await this.breaker.execute(this.restartRelayDiscoveryIfNeeded);
       } catch (error) {
         if (error instanceof BrokenCircuitError) {
-          // log error
           this.logger('libp2p:restart-relay-discovery circuit is open');
         } else {
           throw error;

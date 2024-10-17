@@ -14,39 +14,31 @@ import RoseNetNodeContext from '../context/RoseNetNodeContext';
 
 import { decode } from '../utils/codec';
 
-import {
-  ACK_BYTE,
-  MAX_INBOUND_ROSENET_DIRECT_QUEUE_SIZE,
-  MAX_INBOUND_ROSENET_DIRECT_QUEUE_SIZE_PER_PEER,
-  MAX_INBOUND_ROSENET_DIRECT_THROUGHPUT,
-  MAX_INBOUND_ROSENET_DIRECT_THROUGHPUT_PER_PEER,
-  ROSENET_DIRECT_PROTOCOL_V1,
-  MESSAGE_HANDLING_TIMEOUT,
-} from '../constants';
-
-const messageHandlingBulkhead = bulkhead(
-  MAX_INBOUND_ROSENET_DIRECT_THROUGHPUT,
-  MAX_INBOUND_ROSENET_DIRECT_QUEUE_SIZE,
-);
-const peerBulkheads = new Proxy<Record<string, BulkheadPolicy>>(
-  {},
-  {
-    get(bulkheads, peer: string) {
-      if (peer in bulkheads) return bulkheads[peer];
-      bulkheads[peer] = bulkhead(
-        MAX_INBOUND_ROSENET_DIRECT_THROUGHPUT_PER_PEER,
-        MAX_INBOUND_ROSENET_DIRECT_QUEUE_SIZE_PER_PEER,
-      );
-      return bulkheads[peer];
-    },
-  },
-);
+import { ACK_BYTE, ROSENET_DIRECT_PROTOCOL_V1 } from '../constants';
 
 /**
  * protocol handler for RoseNet direct
  */
-const handleIncomingMessageFactory =
-  (node: Libp2p) => (handler: (from: string, message?: string) => void) => {
+const handleIncomingMessageFactory = (node: Libp2p) => {
+  const messageHandlingBulkhead = bulkhead(
+    RoseNetNodeContext.config.direct.maxInboundThroughput,
+    RoseNetNodeContext.config.direct.maxInboundQueueSize,
+  );
+  const peerBulkheads = new Proxy<Record<string, BulkheadPolicy>>(
+    {},
+    {
+      get(bulkheads, peer: string) {
+        if (peer in bulkheads) return bulkheads[peer];
+        bulkheads[peer] = bulkhead(
+          RoseNetNodeContext.config.direct.maxInboundThroughputPerPeer,
+          RoseNetNodeContext.config.direct.maxInboundQueueSizePerPeer,
+        );
+        return bulkheads[peer];
+      },
+    },
+  );
+
+  return (handler: (from: string, message?: string) => void) => {
     node.handle(
       ROSENET_DIRECT_PROTOCOL_V1,
       async ({ connection, stream }) => {
@@ -65,7 +57,7 @@ const handleIncomingMessageFactory =
           await wrappedPolicy.execute(async () => {
             try {
               const messageHandlingTimeout = timeout(
-                MESSAGE_HANDLING_TIMEOUT,
+                RoseNetNodeContext.config.direct.handlingTimeout,
                 TimeoutStrategy.Aggressive,
               );
               await messageHandlingTimeout.execute(() =>
@@ -113,5 +105,6 @@ const handleIncomingMessageFactory =
       `Handler for ${ROSENET_DIRECT_PROTOCOL_V1} protocol set`,
     );
   };
+};
 
 export default handleIncomingMessageFactory;

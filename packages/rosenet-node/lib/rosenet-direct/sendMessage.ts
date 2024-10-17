@@ -24,17 +24,7 @@ import RoseNetDirectError, {
 } from '../errors/RoseNetDirectError';
 import RoseNetNodeError from '../errors/RoseNetNodeError';
 
-import {
-  ACK_BYTE,
-  FAIL_FAST_MESSAGE_RETRY_ATTEMPTS,
-  FAIL_FAST_MESSAGE_RETRY_INITIAL_DELAY,
-  FAIL_FAST_THRESHOLD,
-  MAX_OUTBOUND_ROSENET_DIRECT_QUEUE_SIZE,
-  MAX_OUTBOUND_ROSENET_DIRECT_THROUGHPUT,
-  MESSAGE_RETRY_ATTEMPTS,
-  MESSAGE_RETRY_INITIAL_DELAY,
-  MESSAGE_ROUNDTRIP_TIMEOUT,
-} from '../constants';
+import { ACK_BYTE } from '../constants';
 
 /**
  * A factory returning a function to send a message to a specific peer via
@@ -48,7 +38,7 @@ const sendMessageFactory =
       stream = await streamService.getRoseNetDirectStreamTo(to, node);
 
       const messageRoundTripTimeout = timeout(
-        MESSAGE_ROUNDTRIP_TIMEOUT,
+        RoseNetNodeContext.config.direct.roundTripTimeout,
         TimeoutStrategy.Aggressive,
       );
 
@@ -124,17 +114,16 @@ const sendMessageFactory =
     }
   };
 
-const bulkheadPolicy = bulkhead(
-  MAX_OUTBOUND_ROSENET_DIRECT_THROUGHPUT,
-  MAX_OUTBOUND_ROSENET_DIRECT_QUEUE_SIZE,
-);
-
 /**
  * A wrapper around `sendMessageFactory` for retrying failed messages
  */
-const sendMessageWithRetryAndBulkheadFactory =
-  (node: Libp2p) =>
-  (
+const sendMessageWithRetryAndBulkheadFactory = (node: Libp2p) => {
+  const bulkheadPolicy = bulkhead(
+    RoseNetNodeContext.config.direct.maxOutboundThroughput,
+    RoseNetNodeContext.config.direct.maxOutboundQueueSize,
+  );
+
+  return (
     to: string,
     message: string,
     /**
@@ -145,14 +134,17 @@ const sendMessageWithRetryAndBulkheadFactory =
   ) => {
     const sendMessageInner = sendMessageFactory(node);
 
-    const shouldFailFast = bulkheadPolicy.executionSlots > FAIL_FAST_THRESHOLD;
+    const shouldFailFast =
+      bulkheadPolicy.executionSlots >
+      RoseNetNodeContext.config.direct.failFastThreshold;
 
     const maxAttempts = shouldFailFast
-      ? MESSAGE_RETRY_ATTEMPTS
-      : FAIL_FAST_MESSAGE_RETRY_ATTEMPTS;
+      ? RoseNetNodeContext.config.direct.maxRetryAttempts
+      : RoseNetNodeContext.config.direct.failFastMaxRetryAttempts;
+
     const initialDelay = shouldFailFast
-      ? MESSAGE_RETRY_INITIAL_DELAY
-      : FAIL_FAST_MESSAGE_RETRY_INITIAL_DELAY;
+      ? RoseNetNodeContext.config.direct.retryInitialDelay
+      : RoseNetNodeContext.config.direct.failFastRetryInitialDelay;
 
     const retryPolicy = retry(handleAll, {
       maxAttempts,
@@ -168,7 +160,7 @@ const sendMessageWithRetryAndBulkheadFactory =
     });
     retryPolicy.onRetry((data) => {
       RoseNetNodeContext.logger.debug(
-        `Retry sending message (attempt #${data.attempt}/${MESSAGE_RETRY_ATTEMPTS})`,
+        `Retry sending message (attempt #${data.attempt}/${RoseNetNodeContext.config.direct.maxRetryAttempts})`,
         {
           message,
         },
@@ -194,5 +186,6 @@ const sendMessageWithRetryAndBulkheadFactory =
         onSettled?.(new RoseNetNodeError('Message sending failed'));
       });
   };
+};
 
 export default sendMessageWithRetryAndBulkheadFactory;

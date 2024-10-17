@@ -1,8 +1,9 @@
 import { createRoseNetNode } from '@rosen-bridge/rosenet-node';
 
 const node = await createRoseNetNode({
-  logger: console,
-  relayMultiaddrs: process.env.RELAY_MULTIADDRS!.split(','),
+  relay: {
+    multiaddrs: process.env.RELAY_MULTIADDRS!.split(','),
+  },
   privateKey: process.env.PRIVATE_KEY!,
   port: +process.env.PORT!,
 });

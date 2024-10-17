@@ -14,10 +14,7 @@ import { Libp2p } from 'libp2p';
 
 import RoseNetNodeContext from '../context/RoseNetNodeContext';
 
-import {
-  ROSENET_DIRECT_STREAM_CREATION_TIMEOUT,
-  ROSENET_DIRECT_PROTOCOL_V1,
-} from '../constants';
+import { ROSENET_DIRECT_PROTOCOL_V1 } from '../constants';
 
 import { RoseNetNodeError } from '../errors';
 
@@ -88,7 +85,7 @@ async function getRoseNetDirectStreamTo(to: string, node: Libp2p) {
   );
 
   const streamCreationTimeout = timeout(
-    ROSENET_DIRECT_STREAM_CREATION_TIMEOUT,
+    RoseNetNodeContext.config.direct.streamCreationTimeout,
     TimeoutStrategy.Aggressive,
   );
   const stream = await streamCreationTimeout
