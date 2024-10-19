@@ -3,24 +3,18 @@ import { bulkhead, isBulkheadRejectedError } from 'cockatiel';
 
 import RoseNetNodeContext from '../context/RoseNetNodeContext';
 
-import {
-  MAX_OUTBOUND_PUBSUB_QUEUE_SIZE,
-  MAX_OUTBOUND_PUBSUB_THROUGHPUT,
-} from '../constants';
-
 const textEncoder = new TextEncoder();
-
-const bulkheadPolicy = bulkhead(
-  MAX_OUTBOUND_PUBSUB_THROUGHPUT,
-  MAX_OUTBOUND_PUBSUB_QUEUE_SIZE,
-);
 
 /**
  * factory for libp2p publish
  */
-const publishFactory =
-  (node: Libp2p<{ pubsub: PubSub }>) =>
-  async (topic: string, message: string) => {
+const publishFactory = (node: Libp2p<{ pubsub: PubSub }>) => {
+  const bulkheadPolicy = bulkhead(
+    RoseNetNodeContext.config.pubsub.maxOutboundThroughput,
+    RoseNetNodeContext.config.pubsub.maxOutboundQueueSize,
+  );
+
+  return async (topic: string, message: string) => {
     try {
       await bulkheadPolicy.execute(() =>
         node.services.pubsub.publish(topic, textEncoder.encode(message)),
@@ -36,5 +30,6 @@ const publishFactory =
       }
     }
   };
+};
 
 export default publishFactory;
