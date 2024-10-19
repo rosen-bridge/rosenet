@@ -1,6 +1,6 @@
 {
   "name": "@rosen-bridge/rosenet-node",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Rosen Bridge RoseNet node",
   "repository": "https://github.com/rosen-bridge/rosenet",
   "license": "GPL-3.0",
@@ -50,7 +50,7 @@
     "@libp2p/tcp": "^9.1.5",
     "@libp2p/utils": "^5.4.9",
     "@multiformats/multiaddr": "^12.3.0",
-    "@rosen-bridge/rosenet-utils": "^0.0.0",
+    "@rosen-bridge/rosenet-utils": "^0.1.0",
     "cockatiel": "^3.2.1",
     "fast-shuffle": "^6.1.0",
     "it-first": "^3.0.6",

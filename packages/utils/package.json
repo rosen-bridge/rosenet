@@ -1,7 +1,7 @@
 {
   "name": "@rosen-bridge/rosenet-utils",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Utils used inside RoseNet",
   "repository": "https://github.com/rosen-bridge/rosenet",
   "license": "GPL-3.0",
