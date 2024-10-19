@@ -139,7 +139,8 @@ const createRoseNetNode = async (config: PartialRoseNetNodeConfig) => {
          */
         maxInboundDataLength:
           RoseNetNodeContext.config.pubsub.gossipsubMaxInboundDataLength,
-        globalSignaturePolicy: 'StrictNoSign',
+        globalSignaturePolicy:
+          RoseNetNodeContext.config.pubsub.gossipsubSignaturePolicy,
         ignoreDuplicatePublishError: true,
       }),
       dcutr: dcutr(),
