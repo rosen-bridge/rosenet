@@ -19,6 +19,7 @@ import {
 import { RoseNetRelayError } from './errors';
 
 import {
+  DEFAULT_GOSSIPSUB_MAX_INBOUND_DATA_LENGTH,
   DEFAULT_LISTEN_HOST,
   RESERVATION_DATA_LIMIT,
   RESERVATION_DURATION_LIMIT,
@@ -93,7 +94,8 @@ const createRoseNetRelay = async ({
         Dhi: 0,
         Dout: 0,
         doPX: true,
-        globalSignaturePolicy: 'StrictNoSign',
+        globalSignaturePolicy:
+          config.pubsub?.gossipsubSignaturePolicy ?? 'StrictNoSign',
         ignoreDuplicatePublishError: true,
         /**
          * Current implementation of Gossipsub includes at most 5000 messages in
@@ -102,7 +104,9 @@ const createRoseNetRelay = async ({
          * maximum of around 5000*100KB=500MB is received in 3 heartbeats from
          * a single stream, which is 500MB/3≃170MB.
          */
-        maxInboundDataLength: 170_000_000, // 170MB
+        maxInboundDataLength:
+          config.pubsub?.gossipsubMaxInboundDataLength ??
+          DEFAULT_GOSSIPSUB_MAX_INBOUND_DATA_LENGTH,
       }),
       identify: identify(),
       ping: ping({

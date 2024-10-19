@@ -1,4 +1,5 @@
 import { AbstractLogger } from '@rosen-bridge/logger-interface';
+import { SignaturePolicy } from '@libp2p/interface';
 
 export interface RoseNetRelayConfig {
   listen?: {
@@ -11,5 +12,9 @@ export interface RoseNetRelayConfig {
   maxReservations?: number;
   debug?: {
     libp2pComponents?: string[];
+  };
+  pubsub?: {
+    gossipsubMaxInboundDataLength?: number;
+    gossipsubSignaturePolicy?: SignaturePolicy;
   };
 }
