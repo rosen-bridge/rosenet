@@ -29,7 +29,7 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
-    "@rosen-bridge/rosenet-node": "^0.0.0",
-    "@rosen-bridge/rosenet-relay": "^0.0.0"
+    "@rosen-bridge/rosenet-node": "^0.1.0",
+    "@rosen-bridge/rosenet-relay": "^0.1.0"
   }
 }
