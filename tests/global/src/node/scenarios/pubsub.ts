@@ -1,8 +1,12 @@
 import { createRoseNetNode } from '@rosen-bridge/rosenet-node';
-import config from '../config';
-import { wait } from '../utils';
 import { random } from 'lodash-es';
+
+import config from '../config';
 import { savePubsub } from '../metric-store';
+import { wait } from '../utils';
+
+import logger from '../logger';
+
 import { Scenario } from '../types';
 
 /**
@@ -13,7 +17,7 @@ export async function* pubsubSenario(
 ): Scenario {
   while (true) {
     const timeout = yield;
-    console.log(`Running pubsub scenario for ${timeout}ms`);
+    logger.info(`Running pubsub scenario for ${timeout}ms`);
     const signal = AbortSignal.timeout(timeout);
     // eslint-disable-next-line no-constant-condition
     while (true) {
@@ -30,6 +34,6 @@ export async function* pubsubSenario(
       }
       await wait();
     }
-    console.log('Pubsub scenario finished');
+    logger.info('Pubsub scenario finished');
   }
 }

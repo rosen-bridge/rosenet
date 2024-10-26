@@ -2,6 +2,9 @@ import { createRoseNetNode } from '@rosen-bridge/rosenet-node';
 
 import { directScenario } from './direct';
 import { pubsubSenario } from './pubsub';
+
+import logger from '../logger';
+
 import { Scenario } from '../types';
 
 /**
@@ -16,8 +19,8 @@ export async function* combinedScenario(
 
   while (true) {
     const timeout = yield;
-    console.log(`Running combined scenario for ${timeout}ms`);
+    logger.info(`Running combined scenario for ${timeout}ms`);
     await Promise.all([direct.next(timeout), pubsub.next(timeout)]);
-    console.log('Combined scenario finished');
+    logger.info('Combined scenario finished');
   }
 }

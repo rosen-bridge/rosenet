@@ -3,10 +3,11 @@ import { readPrivateKeyFromFile } from '@rosen-bridge/rosenet-utils';
 
 import config from './config';
 
+import logger from './logger';
+
 const privateKey = await readPrivateKeyFromFile('.rosenet/pk');
 
 const node = await createRoseNetRelay({
-  logger: console,
   privateKey,
   listen: {
     host: '0.0.0.0',
@@ -14,6 +15,7 @@ const node = await createRoseNetRelay({
   },
   whitelist: config.whitelist,
   maxReservations: config.maxReservations,
+  logger,
 });
 
 await node.start();

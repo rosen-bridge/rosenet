@@ -1,5 +1,8 @@
-import { Scenario } from '../types';
 import { waitMs } from '../utils';
+
+import logger from '../logger';
+
+import { Scenario } from '../types';
 
 /**
  * A scenario during which the node simply does nothing
@@ -7,8 +10,8 @@ import { waitMs } from '../utils';
 export async function* breakSenario(): Scenario {
   while (true) {
     const timeout = yield;
-    console.log(`Running break scenario for ${timeout}ms`);
+    logger.info(`Running break scenario for ${timeout}ms`);
     await waitMs(timeout);
-    console.log('Break scenario finished');
+    logger.info('Break scenario finished');
   }
 }

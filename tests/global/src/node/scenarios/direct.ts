@@ -1,8 +1,12 @@
 import { createRoseNetNode } from '@rosen-bridge/rosenet-node';
+import { random, sample } from 'lodash-es';
+
 import config from '../config';
 import { saveDirect } from '../metric-store';
 import { wait } from '../utils';
-import { random, sample } from 'lodash-es';
+
+import logger from '../logger';
+
 import { Scenario } from '../types';
 
 const allConnectedPeersSoFar = new Set<string>();
@@ -16,7 +20,7 @@ export async function* directScenario(
 ): Scenario {
   while (true) {
     const timeout = yield;
-    console.log(`Running direct scenario for ${timeout}ms`);
+    logger.info(`Running direct scenario for ${timeout}ms`);
     const signal = AbortSignal.timeout(timeout);
     const peers = node.info
       .getConnectedPeers()
@@ -67,6 +71,6 @@ export async function* directScenario(
       }
       await wait();
     }
-    console.log('Direct scenario finished');
+    logger.info('Direct scenario finished');
   }
 }

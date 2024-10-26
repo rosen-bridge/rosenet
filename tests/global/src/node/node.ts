@@ -1,3 +1,5 @@
+import './bootstrap';
+
 import { createRoseNetNode } from '@rosen-bridge/rosenet-node';
 import { readPrivateKeyFromFile } from '@rosen-bridge/rosenet-utils';
 import { random, sample } from 'lodash-es';
@@ -9,6 +11,8 @@ import { combinedScenario } from './scenarios/combined';
 import { directScenario } from './scenarios/direct';
 import { pubsubSenario } from './scenarios/pubsub';
 
+import logger from './logger';
+
 const privateKey = await readPrivateKeyFromFile('.rosenet/pk');
 
 const node = await createRoseNetNode({
@@ -16,6 +20,7 @@ const node = await createRoseNetNode({
     multiaddrs: config.relayMultiaddrs,
   },
   privateKey,
+  logger,
 });
 await node.start();
 

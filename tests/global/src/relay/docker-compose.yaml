@@ -11,6 +11,7 @@ services:
       - ${PORT:-44123}:44123
     volumes:
       - rosenet-relay-pk:/app/tests/global/.rosenet
+      - ${LOGS_DIRECTORY:-./logs}:/app/tests/global/logs
 
 volumes:
   rosenet-relay-pk:

@@ -13,6 +13,7 @@ services:
       - internal
     volumes:
       - rosenet-node-pk:/app/tests/global/.rosenet
+      - ${LOGS_DIRECTORY:-./logs}:/app/tests/global/logs
     depends_on:
       - influxdb
 
@@ -28,7 +29,7 @@ services:
       - influxdb-data:/var/lib/influxdb2
       - influxdb2-config:/etc/influxdb2
     healthcheck:
-      test: ['influx', 'ping']
+      test: ['CMD', 'influx', 'ping']
       timeout: 5s
       interval: 5s
       retries: 2
