@@ -1,3 +1,5 @@
+import './bootstrap';
+
 import { createRoseNetRelay } from '@rosen-bridge/rosenet-relay';
 import { readPrivateKeyFromFile } from '@rosen-bridge/rosenet-utils';
 
