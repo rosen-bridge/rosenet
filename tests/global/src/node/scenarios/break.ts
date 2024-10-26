@@ -7,7 +7,7 @@ import { Scenario } from '../types';
 /**
  * A scenario during which the node simply does nothing
  */
-export async function* breakSenario(): Scenario {
+export async function* breakScenario(): Scenario {
   while (true) {
     const timeout = yield;
     logger.info(`Running break scenario for ${timeout}ms`);

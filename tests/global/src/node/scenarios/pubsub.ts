@@ -12,7 +12,7 @@ import { Scenario } from '../types';
 /**
  * A scenario during which the node sends pubsub messages in bursts
  */
-export async function* pubsubSenario(
+export async function* pubsubScenario(
   node: Awaited<ReturnType<typeof createRoseNetNode>>,
 ): Scenario {
   while (true) {

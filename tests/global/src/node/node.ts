@@ -6,10 +6,10 @@ import { random, sample } from 'lodash-es';
 
 import config from './config';
 import { registerHandlers } from './registerHandlers';
-import { breakSenario } from './scenarios/break';
+import { breakScenario } from './scenarios/break';
 import { combinedScenario } from './scenarios/combined';
 import { directScenario } from './scenarios/direct';
-import { pubsubSenario } from './scenarios/pubsub';
+import { pubsubScenario } from './scenarios/pubsub';
 
 import logger from './logger';
 
@@ -50,9 +50,9 @@ logger.debug('Message handlers registered');
 
 const scenarios = [
   directScenario(node),
-  pubsubSenario(node),
+  pubsubScenario(node),
   combinedScenario(node),
-  breakSenario(),
+  breakScenario(),
 ];
 
 await Promise.all(scenarios.map((scenario) => scenario.next()));
