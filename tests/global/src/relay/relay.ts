@@ -5,7 +5,7 @@ import { readPrivateKeyFromFile } from '@rosen-bridge/rosenet-utils';
 
 import config from './config';
 
-import logger from './logger';
+import { serviceLogger, rosenetLogger } from './logger';
 
 const privateKey = await readPrivateKeyFromFile('.rosenet/pk');
 
@@ -17,10 +17,10 @@ const node = await createRoseNetRelay({
   },
   whitelist: config.whitelist,
   maxReservations: config.maxReservations,
-  logger,
+  logger: rosenetLogger,
 });
 
 await node.start();
 node.subscribe('rosenet-news', () => {});
 
-logger.info('RoseNet relay started');
+serviceLogger.info('RoseNet relay started');

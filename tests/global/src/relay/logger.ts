@@ -1,5 +1,6 @@
 import { DefaultLoggerFactory } from '@rosen-bridge/abstract-logger';
 
-const logger = DefaultLoggerFactory.getInstance().getDefaultLogger();
-
-export default logger;
+export const serviceLogger =
+  DefaultLoggerFactory.getInstance().getLogger('service');
+export const rosenetLogger =
+  DefaultLoggerFactory.getInstance().getLogger('rosenet');

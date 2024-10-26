@@ -11,17 +11,17 @@ import { combinedScenario } from './scenarios/combined';
 import { directScenario } from './scenarios/direct';
 import { pubsubScenario } from './scenarios/pubsub';
 
-import logger from './logger';
+import { serviceLogger, rosenetLogger } from './logger';
 
 process.on('uncaughtException', (error) => {
-  logger.error('An uncaught exception occurred');
-  logger.debug(error?.message ?? 'Unknown error message');
+  serviceLogger.error('An uncaught exception occurred');
+  serviceLogger.debug(error?.message ?? 'Unknown error message');
   process.exit(1);
 });
 
 process.on('unhandledRejection', (error) => {
-  logger.error('An unhandled rejection occurred');
-  logger.debug(
+  serviceLogger.error('An unhandled rejection occurred');
+  serviceLogger.debug(
     (error instanceof Error && error?.message) || 'Unknown error message',
   );
   process.exit(1);
@@ -29,8 +29,10 @@ process.on('unhandledRejection', (error) => {
 
 const privateKey = await readPrivateKeyFromFile('.rosenet/pk').catch(
   (error) => {
-    logger.error('An error occurred while getting private key from file');
-    logger.debug(error?.message ?? 'Unknown error message');
+    serviceLogger.error(
+      'An error occurred while getting private key from file',
+    );
+    serviceLogger.debug(error?.message ?? 'Unknown error message');
     process.exit(1);
   },
 );
@@ -40,13 +42,13 @@ const node = await createRoseNetNode({
     multiaddrs: config.relayMultiaddrs,
   },
   privateKey,
-  logger,
+  logger: rosenetLogger,
 });
 await node.start();
-logger.info('RoseNet node started');
+serviceLogger.info('RoseNet node started');
 
 registerHandlers(node);
-logger.debug('Message handlers registered');
+serviceLogger.debug('Message handlers registered');
 
 const scenarios = [
   directScenario(node),

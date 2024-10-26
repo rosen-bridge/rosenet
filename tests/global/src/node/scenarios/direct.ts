@@ -5,7 +5,7 @@ import config from '../config';
 import { saveDirect } from '../metric-store';
 import { waitBeforeNextBurst } from '../utils';
 
-import logger from '../logger';
+import { serviceLogger } from '../logger';
 
 import { Scenario } from '../types';
 
@@ -20,7 +20,7 @@ export async function* directScenario(
 ): Scenario {
   while (true) {
     const timeout = yield;
-    logger.info(`Running direct scenario for ${timeout}ms`);
+    serviceLogger.info(`Running direct scenario for ${timeout}ms`);
     const signal = AbortSignal.timeout(timeout);
     const peers = node.info
       .getConnectedPeers()
@@ -36,7 +36,7 @@ export async function* directScenario(
       if (signal.aborted) {
         break;
       }
-      logger.info(
+      serviceLogger.info(
         `Sending ${config.directBurstSize} direct messages to random peers`,
       );
       for (let i = 0; i < config.directBurstSize; i++) {
@@ -62,12 +62,12 @@ export async function* directScenario(
             message.length,
           );
           if (error) {
-            logger.warn(
+            serviceLogger.warn(
               `An error occurred while sending message to peer ${peer.slice(0, 5)}...${peer.slice(-5)}`,
               { error },
             );
           } else {
-            logger.info(
+            serviceLogger.info(
               `Message sent to peer ${peer.slice(0, 5)}...${peer.slice(-5)} successfully`,
               {
                 latency,
@@ -79,6 +79,6 @@ export async function* directScenario(
       }
       await waitBeforeNextBurst();
     }
-    logger.info('Direct scenario finished');
+    serviceLogger.info('Direct scenario finished');
   }
 }

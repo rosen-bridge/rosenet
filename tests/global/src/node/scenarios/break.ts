@@ -1,6 +1,6 @@
 import { waitMs } from '../utils';
 
-import logger from '../logger';
+import { serviceLogger } from '../logger';
 
 import { Scenario } from '../types';
 
@@ -10,8 +10,8 @@ import { Scenario } from '../types';
 export async function* breakScenario(): Scenario {
   while (true) {
     const timeout = yield;
-    logger.info(`Running break scenario for ${timeout}ms`);
+    serviceLogger.info(`Running break scenario for ${timeout}ms`);
     await waitMs(timeout);
-    logger.info('Break scenario finished');
+    serviceLogger.info('Break scenario finished');
   }
 }

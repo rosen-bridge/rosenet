@@ -1,6 +1,6 @@
 import { InfluxDB, Point } from '@influxdata/influxdb-client';
 
-import logger from './logger';
+import { serviceLogger } from './logger';
 
 const influxDB = new InfluxDB({
   url: 'http://influxdb:8086',
@@ -34,12 +34,12 @@ export const saveDirect = async (
 
     writeApi.writePoint(point);
     await writeApi.flush();
-    logger.debug('Direct message data saved in database');
+    serviceLogger.debug('Direct message data saved in database');
   } catch (error) {
-    logger.warn(
+    serviceLogger.warn(
       'An error occurred while saving direct message data in database',
     );
-    logger.debug(
+    serviceLogger.debug(
       (error instanceof Error && error.message) || 'Unknown error message',
     );
   }
@@ -65,12 +65,12 @@ export const savePubsub = async (
 
     writeApi.writePoint(point);
     await writeApi.flush();
-    logger.debug('Pubsub message data saved in database');
+    serviceLogger.debug('Pubsub message data saved in database');
   } catch (error) {
-    logger.warn(
+    serviceLogger.warn(
       'An error occurred while saving pubsub message data in database',
     );
-    logger.debug(
+    serviceLogger.debug(
       (error instanceof Error && error.message) || 'Unknown error message',
     );
   }

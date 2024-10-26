@@ -5,7 +5,7 @@ import config from '../config';
 import { savePubsub } from '../metric-store';
 import { waitBeforeNextBurst } from '../utils';
 
-import logger from '../logger';
+import { serviceLogger } from '../logger';
 
 import { Scenario } from '../types';
 
@@ -17,7 +17,7 @@ export async function* pubsubScenario(
 ): Scenario {
   while (true) {
     const timeout = yield;
-    logger.info(`Running pubsub scenario for ${timeout}ms`);
+    serviceLogger.info(`Running pubsub scenario for ${timeout}ms`);
     const signal = AbortSignal.timeout(timeout);
     // eslint-disable-next-line no-constant-condition
     while (true) {
@@ -30,15 +30,17 @@ export async function* pubsubScenario(
           .concat(Date.now().toString());
 
         await node.publish('rosenet-pubsub', message).catch((error) => {
-          logger.warn(`An error occurred while publishing message`, { error });
+          serviceLogger.warn(`An error occurred while publishing message`, {
+            error,
+          });
         });
         savePubsub('send', 0, message.length);
-        logger.info(`Message published successfully`, {
+        serviceLogger.info(`Message published successfully`, {
           messageLength: message.length,
         });
       }
       await waitBeforeNextBurst();
     }
-    logger.info('Pubsub scenario finished');
+    serviceLogger.info('Pubsub scenario finished');
   }
 }
