@@ -4,7 +4,7 @@ import logger from './logger';
 
 const influxDB = new InfluxDB({
   url: 'http://influxdb:8086',
-  token: 'helloworld',
+  token: 'admintoken',
 });
 const writeApi = influxDB.getWriteApi('Rosen', 'RoseNet');
 
