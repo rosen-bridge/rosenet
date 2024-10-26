@@ -57,16 +57,6 @@ export async function* directScenario(
             roundtripEnd - roundtripStart,
             message.length,
           );
-          // if (error) {
-          //   saveDirect('failure', peer, 0, message.length);
-          // } else {
-          //   saveDirect(
-          //     'success',
-          //     peer,
-          //     roundtripEnd - roundtripStart,
-          //     message.length,
-          //   );
-          // }
         });
       }
       await wait();
