@@ -13,6 +13,7 @@ RUN mkdir -p /app/packages/utils/node_modules
 RUN mkdir -p /app/tests/global/node_modules
 
 FROM base
+COPY --from=build /app/packages/rosenet-node/dist /app/packages/rosenet-node/dist
 COPY --from=build /app/packages/utils/dist /app/packages/utils/dist
 COPY --from=prod-deps /app/node_modules /app/node_modules
 COPY --from=prod-deps /app/packages/rosenet-node/node_modules /app/packages/rosenet-node/node_modules
