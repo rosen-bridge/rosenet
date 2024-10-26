@@ -11,7 +11,8 @@ export const waitMs = (ms: number) =>
   });
 
 /**
- * Wait for a random duration based on config
+ * Wait for a random duration based on config before firing next burst of
+ * messages
  */
-export const wait = () =>
+export const waitBeforeNextBurst = () =>
   waitMs(random(config.minIdleTime, config.maxIdleTime));

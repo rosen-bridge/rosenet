@@ -43,8 +43,10 @@ const node = await createRoseNetNode({
   logger,
 });
 await node.start();
+logger.info('RoseNet node started');
 
 registerHandlers(node);
+logger.debug('Message handlers registered');
 
 const scenarios = [
   directScenario(node),

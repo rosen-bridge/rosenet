@@ -3,7 +3,7 @@ import { random, sample } from 'lodash-es';
 
 import config from '../config';
 import { saveDirect } from '../metric-store';
-import { wait } from '../utils';
+import { waitBeforeNextBurst } from '../utils';
 
 import logger from '../logger';
 
@@ -36,6 +36,9 @@ export async function* directScenario(
       if (signal.aborted) {
         break;
       }
+      logger.info(
+        `Sending ${config.directBurstSize} direct messages to random peers`,
+      );
       for (let i = 0; i < config.directBurstSize; i++) {
         const peer = sample(
           config.shouldSendDirectToOldPeers
@@ -50,16 +53,31 @@ export async function* directScenario(
         const roundtripStart = Date.now();
         await node.sendMessage(peer, message, async (error) => {
           const roundtripEnd = Date.now();
+          const latency = roundtripEnd - roundtripStart;
           saveDirect(
             'send',
             error ? 'failure' : 'success',
             peer,
-            roundtripEnd - roundtripStart,
+            latency,
             message.length,
           );
+          if (error) {
+            logger.warn(
+              `An error occurred while sending message to peer ${peer.slice(0, 5)}...${peer.slice(-5)}`,
+              { error },
+            );
+          } else {
+            logger.info(
+              `Message sent to peer ${peer.slice(0, 5)}...${peer.slice(-5)} successfully`,
+              {
+                latency,
+                messageLength: message.length,
+              },
+            );
+          }
         });
       }
-      await wait();
+      await waitBeforeNextBurst();
     }
     logger.info('Direct scenario finished');
   }

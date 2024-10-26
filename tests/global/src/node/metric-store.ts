@@ -34,9 +34,13 @@ export const saveDirect = async (
 
     writeApi.writePoint(point);
     await writeApi.flush();
-  } catch {
+    logger.debug('Direct message data saved in database');
+  } catch (error) {
     logger.warn(
       'An error occurred while saving direct message data in database',
+    );
+    logger.debug(
+      (error instanceof Error && error.message) || 'Unknown error message',
     );
   }
 };
@@ -61,9 +65,13 @@ export const savePubsub = async (
 
     writeApi.writePoint(point);
     await writeApi.flush();
-  } catch {
+    logger.debug('Pubsub message data saved in database');
+  } catch (error) {
     logger.warn(
       'An error occurred while saving pubsub message data in database',
+    );
+    logger.debug(
+      (error instanceof Error && error.message) || 'Unknown error message',
     );
   }
 };

@@ -20,3 +20,5 @@ const node = await createRoseNetRelay({
 
 await node.start();
 node.subscribe('rosenet-news', () => {});
+
+logger.info('RoseNet relay started');

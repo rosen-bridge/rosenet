@@ -2,6 +2,8 @@ import { createRoseNetNode } from '@rosen-bridge/rosenet-node';
 
 import { saveDirect, savePubsub } from './metric-store';
 
+import logger from './logger';
+
 /**
  * Register pubsub and direct message handlers
  *
@@ -13,18 +15,23 @@ export const registerHandlers = (
   node.handleIncomingMessage(async (from, message) => {
     const roundtripEnd = Date.now();
     const roundtripStart = +message!.slice(-13);
-    saveDirect(
-      'receive',
-      'success',
+    const latency = roundtripEnd - roundtripStart;
+    saveDirect('receive', 'success', from, latency, message!.length);
+    logger.info('Direct message received', {
       from,
-      roundtripEnd - roundtripStart,
-      message!.length,
-    );
+      latency,
+      messageLength: message!.length,
+    });
   });
 
   node.subscribe('rosenet-news', (message) => {
     const roundtripEnd = Date.now();
     const roundtripStart = +message.slice(-13);
-    savePubsub('receive', roundtripEnd - roundtripStart, message.length);
+    const latency = roundtripEnd - roundtripStart;
+    savePubsub('receive', latency, message.length);
+    logger.info('Pubsub message received', {
+      latency,
+      messageLength: message!.length,
+    });
   });
 };

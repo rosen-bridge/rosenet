@@ -3,7 +3,7 @@ import { random } from 'lodash-es';
 
 import config from '../config';
 import { savePubsub } from '../metric-store';
-import { wait } from '../utils';
+import { waitBeforeNextBurst } from '../utils';
 
 import logger from '../logger';
 
@@ -29,10 +29,15 @@ export async function* pubsubSenario(
           .repeat(random(config.minMessageSize, config.maxMessageSize))
           .concat(Date.now().toString());
 
-        await node.publish('rosenet-pubsub', message);
+        await node.publish('rosenet-pubsub', message).catch((error) => {
+          logger.warn(`An error occurred while publishing message`, { error });
+        });
         savePubsub('send', 0, message.length);
+        logger.info(`Message published successfully`, {
+          messageLength: message.length,
+        });
       }
-      await wait();
+      await waitBeforeNextBurst();
     }
     logger.info('Pubsub scenario finished');
   }
