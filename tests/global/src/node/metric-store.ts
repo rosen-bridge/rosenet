@@ -1,5 +1,7 @@
 import { InfluxDB, Point } from '@influxdata/influxdb-client';
 
+import logger from './logger';
+
 const influxDB = new InfluxDB({
   url: 'http://influxdb:8086',
   token: 'helloworld',
@@ -22,15 +24,21 @@ export const saveDirect = async (
   latency: number,
   size: number,
 ) => {
-  const point = new Point('direct')
-    .tag('direction', direction)
-    .tag('status', status)
-    .tag('peer', peer)
-    .floatField('latency', latency)
-    .uintField('size', size);
+  try {
+    const point = new Point('direct')
+      .tag('direction', direction)
+      .tag('status', status)
+      .tag('peer', peer)
+      .floatField('latency', latency)
+      .uintField('size', size);
 
-  writeApi.writePoint(point);
-  await writeApi.flush();
+    writeApi.writePoint(point);
+    await writeApi.flush();
+  } catch {
+    logger.warn(
+      'An error occurred while saving direct message data in database',
+    );
+  }
 };
 
 /**
@@ -45,11 +53,17 @@ export const savePubsub = async (
   latency: number,
   size: number,
 ) => {
-  const point = new Point('pubsub')
-    .tag('direction', direction)
-    .floatField('latency', latency)
-    .uintField('size', size);
+  try {
+    const point = new Point('pubsub')
+      .tag('direction', direction)
+      .floatField('latency', latency)
+      .uintField('size', size);
 
-  writeApi.writePoint(point);
-  await writeApi.flush();
+    writeApi.writePoint(point);
+    await writeApi.flush();
+  } catch {
+    logger.warn(
+      'An error occurred while saving pubsub message data in database',
+    );
+  }
 };

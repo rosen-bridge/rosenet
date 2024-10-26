@@ -13,7 +13,27 @@ import { pubsubSenario } from './scenarios/pubsub';
 
 import logger from './logger';
 
-const privateKey = await readPrivateKeyFromFile('.rosenet/pk');
+process.on('uncaughtException', (error) => {
+  logger.error('An uncaught exception occurred');
+  logger.debug(error?.message ?? 'Unknown error message');
+  process.exit(1);
+});
+
+process.on('unhandledRejection', (error) => {
+  logger.error('An unhandled rejection occurred');
+  logger.debug(
+    (error instanceof Error && error?.message) || 'Unknown error message',
+  );
+  process.exit(1);
+});
+
+const privateKey = await readPrivateKeyFromFile('.rosenet/pk').catch(
+  (error) => {
+    logger.error('An error occurred while getting private key from file');
+    logger.debug(error?.message ?? 'Unknown error message');
+    process.exit(1);
+  },
+);
 
 const node = await createRoseNetNode({
   relay: {
