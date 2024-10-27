@@ -10,14 +10,14 @@ const winstonLogger = new WinstonLogger([
     type: 'file',
     level: 'info',
     maxFiles: '10',
-    maxSize: '5MB',
+    maxSize: '20m',
     path: './logs/info/',
   },
   {
     type: 'file',
     level: 'debug',
     maxFiles: '100',
-    maxSize: '5MB',
+    maxSize: '20m',
     path: './logs/debug/',
   },
 ]);
