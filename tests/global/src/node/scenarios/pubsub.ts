@@ -29,7 +29,7 @@ export async function* pubsubScenario(
           .repeat(random(config.minMessageSize, config.maxMessageSize))
           .concat(Date.now().toString());
 
-        await node.publish('rosenet-pubsub', message).catch((error) => {
+        await node.publish('rosenet-news', message).catch((error) => {
           serviceLogger.warn(`An error occurred while publishing message`, {
             error,
           });
