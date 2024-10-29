@@ -64,7 +64,7 @@ const createRoseNetNode = async (config: PartialRoseNetNodeConfig) => {
 
   const peerId = await privateKeyToPeerId(RoseNetNodeContext.config.privateKey);
 
-  RoseNetNodeContext.logger.debug(`PeerId ${peerId.toString()} generated`);
+  RoseNetNodeContext.logger.info(`PeerId ${peerId.toString()} generated`);
 
   const announceMultiaddr = await addressService.getAnnounceMultiaddr(
     RoseNetNodeContext.config.port,
