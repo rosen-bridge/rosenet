@@ -90,13 +90,13 @@ const createRoseNetNode = async (config: PartialRoseNetNodeConfig) => {
       listen: [
         `/ip4/${RoseNetNodeContext.config.host}/tcp/${RoseNetNodeContext.config.port}`,
         ...sampledRelayMultiaddrs.map(
-          (multiaddr) => `${multiaddr}/p2p-circuit`,
+          (multiaddr) => `${multiaddr}/p2p-circuit/p2p/${peerId.toString()}`,
         ),
       ],
       announce: [
         announceMultiaddr,
         ...sampledRelayMultiaddrs.map(
-          (multiaddr) => `${multiaddr}/p2p-circuit`,
+          (multiaddr) => `${multiaddr}/p2p-circuit/p2p/${peerId.toString()}`,
         ),
       ],
     },
