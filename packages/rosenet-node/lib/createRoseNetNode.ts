@@ -164,6 +164,10 @@ const createRoseNetNode = async (config: PartialRoseNetNodeConfig) => {
     info: {
       getPeerId: () => node.peerId.toString(),
       getConnectedPeers: () => node.getPeers().map((peer) => peer.toString()),
+      getDiscoveredPeers: async () => {
+        const peers = await node.peerStore.all();
+        return peers.map((peer) => peer.id.toString());
+      },
     },
   };
 };
