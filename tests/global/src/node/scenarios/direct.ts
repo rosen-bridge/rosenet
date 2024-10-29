@@ -22,15 +22,12 @@ export async function* directScenario(
     const timeout = yield;
     serviceLogger.info(`Running direct scenario for ${timeout}ms`);
     const signal = AbortSignal.timeout(timeout);
-    const peers = node.info
-      .getConnectedPeers()
-      .filter(
-        (peer) =>
-          !config.relayMultiaddrs.some((relayMultiaddr) =>
-            relayMultiaddr.includes(peer),
-          ),
-      );
-    peers.forEach(allConnectedPeersSoFar.add);
+    const peers = (await node.info.getDiscoveredPeers()).filter(
+      (peer) =>
+        !config.relayMultiaddrs.some((relayMultiaddr) =>
+          relayMultiaddr.includes(peer),
+        ),
+    );
     // eslint-disable-next-line no-constant-condition
     while (true) {
       if (signal.aborted) {
