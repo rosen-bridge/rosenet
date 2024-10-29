@@ -24,6 +24,9 @@ export async function* pubsubScenario(
       if (signal.aborted) {
         break;
       }
+      serviceLogger.info(
+        `Publishing ${config.pubsubBurstSize} messages`,
+      );
       for (let i = 0; i < config.pubsubBurstSize; i++) {
         const message = 'r'
           .repeat(random(config.minMessageSize, config.maxMessageSize))
