@@ -28,6 +28,7 @@ export async function* directScenario(
           relayMultiaddr.includes(peer),
         ),
     );
+    peers.forEach(allConnectedPeersSoFar.add.bind(allConnectedPeersSoFar));
     // eslint-disable-next-line no-constant-condition
     while (true) {
       if (signal.aborted) {
