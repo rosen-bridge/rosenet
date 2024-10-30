@@ -26,10 +26,10 @@ git clone https://github.com/rosen-bridge/rosenet.git
 
 # Choose your setup type:
 # For relay setup:
-cd tests/global/src/relay
+cd rosenet/tests/global/src/relay
 
 # For node setup:
-cd tests/global/src/node
+cd rosenet/tests/global/src/node
 
 # Create service configuration file
 cp .env.example .env
@@ -45,7 +45,7 @@ docker compose up -d
 
    ```bash
    git clone https://github.com/rosen-bridge/rosenet.git
-   cd tests/global/src/relay
+   cd rosenet/tests/global/src/relay
    ```
 
 2. **Configure Environment**
