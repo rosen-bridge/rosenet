@@ -101,7 +101,12 @@ async function getRoseNetDirectStreamTo(to: string, node: Libp2p) {
               ]
             : [
                 partialPartitions[0],
-                [...partialPartitions[1], address.multiaddr],
+                [
+                  ...partialPartitions[1],
+                  address.multiaddr.toString().endsWith('p2p-circuit')
+                    ? address.multiaddr.encapsulate(`/p2p/${peerId.toString()}`)
+                    : address.multiaddr,
+                ],
               ],
         [[], []] as [Multiaddr[], Multiaddr[]],
       );
