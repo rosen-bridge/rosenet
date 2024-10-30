@@ -13,18 +13,8 @@ import { pubsubScenario } from './scenarios/pubsub';
 
 import { serviceLogger, rosenetLogger } from './logger';
 
-process.on('uncaughtException', (error) => {
-  serviceLogger.error('An uncaught exception occurred');
-  serviceLogger.debug(error?.message ?? 'Unknown error message');
-  process.exit(1);
-});
-
-process.on('unhandledRejection', (error) => {
-  serviceLogger.error('An unhandled rejection occurred');
-  serviceLogger.debug(
-    (error instanceof Error && error?.message) || 'Unknown error message',
-  );
-  process.exit(1);
+process.on('uncaughtExceptionMonitor', (error) => {
+  serviceLogger.error('An uncaught exception occurred', { error });
 });
 
 const privateKey = await readPrivateKeyFromFile('.rosenet/pk').catch(
