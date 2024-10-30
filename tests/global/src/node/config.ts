@@ -13,4 +13,5 @@ export default {
   minScenarioDuration: optional(process.env.MIN_SCNEARIO_DURATION, 60_000),
   maxScenarioDuration: optional(process.env.MAX_SCNEARIO_DURATION, 300_000),
   relayMultiaddrs: process.env.RELAY_MULTIADDRS!.split(','),
+  influxdbToken: process.env.INFLUXDB_ADMIN_TOKEN!,
 };

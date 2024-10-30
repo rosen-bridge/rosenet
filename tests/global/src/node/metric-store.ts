@@ -2,9 +2,11 @@ import { InfluxDB, Point } from '@influxdata/influxdb-client';
 
 import { serviceLogger } from './logger';
 
+import config from './config';
+
 const influxDB = new InfluxDB({
   url: 'http://influxdb:8086',
-  token: 'admintoken',
+  token: config.influxdbToken,
 });
 const writeApi = influxDB.getWriteApi('Rosen', 'RoseNet');
 
