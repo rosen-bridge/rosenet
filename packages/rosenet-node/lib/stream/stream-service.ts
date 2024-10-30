@@ -111,15 +111,33 @@ async function getRoseNetDirectStreamTo(to: string, node: Libp2p) {
         [[], []] as [Multiaddr[], Multiaddr[]],
       );
 
+      RoseNetNodeContext.logger.debug(
+        `Fetched and partitioned peer multiaddresses`,
+        {
+          publicAddresses: publicAddresses.map((address) => address.toString()),
+          otherAddresses: otherAddresses.map((address) => address.toString()),
+        },
+      );
+
       if (publicAddresses) {
         try {
-          return await node.dial(publicAddresses, {
+          const connection = await node.dial(publicAddresses, {
             signal: AbortSignal.timeout(PUBLIC_MULTIADDR_DIAL_TIMEOUT),
           });
+          RoseNetNodeContext.logger.debug(
+            `Public multiaddress dialed successfully`,
+          );
+          return connection;
         } catch {
+          RoseNetNodeContext.logger.debug(
+            `Couldn't dial any public multiaddresses, trying relayed addresses`,
+          );
           return await node.dial(otherAddresses);
         }
       } else {
+        RoseNetNodeContext.logger.debug(
+          'No public multiaddress found for this peer, trying relayed addresses',
+        );
         return await node.dial(otherAddresses);
       }
     }));
