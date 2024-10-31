@@ -119,3 +119,7 @@ export const DEFAULT_FAIL_FAST_THRESHOLD =
  * Default gossipsubMaxInboundDataLength config of Gossipsub
  */
 export const DEFAULT_GOSSIPSUB_MAX_INBOUND_DATA_LENGTH = 170_000_000;
+/**
+ * Timeout used when dialing a peer's hopefully public multiaddress
+ */
+export const PUBLIC_MULTIADDR_DIAL_TIMEOUT = 5000;

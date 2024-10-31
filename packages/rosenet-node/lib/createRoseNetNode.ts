@@ -64,7 +64,7 @@ const createRoseNetNode = async (config: PartialRoseNetNodeConfig) => {
 
   const peerId = await privateKeyToPeerId(RoseNetNodeContext.config.privateKey);
 
-  RoseNetNodeContext.logger.debug(`PeerId ${peerId.toString()} generated`);
+  RoseNetNodeContext.logger.info(`PeerId ${peerId.toString()} generated`);
 
   const announceMultiaddr = await addressService.getAnnounceMultiaddr(
     RoseNetNodeContext.config.port,
@@ -90,13 +90,13 @@ const createRoseNetNode = async (config: PartialRoseNetNodeConfig) => {
       listen: [
         `/ip4/${RoseNetNodeContext.config.host}/tcp/${RoseNetNodeContext.config.port}`,
         ...sampledRelayMultiaddrs.map(
-          (multiaddr) => `${multiaddr}/p2p-circuit`,
+          (multiaddr) => `${multiaddr}/p2p-circuit/p2p/${peerId.toString()}`,
         ),
       ],
       announce: [
         announceMultiaddr,
         ...sampledRelayMultiaddrs.map(
-          (multiaddr) => `${multiaddr}/p2p-circuit`,
+          (multiaddr) => `${multiaddr}/p2p-circuit/p2p/${peerId.toString()}`,
         ),
       ],
     },
@@ -164,6 +164,10 @@ const createRoseNetNode = async (config: PartialRoseNetNodeConfig) => {
     info: {
       getPeerId: () => node.peerId.toString(),
       getConnectedPeers: () => node.getPeers().map((peer) => peer.toString()),
+      getDiscoveredPeers: async () => {
+        const peers = await node.peerStore.all();
+        return peers.map((peer) => peer.id.toString());
+      },
     },
   };
 };

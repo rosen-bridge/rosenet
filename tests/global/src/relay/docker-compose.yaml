@@ -1,0 +1,17 @@
+name: 'global-rosenet-test'
+
+services:
+  rosenet-relay:
+    build:
+      context: ../../../..
+      dockerfile: ./tests/global/src/relay/Dockerfile
+    env_file:
+      - .env.service
+    ports:
+      - ${PORT:-44123}:44123
+    volumes:
+      - rosenet-relay-pk:/app/tests/global/.rosenet
+      - ${LOGS_DIRECTORY:-./logs}:/app/tests/global/logs
+
+volumes:
+  rosenet-relay-pk:

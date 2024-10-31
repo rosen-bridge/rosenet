@@ -135,16 +135,16 @@ const sendMessageWithRetryAndBulkheadFactory = (node: Libp2p) => {
     const sendMessageInner = sendMessageFactory(node);
 
     const shouldFailFast =
-      bulkheadPolicy.executionSlots >
+      bulkheadPolicy.executionSlots <
       RoseNetNodeContext.config.direct.failFastThreshold;
 
     const maxAttempts = shouldFailFast
-      ? RoseNetNodeContext.config.direct.maxRetryAttempts
-      : RoseNetNodeContext.config.direct.failFastMaxRetryAttempts;
+      ? RoseNetNodeContext.config.direct.failFastMaxRetryAttempts
+      : RoseNetNodeContext.config.direct.maxRetryAttempts;
 
     const initialDelay = shouldFailFast
-      ? RoseNetNodeContext.config.direct.retryInitialDelay
-      : RoseNetNodeContext.config.direct.failFastRetryInitialDelay;
+      ? RoseNetNodeContext.config.direct.failFastRetryInitialDelay
+      : RoseNetNodeContext.config.direct.retryInitialDelay;
 
     const retryPolicy = retry(handleAll, {
       maxAttempts,
@@ -160,7 +160,7 @@ const sendMessageWithRetryAndBulkheadFactory = (node: Libp2p) => {
     });
     retryPolicy.onRetry((data) => {
       RoseNetNodeContext.logger.debug(
-        `Retry sending message (attempt #${data.attempt}/${RoseNetNodeContext.config.direct.maxRetryAttempts})`,
+        `Retry sending message (attempt #${data.attempt}/${maxAttempts})`,
         {
           message,
         },
@@ -176,7 +176,7 @@ const sendMessageWithRetryAndBulkheadFactory = (node: Libp2p) => {
         RoseNetNodeContext.logger.warn(
           'Message sending failed, dropping message',
           {
-            lastOccurredError: error,
+            lastOccurredError: JSON.stringify(error),
             isFailFastEnabled: shouldFailFast,
           },
         );

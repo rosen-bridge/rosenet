@@ -1,4 +1,5 @@
 import { peerIdFromString } from '@libp2p/peer-id';
+import { Multiaddr } from '@multiformats/multiaddr';
 import {
   circuitBreaker,
   CircuitBreakerPolicy,
@@ -14,7 +15,10 @@ import { Libp2p } from 'libp2p';
 
 import RoseNetNodeContext from '../context/RoseNetNodeContext';
 
-import { ROSENET_DIRECT_PROTOCOL_V1 } from '../constants';
+import {
+  ROSENET_DIRECT_PROTOCOL_V1,
+  PUBLIC_MULTIADDR_DIAL_TIMEOUT,
+} from '../constants';
 
 import { RoseNetNodeError } from '../errors';
 
@@ -70,7 +74,73 @@ async function getRoseNetDirectStreamTo(to: string, node: Libp2p) {
    */
   const connection =
     possibleOpenConnectionToPeer ??
-    (await peerBreakers[to].execute(() => node.dial(peerId)));
+    (await peerBreakers[to].execute(async () => {
+      /**
+       * The nodes advertise hopefully public multiaddresses, but these
+       * multiaddresses may be wrong because of being behind a non-symmetric
+       * NAT. In addition, there is a bug in libp2p that allows the dial to a
+       * single multiaddress of a peer to take all the timeout of a dial to the
+       * peer. These combined will cause the dial to nodes with unreachable
+       * public multiaddresses to always fail, because their relayed
+       * multiaddress is never tried.
+       *
+       * As a workaround, we manually first try to dial the public multiaddress
+       * but with a reduced timeout, and then the other ones if the first dial
+       * fails.
+       *
+       * Libp2p bug GitHub issue:
+       * https://github.com/libp2p/js-libp2p/issues/2368
+       */
+      const peerAddresses = (await node.peerStore.get(peerId)).addresses;
+      const [publicAddresses, otherAddresses] = peerAddresses.reduce(
+        (partialPartitions, address) =>
+          address.multiaddr.isThinWaistAddress()
+            ? [
+                [...partialPartitions[0], address.multiaddr],
+                partialPartitions[1],
+              ]
+            : [
+                partialPartitions[0],
+                [
+                  ...partialPartitions[1],
+                  address.multiaddr.toString().endsWith('p2p-circuit')
+                    ? address.multiaddr.encapsulate(`/p2p/${peerId.toString()}`)
+                    : address.multiaddr,
+                ],
+              ],
+        [[], []] as [Multiaddr[], Multiaddr[]],
+      );
+
+      RoseNetNodeContext.logger.debug(
+        `Fetched and partitioned peer multiaddresses`,
+        {
+          publicAddresses: publicAddresses.map((address) => address.toString()),
+          otherAddresses: otherAddresses.map((address) => address.toString()),
+        },
+      );
+
+      if (publicAddresses) {
+        try {
+          const connection = await node.dial(publicAddresses, {
+            signal: AbortSignal.timeout(PUBLIC_MULTIADDR_DIAL_TIMEOUT),
+          });
+          RoseNetNodeContext.logger.debug(
+            `Public multiaddress dialed successfully`,
+          );
+          return connection;
+        } catch {
+          RoseNetNodeContext.logger.debug(
+            `Couldn't dial any public multiaddresses, trying relayed addresses`,
+          );
+          return await node.dial(otherAddresses);
+        }
+      } else {
+        RoseNetNodeContext.logger.debug(
+          'No public multiaddress found for this peer, trying relayed addresses',
+        );
+        return await node.dial(otherAddresses);
+      }
+    }));
 
   RoseNetNodeContext.logger.debug(
     possibleOpenConnectionToPeer
