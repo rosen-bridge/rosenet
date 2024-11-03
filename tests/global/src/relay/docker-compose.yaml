@@ -12,6 +12,7 @@ services:
     volumes:
       - rosenet-relay-pk:/app/tests/global/.rosenet
       - ${LOGS_DIRECTORY:-./logs}:/app/tests/global/logs
+    restart: always
 
 volumes:
   rosenet-relay-pk:
