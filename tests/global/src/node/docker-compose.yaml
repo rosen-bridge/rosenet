@@ -16,6 +16,7 @@ services:
       - ${LOGS_DIRECTORY:-./logs}:/app/tests/global/logs
     depends_on:
       - influxdb
+    restart: always
 
   influxdb:
     image: influxdb
