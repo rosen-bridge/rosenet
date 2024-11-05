@@ -1,6 +1,5 @@
 {
   "name": "@rosen-bridge/rosenet-utils",
-  "private": true,
   "version": "0.2.0",
   "description": "Utils used inside RoseNet",
   "repository": "https://github.com/rosen-bridge/rosenet",
