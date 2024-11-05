@@ -175,7 +175,9 @@ After the test is over, analyze the results through the node's database:
 
 2. **Extract Test Results**
    - Navigate to "Data Explorer"
-   - Select bucket: `RoseNet`
-   - Choose measurements: `direct` and `pubsub`
-   - Change period to an appropriate one (e.g., a week)
+   - Select bucket: `RoseNet` (Chosen by default)
+   - Choose measurements: `direct` and `pubsub` from "\_measurements" filter
+   - On "aggregate functions" section (bottom right), click custom, then uncheck "mean", and any other possibly selected aggregate function
+   - Change period to an appropriate one (e.g. "Past 7d") - note that it may take a while to run the query and your browser may ask you to kill the tab, which you should ignore and wait
    - Export data using the CSV button
+   - The file is probably quite large, so it's a good idea to compress it
