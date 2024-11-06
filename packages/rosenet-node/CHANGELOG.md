@@ -1,5 +1,18 @@
 # @rosen-bridge/rosenet-node
 
+## 0.2.0
+
+### Minor Changes
+
+- Add `getDiscoveredPeers` to public APIs for gettting a list of discovered peer ids
+
+### Patch Changes
+
+- Change level of peer id log to info
+- Fix failing dials when nodes are behind a non-symmetric NAT
+- Updated dependencies
+  - @rosen-bridge/rosenet-utils@0.2.0
+
 ## 0.1.0
 
 ### Minor Changes
