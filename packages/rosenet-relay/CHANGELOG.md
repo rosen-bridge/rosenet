@@ -1,5 +1,12 @@
 # @rosen-bridge/rosenet-relay
 
+## 0.1.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @rosen-bridge/rosenet-utils@0.3.0
+
 ## 0.1.1
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @rosen-bridge/rosenet-utils
 
+## 0.3.0
+
+### Minor Changes
+
+- Refactor readPrivateKeyFromFile to read privKey with base64pad encoding
+
 ## 0.2.0
 
 ### Minor Changes
