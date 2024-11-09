@@ -25,7 +25,7 @@ import {
   RESERVATION_DURATION_LIMIT,
 } from './constants';
 
-import packageJson from '../package.json' with { type: 'json' };
+import packageJson from '../package.json' assert { type: 'json' };
 
 import { RoseNetRelayConfig } from './types';
 
