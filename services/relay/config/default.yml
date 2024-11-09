@@ -11,4 +11,4 @@ listen:
   port: 44123
 whitelist: []
 pubsubTopics: []
-privateKeyFilePath: './rosenet-pk'
+privateKeyFilePath: './rosenet-secret.json'
