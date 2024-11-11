@@ -11,4 +11,4 @@ export const pubsubTopics = config.get<string[]>('pubsubTopics') ?? [];
 export const logs = config.get<TransportOptions[]>('logs') ?? [];
 
 export const privateKeyFilePath =
-  config.get<string>('privateKeyFilePath') ?? './rosenet-pk';
+  config.get<string>('privateKeyFilePath') ?? './rosenet-secret.json';
