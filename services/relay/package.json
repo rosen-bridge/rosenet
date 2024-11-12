@@ -1,0 +1,38 @@
+{
+  "name": "@rosen-bridge/relay-service",
+  "version": "0.1.0",
+  "description": "Rosen Bridge relay service",
+  "repository": "",
+  "license": "GPL-3.0",
+  "author": "Rosen Team",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "lint": "eslint --fix . && npm run prettify",
+    "prettify": "prettier --write . --ignore-path ./.gitignore",
+    "start": "node --watch --loader ./ts-node-esm-loader.js --loader extensionless ./src/index.ts",
+    "start:prod": "node --loader extensionless ./dist/index.js",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@rosen-bridge/abstract-logger": "^2.0.1",
+    "@rosen-bridge/rosenet-relay": "^0.1.1",
+    "@rosen-bridge/rosenet-utils": "^0.2.0",
+    "@rosen-bridge/winston-logger": "^1.0.2",
+    "config": "^3.3.7"
+  },
+  "devDependencies": {
+    "@types/config": "^0.0.41",
+    "@types/node": "^20.11.9",
+    "@typescript-eslint/eslint-plugin": "^6.19.1",
+    "@typescript-eslint/parser": "^6.19.1",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "extensionless": "^1.9.6",
+    "prettier": "^3.2.4",
+    "ts-node": "^10.7.0",
+    "tsconfig-paths": "^4.1.2",
+    "typescript": "^5.3.3"
+  }
+}

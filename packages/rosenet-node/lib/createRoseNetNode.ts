@@ -33,7 +33,7 @@ import sample from './utils/sample';
 
 import RoseNetNodeError from './errors/RoseNetNodeError';
 
-import packageJson from '../package.json' with { type: 'json' };
+import packageJson from '../package.json' assert { type: 'json' };
 
 import { PartialRoseNetNodeConfig } from './types';
 

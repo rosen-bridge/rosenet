@@ -1,0 +1,14 @@
+logs:
+  - type: 'file'
+    path: './logs/'
+    maxSize: '10m'
+    maxFiles: '14d'
+    level: 'info'
+  - type: 'console'
+    level: 'info'
+listen:
+  host: 0.0.0.0
+  port: 44123
+whitelist: []
+pubsubTopics: []
+privateKeyFilePath: './rosenet-secret.json'
