@@ -40,6 +40,13 @@ const subscribeFactory = (node: Libp2p<{ pubsub: PubSub }>) => {
               RoseNetNodeContext.logger.debug('Pubsub message received', {
                 message,
               });
+            } else {
+              RoseNetNodeContext.logger.warn(
+                `Couldn't verify pubsub message with senderPubKey ${message.senderPubKey}`,
+              );
+              RoseNetNodeContext.logger.debug(
+                `senderPubKey ${message.senderPubKey} couldn't verify message ${message.message} with signature ${message.signature}`,
+              );
             }
           }
         });
