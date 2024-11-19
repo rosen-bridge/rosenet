@@ -24,7 +24,7 @@ export const registerHandlers = (
     });
   });
 
-  node.subscribe('rosenet-news', (message) => {
+  node.subscribe('rosenet-news', (_, message) => {
     const roundtripEnd = Date.now();
     const roundtripStart = +message.slice(-13);
     const latency = roundtripEnd - roundtripStart;

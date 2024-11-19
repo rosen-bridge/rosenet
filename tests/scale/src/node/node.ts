@@ -78,7 +78,7 @@ node.handleIncomingMessage(async (from) => {
   };
 });
 
-node.subscribe('rosenet-news', (message) => {
+node.subscribe('rosenet-news', (_, message) => {
   received++;
   const delay = +(Date.now() - +message.split('.')[1]) / 1000;
   totalDelay += +(Date.now() - +message.split('.')[1]) / 1000;

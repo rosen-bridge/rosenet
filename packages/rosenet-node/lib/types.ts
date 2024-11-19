@@ -50,3 +50,9 @@ export type PartialRoseNetNodeConfig = Pick<
   RoseNetNodeConfigMandatoryKeys
 > &
   RecursivePartial<Omit<RoseNetNodeConfig, RoseNetNodeConfigMandatoryKeys>>;
+
+export type PubSubMSG = {
+  senderPubKey: string;
+  signature: string;
+  message: string;
+};
