@@ -155,6 +155,16 @@ const createRoseNetNode = async (config: PartialRoseNetNodeConfig) => {
 
   addEventListeners(node, RoseNetNodeContext.logger);
 
+  const relaysId = RoseNetNodeContext.config.relay.multiaddrs.map(
+    (relay) => relay.split('/').pop()!,
+  );
+  const getConnectedPeers = (excludeRelays: boolean = false) => {
+    const peers = node.getPeers().map((peer) => peer.toString());
+    return excludeRelays
+      ? peers.filter((peer) => !relaysId.includes(peer))
+      : peers;
+  };
+
   return {
     start: async () => node.start(),
     sendMessage: sendMessageFactory(node),
@@ -162,8 +172,9 @@ const createRoseNetNode = async (config: PartialRoseNetNodeConfig) => {
     publish: publishFactory(node),
     subscribe: subscribeFactory(node),
     info: {
+      relaysId: relaysId,
       getPeerId: () => node.peerId.toString(),
-      getConnectedPeers: () => node.getPeers().map((peer) => peer.toString()),
+      getConnectedPeers: getConnectedPeers,
       getDiscoveredPeers: async () => {
         const peers = await node.peerStore.all();
         return peers.map((peer) => peer.id.toString());
