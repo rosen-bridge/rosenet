@@ -1,14 +1,14 @@
 import { isIP } from 'node:net';
 
 import { fromNodeAddress } from '@multiformats/multiaddr';
-import { publicIp } from 'public-ip';
+import { publicIpv4 } from 'public-ip';
 
 import RoseNetNodeContext from '../context/RoseNetNodeContext';
 
 /**
  * identify public ip (v4 or v6) of current node
  */
-const identifyPublicIP = () => publicIp();
+const identifyPublicIP = () => publicIpv4();
 
 /**
  * get multiaddr containing public ip of current node, to be used as announce
