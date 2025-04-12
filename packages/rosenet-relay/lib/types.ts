@@ -1,4 +1,4 @@
-import { AbstractLogger } from '@rosen-bridge/logger-interface';
+import { AbstractLogger } from '@rosen-bridge/abstract-logger';
 import { SignaturePolicy } from '@libp2p/interface';
 
 export interface RoseNetRelayConfig {

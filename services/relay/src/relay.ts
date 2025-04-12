@@ -1,4 +1,4 @@
-import { DefaultLoggerFactory } from '@rosen-bridge/abstract-logger';
+import { CallbackLoggerFactory } from '@rosen-bridge/callback-logger';
 import { createRoseNetRelay } from '@rosen-bridge/rosenet-relay';
 import { readPrivateKeyFromFile } from '@rosen-bridge/rosenet-utils';
 
@@ -10,8 +10,8 @@ import {
   whitelist,
 } from './configs';
 
-const logger = DefaultLoggerFactory.getInstance().getLogger(import.meta.url);
-const rosenetLogger = DefaultLoggerFactory.getInstance().getLogger('rosenet');
+const logger = CallbackLoggerFactory.getInstance().getLogger(import.meta.url);
+const rosenetLogger = CallbackLoggerFactory.getInstance().getLogger('rosenet');
 
 /**
  * Start relay service

@@ -1,7 +1,7 @@
 import { format as utilFormat } from 'node:util';
 
 import { ComponentLogger, Logger } from '@libp2p/interface';
-import { AbstractLogger, DummyLogger } from '@rosen-bridge/logger-interface';
+import { AbstractLogger, DummyLogger } from '@rosen-bridge/abstract-logger';
 
 import format from './format';
 
