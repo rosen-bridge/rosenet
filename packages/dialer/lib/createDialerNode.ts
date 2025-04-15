@@ -37,9 +37,9 @@ const createDialerNode = async (config: PartialRoseNetNodeConfig) => {
 
   /**
    * establish connection to relay
-   * @param channel: string desire channel for subscription
-   * @param callback: a callback function for subscribed channel
-   * @param url: string for apiCallbackFunction
+   * @param channel string desire channel for subscription
+   * @param callback a callback function for subscribed channel
+   * @param url string for apiCallbackFunction
    */
   const subscribeChannel = (
     channel: string,
@@ -149,10 +149,9 @@ const createDialerNode = async (config: PartialRoseNetNodeConfig) => {
    */
   const getRelayStates = () => {
     const connectedPeers = node.info.getConnectedPeers();
-    const relayStates = groupBy(node.info.relaysId, (peer) =>
+    return groupBy(node.info.relaysId, (peer) =>
       connectedPeers.includes(peer) ? 'connected' : 'notConnected',
     );
-    return relayStates;
   };
 
   return {
