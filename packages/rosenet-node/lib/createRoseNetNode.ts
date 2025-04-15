@@ -5,7 +5,7 @@ import { bootstrap } from '@libp2p/bootstrap';
 import { circuitRelayTransport } from '@libp2p/circuit-relay-v2';
 import { dcutr } from '@libp2p/dcutr';
 import { identify } from '@libp2p/identify';
-import { PeerId } from '@libp2p/interface';
+import { PeerId, PeerQuery } from '@libp2p/interface';
 import { pubsubPeerDiscovery } from '@libp2p/pubsub-peer-discovery';
 import { tcp } from '@libp2p/tcp';
 
@@ -155,6 +155,31 @@ const createRoseNetNode = async (config: PartialRoseNetNodeConfig) => {
 
   addEventListeners(node, RoseNetNodeContext.logger);
 
+  const relaysId = RoseNetNodeContext.config.relay.multiaddrs.map(
+    (relay) => relay.split('/').pop()!,
+  );
+
+  const getDiscoveredPeers = async (excludeRelays: boolean = false) => {
+    const peerQuery: PeerQuery = {
+      filters: excludeRelays
+        ? [
+            (peer) => {
+              return !relaysId.includes(peer.id.toString());
+            },
+          ]
+        : [],
+    };
+    const peers = await node.peerStore.all(peerQuery);
+    return peers.map((peer) => peer.id.toString());
+  };
+
+  const getConnectedPeers = (excludeRelays: boolean = false) => {
+    const peers = node.getPeers().map((peer) => peer.toString());
+    return excludeRelays
+      ? peers.filter((peer) => !relaysId.includes(peer))
+      : peers;
+  };
+
   return {
     start: async () => node.start(),
     sendMessage: sendMessageFactory(node),
@@ -162,12 +187,10 @@ const createRoseNetNode = async (config: PartialRoseNetNodeConfig) => {
     publish: publishFactory(node),
     subscribe: subscribeFactory(node),
     info: {
+      relaysId: relaysId,
       getPeerId: () => node.peerId.toString(),
-      getConnectedPeers: () => node.getPeers().map((peer) => peer.toString()),
-      getDiscoveredPeers: async () => {
-        const peers = await node.peerStore.all();
-        return peers.map((peer) => peer.id.toString());
-      },
+      getConnectedPeers: getConnectedPeers,
+      getDiscoveredPeers: getDiscoveredPeers,
     },
   };
 };

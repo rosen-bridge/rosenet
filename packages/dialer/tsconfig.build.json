@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "./lib"
+  },
+  "references": [
+    { "path": "../utils/tsconfig.build.json" },
+    {
+      "path": "../rosenet-node/tsconfig.build.json"
+    }
+  ]
+}

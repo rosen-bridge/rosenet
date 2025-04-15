@@ -1,5 +1,6 @@
 import { SignaturePolicy } from '@libp2p/interface';
 import { AbstractLogger } from '@rosen-bridge/logger-interface';
+import createRoseNetNode from './createRoseNetNode';
 
 export interface RoseNetNodeConfig {
   privateKey: string;
@@ -56,3 +57,5 @@ export type PubSubMSG = {
   signature: string;
   message: string;
 };
+
+export type RoseNetNode = Awaited<ReturnType<typeof createRoseNetNode>>;

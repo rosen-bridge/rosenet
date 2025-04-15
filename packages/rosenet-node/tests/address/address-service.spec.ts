@@ -6,7 +6,7 @@ const fakePublicIP = vi.hoisted(() => '172.20.20.20');
 const fakePort = 12345;
 
 vi.mock('public-ip', () => ({
-  publicIp: vi.fn().mockResolvedValue(fakePublicIP),
+  publicIpv4: vi.fn().mockResolvedValue(fakePublicIP),
 }));
 
 describe('getAnnounceMultiaddr', () => {
