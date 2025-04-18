@@ -1,6 +1,6 @@
 import { Libp2p } from 'libp2p';
 import { diffString, DiffStringOptions } from 'json-diff';
-import { AbstractLogger } from '@rosen-bridge/logger-interface';
+import { AbstractLogger } from '@rosen-bridge/abstract-logger';
 
 const jsonDiffOptions: DiffStringOptions = {
   color: false,

@@ -1,5 +1,5 @@
 import { SignaturePolicy } from '@libp2p/interface';
-import { AbstractLogger } from '@rosen-bridge/logger-interface';
+import { AbstractLogger } from '@rosen-bridge/abstract-logger';
 import createRoseNetNode from './createRoseNetNode';
 
 export interface RoseNetNodeConfig {

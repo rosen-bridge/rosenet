@@ -29,10 +29,10 @@
   },
   "dependencies": {
     "@influxdata/influxdb-client": "^1.35.0",
-    "@rosen-bridge/abstract-logger": "^2.0.1",
+    "@rosen-bridge/callback-logger": "^0.1.0",
     "@rosen-bridge/rosenet-node": "^0.2.1",
     "@rosen-bridge/rosenet-relay": "^0.1.2",
-    "@rosen-bridge/winston-logger": "^1.0.2",
+    "@rosen-bridge/winston-logger": "^1.0.3",
     "extensionless": "^1.9.6",
     "lodash-es": "^4.17.21",
     "ts-node": "^10.7.0",

@@ -9,7 +9,7 @@ import {
   SubscribeChannels,
   SubscribeChannelWithURL,
 } from './types';
-import { AbstractLogger, DummyLogger } from '@rosen-bridge/logger-interface';
+import { AbstractLogger, DummyLogger } from '@rosen-bridge/abstract-logger';
 import { DEFAULT_PUBSUB_TOPIC } from './constants';
 import { groupBy } from 'lodash-es';
 import JsonBigInt from '@rosen-bridge/json-bigint';

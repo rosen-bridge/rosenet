@@ -10,10 +10,10 @@
   },
   "references": [
     {
-      "path": "../../packages/rosenet-relay",
+      "path": "../../packages/rosenet-relay/tsconfig.build.json",
     },
     {
-      "path": "../../packages/utils",
+      "path": "../../packages/utils/tsconfig.build.json",
     },
   ],
 }
