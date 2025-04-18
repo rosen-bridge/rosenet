@@ -4,6 +4,7 @@ import { readPrivateKeyFromFile } from '@rosen-bridge/rosenet-utils';
 
 import {
   host,
+  maxReservations,
   port,
   privateKeyFilePath,
   pubsubTopics,
@@ -19,6 +20,7 @@ const rosenetLogger = CallbackLoggerFactory.getInstance().getLogger('rosenet');
 const startRelay = async () => {
   const privateKey = await readPrivateKeyFromFile(privateKeyFilePath);
   const node = await createRoseNetRelay({
+    maxReservations,
     privateKey,
     listen: {
       host,

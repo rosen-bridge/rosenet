@@ -4,6 +4,8 @@ import config from 'config';
 export const host = config.get<string>('listen.host') ?? '0.0.0.0';
 export const port = config.get<number>('listen.port') ?? 44123;
 
+export const maxReservations = config.get<number>('maxReservations') ?? 50;
+
 export const whitelist = config.get<string[]>('whitelist') ?? [];
 
 export const pubsubTopics = config.get<string[]>('pubsubTopics') ?? [];
