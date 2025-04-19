@@ -12,8 +12,8 @@
   "scripts": {
     "lint": "eslint --fix . && npm run prettify",
     "prettify": "prettier --write . --ignore-path ./.gitignore",
-    "start:node": "node --loader ./ts-node-esm-loader.js --loader extensionless ./src/node/node.ts",
-    "start:relay": "node --loader ./ts-node-esm-loader.js --loader extensionless ./src/relay/relay.ts",
+    "start:node": "tsx ./src/node/node.ts",
+    "start:relay": "tsx ./src/relay/relay.ts",
     "type-check": "tsc --noEmit"
   },
   "devDependencies": {
@@ -33,9 +33,7 @@
     "@rosen-bridge/rosenet-node": "^0.2.1",
     "@rosen-bridge/rosenet-relay": "^0.1.2",
     "@rosen-bridge/winston-logger": "^1.0.3",
-    "extensionless": "^1.9.6",
     "lodash-es": "^4.17.21",
-    "ts-node": "^10.7.0",
-    "tsconfig-paths": "^4.1.2"
+    "tsx": "^4.19.3"
   }
 }
