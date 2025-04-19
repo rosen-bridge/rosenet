@@ -5,10 +5,6 @@
     "baseUrl": ".",
   },
   "include": ["src"],
-  "ts-node": {
-    "esm": true,
-    "transpileOnly": true,
-  },
   "references": [
     {
       "path": "../../packages/rosenet-node/tsconfig.build.json",

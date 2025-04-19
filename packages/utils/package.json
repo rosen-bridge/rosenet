@@ -13,7 +13,7 @@
     "coverage": "npm run test -- --coverage",
     "lint": "eslint --fix . && npm run prettify",
     "prettify": "prettier --write . --ignore-path ./.gitignore",
-    "test": "NODE_OPTIONS=--loader=extensionless vitest",
+    "test": "NODE_OPTIONS='--import tsx' vitest",
     "type-check": "tsc --noEmit"
   },
   "devDependencies": {
@@ -25,9 +25,9 @@
     "@vitest/coverage-istanbul": "^1.2.2",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
-    "extensionless": "^1.9.6",
     "interface-datastore": "^8.2.11",
     "prettier": "^3.2.4",
+    "tsx": "^4.19.3",
     "typescript": "^5.3.3",
     "vitest": "^1.2.2"
   },
