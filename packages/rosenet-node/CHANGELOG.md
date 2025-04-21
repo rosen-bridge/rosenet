@@ -1,5 +1,20 @@
 # @rosen-bridge/rosenet-node
 
+## 0.3.0
+
+### Minor Changes
+
+- Export the requirements of the dialer package and add the excludeRelays flag for the node’s connections
+- Update logger package
+- Add sign/verify messages in pubub protocol and add from field to subscribe handler
+
+### Patch Changes
+
+- Fix the address-service to return IPv4. The publicIp package automatically returns IPv6, which will cause issues on most networks.
+- Replace extensionless module resolution with tsx tool
+- Updated dependencies
+  - @rosen-bridge/rosenet-utils@0.4.0
+
 ## 0.2.1
 
 ### Patch Changes
