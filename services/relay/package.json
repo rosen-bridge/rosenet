@@ -1,6 +1,6 @@
 {
   "name": "@rosen-bridge/relay-service",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Rosen Bridge relay service",
   "repository": "",
   "license": "GPL-3.0",
@@ -16,8 +16,8 @@
   },
   "dependencies": {
     "@rosen-bridge/callback-logger": "^0.1.0",
-    "@rosen-bridge/rosenet-relay": "^0.1.2",
-    "@rosen-bridge/rosenet-utils": "^0.3.0",
+    "@rosen-bridge/rosenet-relay": "^0.2.0",
+    "@rosen-bridge/rosenet-utils": "^0.4.0",
     "@rosen-bridge/winston-logger": "1.0.3",
     "config": "^3.3.7",
     "tsx": "^4.19.3"

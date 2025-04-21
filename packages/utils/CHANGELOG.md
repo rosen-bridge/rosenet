@@ -1,5 +1,16 @@
 # @rosen-bridge/rosenet-utils
 
+## 0.4.0
+
+### Minor Changes
+
+- Update logger package
+- Add sign/verify messages in pubub protocol and add from field to subscribe handler
+
+### Patch Changes
+
+- Replace extensionless module resolution with tsx tool
+
 ## 0.3.0
 
 ### Minor Changes
