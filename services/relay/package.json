@@ -20,6 +20,7 @@
     "@rosen-bridge/rosenet-utils": "^0.4.0",
     "@rosen-bridge/winston-logger": "1.0.3",
     "config": "^3.3.7",
+    "js-yaml": "^4.1.0",
     "tsx": "^4.19.3"
   },
   "devDependencies": {
