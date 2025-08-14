@@ -138,3 +138,7 @@ tests/*/terraform.tfvars
 
 .vscode/settings.json
 .idea
+
+services/**/production.yaml
+services/**/local*.yaml
+services/**/rosenet-secret.json

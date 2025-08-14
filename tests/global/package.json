@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "description": "RoseNet global test",
   "repository": "https://github.com/rosen-bridge/rosenet",
-  "license": "GPL-3.0",
+  "license": "MIT",
   "author": "Rosen Team",
   "type": "module",
   "main": "dist/index.js",
@@ -30,8 +30,8 @@
   "dependencies": {
     "@influxdata/influxdb-client": "^1.35.0",
     "@rosen-bridge/callback-logger": "^0.1.0",
-    "@rosen-bridge/rosenet-node": "^0.3.0",
-    "@rosen-bridge/rosenet-relay": "^0.2.0",
+    "@rosen-bridge/rosenet-node": "^0.3.1",
+    "@rosen-bridge/rosenet-relay": "^0.2.1",
     "@rosen-bridge/winston-logger": "^1.0.3",
     "lodash-es": "^4.17.21",
     "tsx": "^4.19.3"

@@ -1,5 +1,11 @@
 # @rosen-bridge/relay-service
 
+## 0.2.1
+
+### Patch Changes
+
+- Fix js-yaml dependency
+
 ## 0.2.0
 
 ### Minor Changes
@@ -10,6 +16,6 @@
 ### Patch Changes
 
 - Replace extensionless module resolution with tsx tool
-- Updated dependencies
+- Update dependencies
   - @rosen-bridge/rosenet-relay@0.2.0
   - @rosen-bridge/rosenet-utils@0.4.0

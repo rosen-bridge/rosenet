@@ -1,9 +1,9 @@
 {
   "name": "@rosen-bridge/relay-service",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Rosen Bridge relay service",
   "repository": "",
-  "license": "GPL-3.0",
+  "license": "MIT",
   "author": "Rosen Team",
   "type": "module",
   "main": "./src/index.ts",

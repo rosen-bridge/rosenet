@@ -1,5 +1,13 @@
 # @rosen-bridge/rosenet-relay
 
+## 0.2.1
+
+### Patch Changes
+
+- Update package license to MIT
+- Update dependencies
+  - @rosen-bridge/rosenet-utils@0.4.1
+
 ## 0.2.0
 
 ### Minor Changes
@@ -9,21 +17,21 @@
 ### Patch Changes
 
 - Replace extensionless module resolution with tsx tool
-- Updated dependencies
+- Update dependencies
   - @rosen-bridge/rosenet-utils@0.4.0
 
 ## 0.1.2
 
 ### Patch Changes
 
-- Updated dependencies
+- Update dependencies
   - @rosen-bridge/rosenet-utils@0.3.0
 
 ## 0.1.1
 
 ### Patch Changes
 
-- Updated dependencies
+- Update dependencies
   - @rosen-bridge/rosenet-utils@0.2.0
 
 ## 0.1.0

@@ -1,5 +1,11 @@
 # @rosen-bridge/rosenet-utils
 
+## 0.4.1
+
+### Patch Changes
+
+- Update package license to MIT
+
 ## 0.4.0
 
 ### Minor Changes
