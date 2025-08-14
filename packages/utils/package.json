@@ -1,9 +1,9 @@
 {
   "name": "@rosen-bridge/rosenet-utils",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Utils used inside RoseNet",
   "repository": "https://github.com/rosen-bridge/rosenet",
-  "license": "GPL-3.0",
+  "license": "MIT",
   "author": "Rosen Team",
   "type": "module",
   "main": "dist/index.js",
@@ -14,7 +14,8 @@
     "lint": "eslint --fix . && npm run prettify",
     "prettify": "prettier --write . --ignore-path ./.gitignore",
     "test": "NODE_OPTIONS='--import tsx' vitest",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "release": "npm run test -- --run && npm run build && npm publish --access public"
   },
   "devDependencies": {
     "@multiformats/multiaddr": "^12.2.1",

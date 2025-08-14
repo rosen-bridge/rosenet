@@ -1,5 +1,13 @@
 # @rosen-bridge/dialer
 
+## 0.2.1
+
+### Patch Changes
+
+- Update package license to MIT
+- Update dependencies
+  - @rosen-bridge/rosenet-node@0.3.1
+
 ## 0.2.0
 
 ### Minor Changes
@@ -9,5 +17,5 @@
 ### Patch Changes
 
 - Replace extensionless module resolution with tsx tool
-- Updated dependencies
+- Update dependencies
   - @rosen-bridge/rosenet-node@0.3.0

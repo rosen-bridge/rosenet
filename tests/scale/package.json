@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "description": "RoseNet scaling large messages test",
   "repository": "https://github.com/rosen-bridge/rosenet",
-  "license": "GPL-3.0",
+  "license": "MIT",
   "author": "Rosen Team",
   "type": "module",
   "main": "dist/index.js",
@@ -26,8 +26,8 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
-    "@rosen-bridge/rosenet-node": "^0.3.0",
-    "@rosen-bridge/rosenet-relay": "^0.2.0",
+    "@rosen-bridge/rosenet-node": "^0.3.1",
+    "@rosen-bridge/rosenet-relay": "^0.2.1",
     "tsx": "^4.19.3"
   }
 }

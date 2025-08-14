@@ -1,5 +1,13 @@
 # @rosen-bridge/rosenet-node
 
+## 0.3.1
+
+### Patch Changes
+
+- Update package license to MIT
+- Update dependencies
+  - @rosen-bridge/rosenet-utils@0.4.1
+
 ## 0.3.0
 
 ### Minor Changes
@@ -12,14 +20,14 @@
 
 - Fix the address-service to return IPv4. The publicIp package automatically returns IPv6, which will cause issues on most networks.
 - Replace extensionless module resolution with tsx tool
-- Updated dependencies
+- Update dependencies
   - @rosen-bridge/rosenet-utils@0.4.0
 
 ## 0.2.1
 
 ### Patch Changes
 
-- Updated dependencies
+- Update dependencies
   - @rosen-bridge/rosenet-utils@0.3.0
 
 ## 0.2.0
@@ -32,7 +40,7 @@
 
 - Change level of peer id log to info
 - Fix failing dials when nodes are behind a non-symmetric NAT
-- Updated dependencies
+- Update dependencies
   - @rosen-bridge/rosenet-utils@0.2.0
 
 ## 0.1.0
