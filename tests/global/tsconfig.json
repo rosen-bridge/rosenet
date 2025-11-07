@@ -12,5 +12,8 @@
     {
       "path": "../../packages/rosenet-relay/tsconfig.build.json",
     },
+    {
+      "path": "../../packages/utils/tsconfig.build.json",
+    },
   ],
 }
