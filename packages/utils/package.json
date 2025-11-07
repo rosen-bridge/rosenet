@@ -37,10 +37,12 @@
   },
   "dependencies": {
     "@libp2p/crypto": "^4.0.2",
+    "@libp2p/interface": "^1.7.0",
     "@libp2p/peer-id-factory": "^4.0.6",
     "@rosen-bridge/abstract-logger": "^2.0.1",
     "json-diff": "^1.0.6",
     "libp2p": "^1.2.3",
-    "multiformats": "^13.1.0"
+    "multiformats": "^13.1.0",
+    "uint8arrays": "^5.1.0"
   }
 }
