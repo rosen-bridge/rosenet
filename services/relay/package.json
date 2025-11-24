@@ -1,5 +1,6 @@
 {
   "name": "@rosen-bridge/relay-service",
+  "private": "true",
   "version": "0.2.1",
   "description": "Rosen Bridge relay service",
   "repository": "",
