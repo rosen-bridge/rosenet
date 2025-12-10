@@ -42,6 +42,24 @@ lint:
   script:
     - npm run lint:check
 
+test:
+  stage: ci
+  cache:
+    key: ${CI_COMMIT_REF_NAME}
+    policy: pull
+    paths:
+      - node_modules
+      - '**/node_modules'
+      - '**/dist'
+  script:
+    - npm run coverage
+  coverage: '/All files[^|]*\|[^|]*\s+([\d\.]+)/'
+  artifacts:
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: '**/coverage/cobertura-coverage.xml'
+
 changeset:
   stage: ci
   cache:
