@@ -4,12 +4,13 @@ export default defineConfig({
   test: {
     coverage: {
       all: true,
+      provider: 'istanbul',
       reporter: 'cobertura',
     },
     passWithNoTests: true,
     poolOptions: {
-      threads: {
-        singleThread: true,
+      forks: {
+        singleFork: true,
       },
     },
   },

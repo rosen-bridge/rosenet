@@ -1,6 +1,7 @@
-import { CallbackLoggerFactory } from '@rosen-bridge/callback-logger';
+import { DefaultLogger } from '@rosen-bridge/abstract-logger';
 import WinstonLogger from '@rosen-bridge/winston-logger';
+import CallbackLogger from '@rosen-bridge/callback-logger';
 
 import { logs } from './configs';
 
-CallbackLoggerFactory.init(new WinstonLogger(logs));
+DefaultLogger.init(new CallbackLogger(WinstonLogger.createLogger(logs)));
