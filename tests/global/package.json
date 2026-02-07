@@ -1,7 +1,7 @@
 {
   "name": "@rosenet-tests/global",
-  "private": true,
   "version": "0.1.0",
+  "private": true,
   "description": "RoseNet global test",
   "repository": "https://github.com/rosen-bridge/rosenet",
   "license": "MIT",
@@ -16,6 +16,16 @@
     "start:relay": "tsx ./src/relay/relay.ts",
     "type-check": "tsc --noEmit"
   },
+  "dependencies": {
+    "@influxdata/influxdb-client": "^1.35.0",
+    "@rosen-bridge/abstract-logger": "^4.0.0",
+    "@rosen-bridge/rosenet-node": "^0.3.1",
+    "@rosen-bridge/rosenet-relay": "^0.2.1",
+    "@rosen-bridge/rosenet-utils": "^0.4.1",
+    "@rosen-bridge/winston-logger": "^3.0.0",
+    "lodash-es": "^4.17.21",
+    "tsx": "^4.19.3"
+  },
   "devDependencies": {
     "@types/lodash-es": "^4.17.12",
     "@types/node": "^20.11.9",
@@ -25,15 +35,5 @@
     "eslint-config-prettier": "^9.1.0",
     "prettier": "^3.2.4",
     "typescript": "^5.3.3"
-  },
-  "dependencies": {
-    "@influxdata/influxdb-client": "^1.35.0",
-    "@rosen-bridge/callback-logger": "^0.1.0",
-    "@rosen-bridge/rosenet-node": "^0.3.1",
-    "@rosen-bridge/rosenet-relay": "^0.2.1",
-    "@rosen-bridge/rosenet-utils": "^0.4.1",
-    "@rosen-bridge/winston-logger": "^1.0.3",
-    "lodash-es": "^4.17.21",
-    "tsx": "^4.19.3"
   }
 }

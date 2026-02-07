@@ -11,15 +11,16 @@
   "scripts": {
     "lint": "eslint --fix . && npm run prettify",
     "prettify": "prettier --write . --ignore-path ./.gitignore",
-    "start:dev": "tsx watch ./src/index.ts",
     "start": "tsx ./src/index.ts",
+    "start:dev": "tsx watch ./src/index.ts",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@rosen-bridge/callback-logger": "^0.1.0",
+    "@rosen-bridge/abstract-logger": "^4.0.0",
+    "@rosen-bridge/callback-logger": "^2.0.0",
     "@rosen-bridge/rosenet-relay": "^0.2.0",
     "@rosen-bridge/rosenet-utils": "^0.4.0",
-    "@rosen-bridge/winston-logger": "1.0.3",
+    "@rosen-bridge/winston-logger": "^3.0.0",
     "config": "^3.3.7",
     "js-yaml": "^4.1.0",
     "tsx": "^4.19.3"

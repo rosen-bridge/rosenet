@@ -1,7 +1,8 @@
 import { createRoseNetRelay } from '@rosen-bridge/rosenet-relay';
+import { ConsoleLogger } from '@rosen-bridge/abstract-logger';
 
 const node = await createRoseNetRelay({
-  logger: console,
+  logger: new ConsoleLogger(),
   privateKey: process.env.PRIVATE_KEY!,
   listen: {
     host: '0.0.0.0',

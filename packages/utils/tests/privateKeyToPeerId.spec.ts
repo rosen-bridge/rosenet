@@ -32,8 +32,8 @@ describe('privateKeyToPeerId', () => {
    * @expected
    * - function call should throw an error
    */
-  it('should throw if private key is not valid', () => {
-    expect(async () => {
+  it('should throw if private key is not valid', async () => {
+    await expect(async () => {
       await privateKeyToPeerId(privateKeys.invalid);
     }).rejects.toThrow();
   });

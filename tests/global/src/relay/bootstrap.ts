@@ -1,7 +1,7 @@
-import { CallbackLoggerFactory } from '@rosen-bridge/callback-logger';
+import { DefaultLogger } from '@rosen-bridge/abstract-logger';
 import WinstonLogger from '@rosen-bridge/winston-logger';
 
-const winstonLogger = new WinstonLogger([
+const winstonLogger = WinstonLogger.createLogger([
   {
     type: 'console',
     level: 'info',
@@ -22,4 +22,4 @@ const winstonLogger = new WinstonLogger([
   },
 ]);
 
-CallbackLoggerFactory.init(winstonLogger);
+DefaultLogger.init(winstonLogger);

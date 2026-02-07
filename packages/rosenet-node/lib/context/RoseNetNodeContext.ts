@@ -1,4 +1,4 @@
-import { AbstractLogger } from '@rosen-bridge/abstract-logger';
+import { AbstractLogger, ConsoleLogger } from '@rosen-bridge/abstract-logger';
 import merge from 'lodash.merge';
 
 import { PartialRoseNetNodeConfig, RoseNetNodeConfig } from '../types';
@@ -29,7 +29,7 @@ import {
 } from '../constants';
 
 const RoseNetNodeContext = {
-  logger: console as AbstractLogger,
+  logger: new ConsoleLogger() as AbstractLogger,
   config: {} as RoseNetNodeConfig,
   init(config: PartialRoseNetNodeConfig) {
     const defaultConfig = {
@@ -67,7 +67,7 @@ const RoseNetNodeContext = {
         sampleSize: DEFAULT_RELAYS_COUNT_TO_CONNECT,
         multiaddrs: [],
       },
-      logger: console,
+      logger: new ConsoleLogger(),
       whitelist: [],
       debug: {
         libp2pComponents: [],

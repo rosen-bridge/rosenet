@@ -1,7 +1,7 @@
 {
   "name": "@rosenet-tests/scale",
-  "private": true,
   "version": "0.0.0",
+  "private": true,
   "description": "RoseNet scaling large messages test",
   "repository": "https://github.com/rosen-bridge/rosenet",
   "license": "MIT",
@@ -16,6 +16,12 @@
     "start:relay": "tsx ./src/relay/relay.ts",
     "type-check": "tsc --noEmit"
   },
+  "dependencies": {
+    "@rosen-bridge/abstract-logger": "^4.0.0",
+    "@rosen-bridge/rosenet-node": "^0.3.1",
+    "@rosen-bridge/rosenet-relay": "^0.2.1",
+    "tsx": "^4.19.3"
+  },
   "devDependencies": {
     "@types/node": "^20.11.9",
     "@typescript-eslint/eslint-plugin": "^6.19.1",
@@ -24,10 +30,5 @@
     "eslint-config-prettier": "^9.1.0",
     "prettier": "^3.2.4",
     "typescript": "^5.3.3"
-  },
-  "dependencies": {
-    "@rosen-bridge/rosenet-node": "^0.3.1",
-    "@rosen-bridge/rosenet-relay": "^0.2.1",
-    "tsx": "^4.19.3"
   }
 }

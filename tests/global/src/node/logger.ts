@@ -1,6 +1,4 @@
-import { CallbackLoggerFactory } from '@rosen-bridge/callback-logger';
+import { DefaultLogger } from '@rosen-bridge/abstract-logger';
 
-export const serviceLogger =
-  CallbackLoggerFactory.getInstance().getLogger('service');
-export const rosenetLogger =
-  CallbackLoggerFactory.getInstance().getLogger('rosenet');
+export const serviceLogger = DefaultLogger.getInstance().child('service');
+export const rosenetLogger = DefaultLogger.getInstance().child('rosenet');
