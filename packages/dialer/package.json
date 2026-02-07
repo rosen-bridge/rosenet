@@ -1,6 +1,6 @@
 {
   "name": "@rosen-bridge/dialer",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "a package top of rosenet-node with rosen p2p requirements",
   "repository": "https://github.com/rosen-bridge/rosenet",
   "license": "MIT",
@@ -18,7 +18,7 @@
   "dependencies": {
     "@rosen-bridge/abstract-logger": "^4.0.0",
     "@rosen-bridge/json-bigint": "^1.1.0",
-    "@rosen-bridge/rosenet-node": "^0.3.1",
+    "@rosen-bridge/rosenet-node": "^0.4.0",
     "lodash-es": "^4.17.21"
   },
   "devDependencies": {
