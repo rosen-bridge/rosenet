@@ -1,6 +1,6 @@
 {
   "name": "@rosen-bridge/rosenet-node",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "Rosen Bridge RoseNet node",
   "repository": "https://github.com/rosen-bridge/rosenet",
   "license": "MIT",
@@ -33,7 +33,7 @@
     "@libp2p/utils": "^5.4.9",
     "@multiformats/multiaddr": "^12.3.0",
     "@rosen-bridge/abstract-logger": "^4.0.0",
-    "@rosen-bridge/rosenet-utils": "^0.4.1",
+    "@rosen-bridge/rosenet-utils": "^0.5.0",
     "cockatiel": "^3.2.1",
     "fast-shuffle": "^6.1.0",
     "it-first": "^3.0.6",
